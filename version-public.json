@@ -1,0 +1,11 @@
+{
+  "versionCode": 26,
+  "versionName": "2.3.7",
+  "apkUrl": "https://coolflower1984.github.io/plantracker/plantracker-open-v2.3.7.apk",
+  "iosVersion": "2.3.7",
+  "iosUrl": "https://coolflower1984.github.io/plantracker/ios.html",
+  "iosInstall": "Safari 打开 → 分享 → 添加到主屏幕（PWA，无需越狱/无需签名）",
+  "webUrl": "https://coolflower1984.github.io/plantracker/web.html",
+  "notes": "周总览可长按拖动任务块换日期、改时间（时长不变）；同一时段多个安排显示 busy，点开可拖出来重排。计划支持自选颜色；日期框换成月历，双击直接跳到那天；课程按所属教学周显示；全部计划新增「今日计划」一键翻到今天；今天那一列改为一对 2px 浅蓝细线。",
+  "minVersion": "2.2.6"
+}

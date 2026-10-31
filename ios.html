@@ -3707,11 +3707,14 @@ function openEduSystem(){
 }
 /* ============ 检查更新（网页 / PWA / App 统一） ============ */
 /* 个人版用 version.json，公开版用 version-public.json（用内置课程是否为空区分） */
-function versionInfoUrl(){
-  var base = (BUILTIN_COURSES && BUILTIN_COURSES.length > 0)
-    ? "https://a68be1eba9715dc89.app.workbuddy.host/version.json?sharecode=J6AR2M6H5W"
-    : "https://a68be1eba9715dc89.app.workbuddy.host/version-public.json?sharecode=J6AR2M6H5W";
-  return base;
+/* 主源 GitHub Pages，兜底 jsDelivr CDN（沙箱托管域名会休眠，不再依赖） */
+var UPDATE_BASES = [
+  "https://coolflower1984.github.io/plantracker/",
+  "https://cdn.jsdelivr.net/gh/coolflower1984/plantracker@main/"
+];
+function versionInfoUrls(){
+  var name = (BUILTIN_COURSES && BUILTIN_COURSES.length > 0) ? "version.json" : "version-public.json";
+  return UPDATE_BASES.map(function(b){ return b + name; });
 }
 function cmpVersion(a, b){
   var pa = String(a || "0").split("."), pb = String(b || "0").split(".");
@@ -3725,10 +3728,17 @@ function cmpVersion(a, b){
   return 0;
 }
 function fetchVersionInfo(){
-  return fetch(versionInfoUrl() + "&t=" + Date.now(), {cache: "no-store"}).then(function(r){
-    if(!r.ok) throw new Error("HTTP " + r.status);
-    return r.json();
-  });
+  var urls = versionInfoUrls(), i = 0;
+  function next(){
+    if(i >= urls.length) return Promise.reject(new Error("version source unavailable"));
+    var u = urls[i++];
+    u = u + (u.indexOf("?") >= 0 ? "&" : "?") + "t=" + Date.now();
+    return fetch(u, {cache: "no-store"}).then(function(r){
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).catch(function(){ return next(); });
+  }
+  return next();
 }
 function showUpdateNotice(remote, notes){
   var cards = [{
