@@ -1,0 +1,11 @@
+{
+  "versionCode": 25,
+  "versionName": "2.3.1",
+  "apkUrl": "https://coolflower1984.github.io/plantracker/plantracker-open-v2.3.1.apk",
+  "iosVersion": "2.3.1",
+  "iosUrl": "https://coolflower1984.github.io/plantracker/ios.html",
+  "iosInstall": "Safari 打开 → 分享 → 添加到主屏幕（PWA，无需越狱/无需签名）",
+  "webUrl": "https://coolflower1984.github.io/plantracker/web.html",
+  "notes": "修复更新检查：服务器临时异常时不再被误判为「已是最新」，启动后会自动重试 4 次（3/6/12 秒），冷启动网络没准备好也能收到更新提示。",
+  "minVersion": "2.2.6"
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>计划追踪·公开版 下载（Android / iOS）</title>
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{margin:0;font-family:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:linear-gradient(160deg,#ecfdf5,#eef4ff 60%,#f4f6fb);min-height:100vh;
+  display:flex;align-items:center;justify-content:center;padding:18px;
+  padding-bottom:calc(18px + env(safe-area-inset-bottom));color:#1f2937;}
+.card{background:#fff;border-radius:20px;box-shadow:0 10px 40px rgba(16,185,129,.12);width:100%;max-width:420px;padding:26px 22px;text-align:center;}
+.icon{font-size:52px;line-height:1;}
+h1{margin:12px 0 4px;font-size:22px;font-weight:800;}
+.ver{color:#6b7280;font-size:13px;margin:0 0 10px;}
+.dlcount{color:#059669;font-size:13px;margin:0 0 14px;font-weight:600;}
+.desc{color:#374151;font-size:14.5px;line-height:1.7;margin:0 0 18px;text-align:left;background:#f8fafc;border-radius:12px;padding:12px 14px;}
+.desc b{color:#065f46;}
+
+/* 平台块 */
+.plat{border:1px solid #e5e7eb;border-radius:16px;padding:14px;margin-bottom:12px;text-align:left;background:#fff;}
+.plat.android{border-color:#a7f3d0;background:linear-gradient(180deg,#f0fdf8,#fff);}
+.plat.ios{border-color:#c7dbff;background:linear-gradient(180deg,#f2f7ff,#fff);}
+.plat-h{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;margin-bottom:4px;}
+.plat.android .plat-h{color:#047857;}
+.plat.ios .plat-h{color:#1d4ed8;}
+.tag{margin-left:auto;font-size:11px;font-weight:600;color:#fff;background:#94a3b8;border-radius:999px;padding:2px 8px;}
+.plat.android .tag{background:#10b981;}
+.plat.ios .tag{background:#3b82f6;}
+.plat-sub{font-size:12.5px;color:#6b7280;margin:0 0 10px;line-height:1.6;}
+.btn{display:block;text-align:center;color:#fff;text-decoration:none;font-size:16px;font-weight:700;
+  border-radius:13px;padding:14px 16px;}
+.btn.green{background:#059669;box-shadow:0 6px 16px rgba(5,150,105,.32);}
+.btn.blue{background:#2563eb;box-shadow:0 6px 16px rgba(37,99,235,.3);}
+.btn:active{filter:brightness(.94);}
+.steps{text-align:left;background:#fffbeb;border:1px solid #fde68a;border-radius:11px;
+  padding:10px 12px;font-size:13px;color:#92400e;line-height:1.85;margin-top:10px;}
+.steps b{color:#78350f;}
+.steps p{margin:0;}
+.ios-steps{background:#eff6ff;border-color:#bfdbfe;color:#1e40af;}
+.ios-steps b{color:#1d4ed8;}
+.foot{font-size:12px;color:#9ca3af;margin:14px 0 0;line-height:1.7;}
+.foot a{color:#94a3b8;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">📅</div>
+  <h1>计划追踪·公开版</h1>
+  <p class="ver">v2.3.1 · Android 7.0+ ／ iOS 15+ · 无内置任何人的课表</p>
+  <p class="dlcount" id="dlcount"></p>
+
+  <div class="desc">
+    北航学生课表 + 计划复盘工具。<b>安装后请导入你自己的课表</b>（支持学校官网 Excel、JSON 备份）。<br>
+    纯本地运行、完全离线，数据只存在你自己的设备里；支持「🔗 同步码」，手机与电脑之间可互相同步。<br>
+    <span style="color:#6b7280;font-size:13px;">v2.3.1：修复自动检查更新——服务器偶发异常时不再被误判为「已是最新」，启动后按 3/6/12 秒自动重试 4 次，冷启动网络没就绪也能收到更新提示；版本提示优先于功能卡弹出，不再被顶掉。</span>
+  </div>
+
+  <div class="plat ios" id="plat-ios">
+    <div class="plat-h">🍎 iPhone / iPad<span class="tag" id="ios-tag">网页版 App</span></div>
+    <p class="plat-sub">iOS 不能安装 APK。用「添加到主屏幕」安装，<b>图标启动、全屏无浏览器栏、断网可用</b>，与 App 体验一致，数据存在本机。</p>
+    <a class="btn blue" id="iosbtn" href="ios.html">📱 打开 iOS 版</a>
+    <div class="steps ios-steps">
+      <p><b>安装步骤（Safari）：</b></p>
+      <p>1. 点上方蓝色按钮（微信里请先点右上角「…」→ 在浏览器打开）；</p>
+      <p>2. 点 Safari 底部「分享」按钮 ⤴；</p>
+      <p>3. 选「添加到主屏幕」→ 右上角「添加」即可。</p>
+    </div>
+  </div>
+
+  <div class="plat android" id="plat-android">
+    <div class="plat-h">🤖 Android<span class="tag" id="and-tag">APK 380 KB</span></div>
+    <p class="plat-sub">下载安装包直接安装，支持后台通知提醒（课前 5 分钟、DDL、进度未填）。</p>
+    <a class="btn green" id="dl" href="plantracker-open-v2.3.1.apk" download="计划追踪-公开版-v2.3.1.apk">⬇ 下载公开版 APK</a>
+    <div class="steps">
+      <p><b>安装步骤：</b></p>
+      <p>1. 点上方绿色按钮下载；</p>
+      <p>2. 下拉通知栏，点刚下载完成的文件；</p>
+      <p>3. 系统提示"允许安装未知来源应用"时，选择允许即可。</p>
+    </div>
+  </div>
+
+  <p class="foot">
+    想用网页版（不安装）？<a id="weblink" href="web.html" target="_blank">直接打开网页版</a>
+  </p>
+</div>
+<script>
+(function(){
+  var UA = navigator.userAgent;
+  var IS_IOS = /iPad|iPhone|iPod/.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var STANDALONE = (window.navigator.standalone === true) ||
+                   (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+
+  var sc = null;
+  try{ sc = new URLSearchParams(location.search).get("sharecode"); }catch(e){}
+
+  if(IS_IOS){
+    document.body.classList.add("is-ios");
+    /* iOS 上把「iPhone / iPad」块提到最前 */
+    var card = document.querySelector(".card");
+    var ios = document.getElementById("plat-ios");
+    var and = document.getElementById("plat-android");
+    card.insertBefore(ios, and);
+    document.getElementById("ios-tag").textContent = STANDALONE ? "已安装" : "推荐";
+    document.getElementById("plat-android").style.opacity = ".92";
+  }
+
+  if(sc){
+    document.getElementById("dl").href = "plantracker-open-v2.3.1.apk?sharecode=" + encodeURIComponent(sc);
+    document.getElementById("weblink").href = "web.html?sharecode=" + encodeURIComponent(sc);
+    document.getElementById("iosbtn").href = "ios.html?sharecode=" + encodeURIComponent(sc);
+  }
+
+  var dlc = document.getElementById("dlcount");
+  function showCount(d){ var v = (d && typeof d.value === "number") ? d.value : 0; if(dlc) dlc.textContent = "Android 版累计下载 " + v + " 次"; }
+  fetch("https://abacus.jasoncameron.dev/get/plantracker-buaa/open").then(function(r){ return r.json(); }).then(showCount).catch(function(){});
+  document.getElementById("dl").addEventListener("click", function(){
+    fetch("https://abacus.jasoncameron.dev/hit/plantracker-buaa/open").then(function(r){ return r.json(); }).then(showCount).catch(function(){});
+  });
+})();
+</script>
+</body>
+</html>
