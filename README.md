@@ -41,6 +41,16 @@
 客户端读取 `version.json` 时采用双源：优先 GitHub Pages，失败自动回退到 jsDelivr
 （`https://cdn.jsdelivr.net/gh/coolflower1984/plantracker@main/version.json`）。
 
+> **注意**：jsDelivr 对 `@main` 有约 12 小时的缓存，推完代码它仍可能返回上一版，
+> 导致回退线路误报「已是最新」。每次发版后必须手动清缓存，query 参数无效：
+>
+> ```
+> curl https://purge.jsdelivr.net/gh/coolflower1984/plantracker@main/version.json
+> curl https://purge.jsdelivr.net/gh/coolflower1984/plantracker@main/version-public.json
+> ```
+>
+> 返回 `"status": "finished"` 即生效，随后复查两个地址的 versionName 是否为当前版本。
+
 ## 数据与隐私
 
 所有课表、计划、复盘数据均保存在本机浏览器存储中，仓库内不含任何用户数据。
