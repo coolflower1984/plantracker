@@ -10,7 +10,7 @@
 |---|---|
 | 落地页 | https://coolflower1984.github.io/plantracker/ |
 | 网页版 | https://coolflower1984.github.io/plantracker/web.html |
-| Android APK | https://coolflower1984.github.io/plantracker/plantracker-open-v2.3.7.apk |
+| Android APK | https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.1.apk |
 | iOS（PWA） | https://coolflower1984.github.io/plantracker/ios.html |
 | 版本信息 | https://coolflower1984.github.io/plantracker/version.json |
 
@@ -22,19 +22,15 @@
 | `web.html` | 网页版主程序，单文件应用 |
 | `ios.html` | iOS PWA 版（Safari 添加到主屏幕） |
 | `ios-project.zip` | iOS Xcode 工程打包 |
-| `plantracker-open-v2.3.7.apk` | Android 安装包（公开版，versionCode 26） |
+| `plantracker-open-v2.4.1.apk` | Android 安装包（公开版，versionCode 28） |
 | `version.json` | 版本信息，App 启动时读取以判断是否有新版 |
 | `sw.js` / `manifest.webmanifest` / `icon-*.png` | PWA 资源 |
 
-## 当前版本 v2.3.7
+## 当前版本 v2.4.1
 
-- 周总览支持长按拖动任务块换日期、改时间（时长不变），可拖到已被占用的时段
-- 同一时段多个安排显示 `busy`，点开可长按拖出来重排
-- 计划支持自选颜色，今日时间轴 / 计划卡片 / 周总览同步变色
-- 日期框换成月历，双击日期直接跳转
-- 课程按所属教学周显示，不只是全局"当前周"
-- 全部计划顶部新增「今日计划」一键翻到今天
-- 周总览今天那一列：两侧各一条 2px 浅蓝细线，无通栏色块
+- 新手教程重新整合为 3 组 8 张，按「认识它 → 每天怎么用 → 数据与设置」排列
+- 补上课表导入、翘课标记、busy 含义、本科／研究生时间轴切换等基础说明
+- 教程列表里的历史版本更新默认只留最近 3 个，可展开查看全部
 
 ## 更新流程
 
