@@ -49,13 +49,13 @@ h1{margin:12px 0 4px;font-size:22px;font-weight:800;}
 <div class="card">
   <div class="icon">📅</div>
   <h1>计划追踪·公开版</h1>
-  <p class="ver">v2.3.1 · Android 7.0+ ／ iOS 15+ · 无内置任何人的课表</p>
+  <p class="ver">v2.3.7 · Android 7.0+ ／ iOS 15+ · 无内置任何人的课表</p>
   <p class="dlcount" id="dlcount"></p>
 
   <div class="desc">
     北航学生课表 + 计划复盘工具。<b>安装后请导入你自己的课表</b>（支持学校官网 Excel、JSON 备份）。<br>
     纯本地运行、完全离线，数据只存在你自己的设备里；支持「🔗 同步码」，手机与电脑之间可互相同步。<br>
-    <span style="color:#6b7280;font-size:13px;">v2.3.1：修复自动检查更新——服务器偶发异常时不再被误判为「已是最新」，启动后按 3/6/12 秒自动重试 4 次，冷启动网络没就绪也能收到更新提示；版本提示优先于功能卡弹出，不再被顶掉。</span>
+    <span style="color:#6b7280;font-size:13px;">v2.3.7：周总览可长按拖动任务块换日期、改时间（时长不变），同一时段多个安排显示 busy、点开可拖出来重排；计划支持自选颜色；日期框换成月历，双击直接跳到那天；课程按所属教学周显示；全部计划新增「今日计划」一键翻到今天。</span>
   </div>
 
   <div class="plat ios" id="plat-ios">
@@ -73,7 +73,7 @@ h1{margin:12px 0 4px;font-size:22px;font-weight:800;}
   <div class="plat android" id="plat-android">
     <div class="plat-h">🤖 Android<span class="tag" id="and-tag">APK 380 KB</span></div>
     <p class="plat-sub">下载安装包直接安装，支持后台通知提醒（课前 5 分钟、DDL、进度未填）。</p>
-    <a class="btn green" id="dl" href="plantracker-open-v2.3.1.apk" download="计划追踪-公开版-v2.3.1.apk">⬇ 下载公开版 APK</a>
+    <a class="btn green" id="dl" href="plantracker-open-v2.3.7.apk" download="计划追踪-公开版-v2.3.7.apk">⬇ 下载公开版 APK</a>
     <div class="steps">
       <p><b>安装步骤：</b></p>
       <p>1. 点上方绿色按钮下载；</p>
@@ -108,7 +108,7 @@ h1{margin:12px 0 4px;font-size:22px;font-weight:800;}
   }
 
   if(sc){
-    document.getElementById("dl").href = "plantracker-open-v2.3.1.apk?sharecode=" + encodeURIComponent(sc);
+    document.getElementById("dl").href = "plantracker-open-v2.3.7.apk?sharecode=" + encodeURIComponent(sc);
     document.getElementById("weblink").href = "web.html?sharecode=" + encodeURIComponent(sc);
     document.getElementById("iosbtn").href = "ios.html?sharecode=" + encodeURIComponent(sc);
   }
