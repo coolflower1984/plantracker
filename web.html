@@ -3803,7 +3803,7 @@ function onSyncAction(){
 }
 
 /* ============ 应用更新 ============ */
-var APP_VERSION_NAME = "2.4.1";
+var APP_VERSION_NAME = "2.4.2";
 
 function isInApp(){
   return typeof window.AndroidBridge !== "undefined" && window.AndroidBridge != null;
@@ -3988,6 +3988,12 @@ var TUTORIAL_CARDS = [
 ];
 var tutShowAll = false;
 var UPDATE_CARDS = {
+  "2.4.2": [
+    {id:"upd-242-1", kind:"update", icon:"📡", title:"公开版的检查更新改走 GitHub", points:[
+      "以前公开版是从开发机的临时地址查版本，那台机器一停，所有人都查不到新版本，点下载还会跳到 404。",
+      "现在从 GitHub Pages 读版本信息，失败自动回退 jsDelivr 备用线路；下载链接也换成固定地址，不再跟着开发机走。"
+    ]}
+  ],
   "2.4.1": [
     {id:"upd-241-1", kind:"update", icon:"📖", title:"新手教程重新整合", points:[
       "原来的教程卡是跟着功能一条条加的，顺序和使用路径对不上，还漏了课表导入、翘课标记、busy 这些最基础的东西。",

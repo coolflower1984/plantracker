@@ -10,7 +10,7 @@
 |---|---|
 | 落地页 | https://coolflower1984.github.io/plantracker/ |
 | 网页版 | https://coolflower1984.github.io/plantracker/web.html |
-| Android APK | https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.1.apk |
+| Android APK | https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.2.apk |
 | iOS（PWA） | https://coolflower1984.github.io/plantracker/ios.html |
 | 版本信息 | https://coolflower1984.github.io/plantracker/version.json |
 
@@ -22,15 +22,15 @@
 | `web.html` | 网页版主程序，单文件应用 |
 | `ios.html` | iOS PWA 版（Safari 添加到主屏幕） |
 | `ios-project.zip` | iOS Xcode 工程打包 |
-| `plantracker-open-v2.4.1.apk` | Android 安装包（公开版，versionCode 28） |
+| `plantracker-open-v2.4.2.apk` | Android 安装包（公开版，versionCode 29） |
 | `version.json` | 版本信息，App 启动时读取以判断是否有新版 |
 | `sw.js` / `manifest.webmanifest` / `icon-*.png` | PWA 资源 |
 
-## 当前版本 v2.4.1
+## 当前版本 v2.4.2
 
-- 新手教程重新整合为 3 组 8 张，按「认识它 → 每天怎么用 → 数据与设置」排列
-- 补上课表导入、翘课标记、busy 含义、本科／研究生时间轴切换等基础说明
-- 教程列表里的历史版本更新默认只留最近 3 个，可展开查看全部
+- 公开版的检查更新改从 GitHub Pages 读取，失败回退 jsDelivr，不再依赖开发机的临时地址
+- 下载链接换成固定地址，修掉「检查更新后点下载跳到 404」
+- 上一版 `plantracker-open-v2.4.1.apk` 暂留，供仍在缓存旧清单的客户端下载
 
 ## 更新流程
 

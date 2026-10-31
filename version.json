@@ -1,11 +1,11 @@
 {
-  "versionCode": 28,
-  "versionName": "2.4.1",
-  "apkUrl": "https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.1.apk",
-  "iosVersion": "2.4.1",
+  "versionCode": 29,
+  "versionName": "2.4.2",
+  "apkUrl": "https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.2.apk",
+  "iosVersion": "2.4.2",
   "iosUrl": "https://coolflower1984.github.io/plantracker/ios.html",
   "iosInstall": "Safari 打开 → 分享 → 添加到主屏幕（PWA，无需越狱/无需签名）",
   "webUrl": "https://coolflower1984.github.io/plantracker/web.html",
-  "notes": "新手教程重新整合：按「第一步 认识它 → 第二步 每天怎么用 → 第三步 数据与设置」分成 3 组 8 张，补上课表导入、翘课标记、busy 是什么、本科／研究生时间轴怎么切；教程列表里的历史更新默认只留最近 3 个版本，可展开查看。",
+  "notes": "公开版的「检查更新」不再依赖开发机的临时地址：版本信息改从 GitHub Pages 读取，失败自动回退 jsDelivr 备用线路，下载链接也换成固定地址。之前那台机器一停，所有装公开版的人都查不到新版本，点下载还会跳到 404。",
   "minVersion": "2.2.6"
 }
