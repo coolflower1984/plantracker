@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>北航计划追踪</title>
-<meta name="description" content="北航学生计划追踪：课表、节次时间轴、计划复盘，单文件离线可用">
+<title>计划追踪</title>
+<meta name="description" content="学生课表 + 计划复盘：节次时间轴、计划打卡、周总览，单文件离线可用">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -100,6 +100,12 @@ button{cursor:pointer;}
 .field{display:flex; gap:6px; font-size:12px; margin-top:5px;}
 .field-label{color:var(--muted); flex:0 0 auto;}
 .field-val{color:var(--text); word-break:break-all;}
+/* 今日页：同一项任务的多段合并成一张卡，段明细可单独点开 */
+.grp-segs{margin-top:7px; border-top:1px dashed var(--line); padding-top:6px;}
+.grp-seg{display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:12px; color:var(--muted); padding:4px 6px; border-radius:7px;}
+.grp-seg + .grp-seg{margin-top:2px;}
+.grp-seg:active{background:rgba(148,163,184,.16);}
+.grp-seg b{font-weight:700; color:var(--text); flex:0 0 auto;}
 .empty{background:var(--card); border:1px dashed var(--line); border-radius:12px; padding:22px; text-align:center; color:var(--muted); font-size:13px;}
 /* 全部计划 */
 .date-group{margin-bottom:14px;}
@@ -187,6 +193,15 @@ button{cursor:pointer;}
 .occ-line input{width:18px; height:18px; accent-color:var(--primary); flex:0 0 auto;}
 #ps-ddl-wrap input{width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:16px; background:var(--card); color:var(--text);}
 .periods{display:grid; grid-template-columns:repeat(7,1fr); gap:8px;}
+/* 计划时段：按节次 / 按时间点 */
+.pmode{display:flex; gap:6px; background:rgba(15,23,42,.05); border-radius:10px; padding:3px; margin:2px 0 8px;}
+.pmode-btn{flex:1 1 0; min-width:0; border:0; background:transparent; border-radius:8px; padding:8px 6px;
+  font-size:12.5px; font-weight:700; color:var(--muted); font-family:inherit; cursor:pointer; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis;}
+.pmode-btn.on{background:#fff; color:var(--primary); box-shadow:0 1px 3px rgba(15,23,42,.12);}
+.time-row{display:flex; align-items:center; gap:8px;}
+.time-row input[type=time]{flex:1 1 0; min-width:0;}
+.time-sep{color:var(--muted); font-weight:700;}
 .pbtn{position:relative; height:40px; border:1px solid var(--line); border-radius:10px; background:var(--card);
   font-size:15px; font-weight:600; color:var(--text); padding:0;}
 .pbtn.selected{background:var(--primary); border-color:var(--primary); color:#fff;}
@@ -206,8 +221,54 @@ button{cursor:pointer;}
   border-radius:10px; padding:7px 2px; font-size:11px; line-height:1.5; text-align:center;}
 .carry-day b{display:block; font-size:13px; color:var(--primary);}
 .carry-day.active{border-color:var(--primary); background:var(--primary-soft);}
+/* 时段段列表（可跨天多选） */
+.seg-chips{display:flex; flex-direction:column; gap:8px;}
+.seg-chip{display:flex; align-items:center; gap:10px; background:var(--card); border:1px solid var(--line);
+  border-radius:10px; padding:9px 10px 9px 12px; font-size:13px; color:var(--text);}
+.seg-chip .seg-txt{flex:1 1 auto; min-width:0; line-height:1.45;}
+.seg-chip .seg-day{font-weight:700; color:var(--primary); margin-right:6px;}
+.seg-chip .seg-min{color:var(--muted); font-size:12px; margin-left:6px;}
+.seg-chip .seg-x{border:0; background:#eef1f6; color:var(--muted); width:24px; height:24px; border-radius:99px; font-size:12px; flex:0 0 auto;}
+.seg-chip .seg-x:active{background:#e2e8f0;}
+.seg-add{width:100%; margin-top:8px; border:1px dashed var(--primary); background:var(--primary-soft);
+  color:var(--primary); border-radius:10px; padding:9px 0; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer;}
+.seg-add:active{filter:brightness(.97);}
+.seg-empty{font-size:12px; color:var(--muted); background:rgba(15,23,42,.04); border-radius:10px; padding:10px 12px;}
+/* 多天时段选择器 */
+.ms-days{display:flex; gap:6px; overflow-x:auto; padding:2px 0 8px; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+.ms-days::-webkit-scrollbar{display:none;}
+.ms-day{flex:0 0 auto; min-width:64px; border:1px solid var(--line); background:var(--card); border-radius:10px;
+  padding:6px 8px 5px; text-align:center; font-size:11px; color:var(--muted); font-family:inherit; cursor:pointer;}
+.ms-day b{display:block; font-size:12.5px; color:var(--text); font-weight:700; margin-top:1px;}
+.ms-day .ms-n{display:inline-block; margin-top:3px; font-size:10px; color:var(--primary); font-weight:700; line-height:1;}
+.ms-day.active{border-color:var(--primary); background:var(--primary-soft);}
+.ms-day.active b{color:var(--primary);}
+.ms-sum{margin-top:14px;}
+.ms-sum-hd{font-size:12px; font-weight:700; color:var(--muted); margin-bottom:8px;}
+.ms-total{font-size:12px; color:var(--primary); font-weight:700; margin-top:8px;}
+.ms-tip{font-size:11.5px; color:var(--muted); line-height:1.6; margin-top:10px;}
 /* 复盘 */
-.review-week{font-size:13px; font-weight:700; color:var(--primary); background:var(--primary-soft); border-radius:99px; padding:4px 12px;}
+.review-week{font-size:13px; font-weight:700; color:var(--primary); background:var(--primary-soft); border-radius:99px;
+  padding:4px 12px; border:none; font-family:inherit; cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.review-week::after{content:"▾"; margin-left:4px; font-size:10px; opacity:.75;}
+.review-week:active{filter:brightness(.96);}
+/* 周次选择 */
+.wk-mask{position:fixed; inset:0; z-index:120; background:rgba(15,23,42,.4); display:flex;
+  align-items:center; justify-content:center; padding:22px;}
+.wk-box{width:100%; max-width:330px; background:var(--card); border-radius:18px; padding:16px 16px 14px;
+  box-shadow:0 20px 60px rgba(15,23,42,.28);}
+.wk-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+.wk-head b{font-size:15px; color:var(--text);}
+.wk-x{border:none; background:transparent; color:var(--muted); font-size:15px; padding:2px 6px; cursor:pointer;}
+.wk-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:7px;}
+.wk-cell{border:1px solid var(--line); background:var(--card); color:var(--text); border-radius:10px;
+  padding:9px 0; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer;}
+.wk-cell:active{background:var(--bg);}
+.wk-cell.on{background:var(--primary); border-color:var(--primary); color:#fff;}
+.wk-now{width:100%; margin-top:12px; border:1px solid var(--primary); background:var(--primary-soft);
+  color:var(--primary); border-radius:10px; padding:9px 0; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer;}
+.wk-now:active{filter:brightness(.97);}
+.wk-tip{font-size:11.5px; color:var(--muted); line-height:1.55; margin-top:12px;}
 .review-summary{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:12px;}
 .rs{background:var(--card); border-radius:12px; padding:12px 6px; text-align:center; box-shadow:0 1px 4px rgba(0,0,0,.06);}
 .rs-v{font-size:18px; font-weight:800; color:var(--primary);}
@@ -334,6 +395,7 @@ input[type=range]{width:100%; min-width:60vw; height:26px; accent-color:var(--pr
 .tl-row-dense .tl-cells{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
 .tl-row-dense .tl-item{min-height:32px;padding:5px 7px;padding-right:14px;font-size:11.5px;border-radius:8px;line-height:1.3;position:relative;}
 .tl-min{position:absolute;top:2px;right:4px;font-size:8px;opacity:.33;font-variant-numeric:tabular-nums;}
+.tl-rt{font-size:10.5px;font-weight:700;opacity:.6;margin-left:5px;white-space:nowrap;font-variant-numeric:tabular-nums;}
 .tl-item.tl-wide{grid-column:1 / -1;padding-right:8px;}
 .tl-row-dense .tl-item.free{justify-content:center;}
 .periods.grad{grid-template-columns:repeat(2,1fr);gap:7px;}
@@ -384,15 +446,16 @@ input[type=range]{width:100%; min-width:60vw; height:26px; accent-color:var(--pr
 .wg2-tlab{position:absolute;left:0;right:0;text-align:right;padding:1px 6px 0 0;box-sizing:border-box;font-size:11px;color:var(--muted);line-height:1.15;}
 .wg2-tlab b{font-weight:700;color:var(--text);font-size:10.5px;}
 .wg2-tlab span{display:block;font-size:9px;color:var(--muted);}
-.wg2-col{flex:1 1 0;min-width:0;position:relative;box-sizing:border-box;background-color:#fff;
-  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--rowh) - 1px),rgba(15,23,42,.07) calc(var(--rowh) - 1px),rgba(15,23,42,.07) var(--rowh));}
+.wg2-col{flex:1 1 0;min-width:0;position:relative;box-sizing:border-box;background-color:#fff;}
 .wg2-col.is-today{background-color:#eff6ff;}
-.wg2-cell{position:absolute;left:0;right:0;cursor:pointer;}
+/* 节与节之间留一条看得见的细线：总览回到「一节一格」后，靠它把格子分开 */
+.wg2-cell{position:absolute;left:0;right:0;cursor:pointer;box-sizing:border-box;
+  border-bottom:1px solid rgba(15,23,42,.11);}
 .wg2-cell:active{background:rgba(59,130,246,.09);}
 .wg2-block{position:absolute;left:1px;right:1px;border-radius:7px;box-sizing:border-box;padding:3px 5px;overflow:hidden;
   display:flex;flex-direction:column;justify-content:center;gap:1px;font-size:10px;line-height:1.15;
   cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;border:1px solid transparent;
-  transition:box-shadow .12s,transform .12s;}
+  z-index:1;transition:box-shadow .12s,transform .12s;}
 .wg2-block .wg2-bn{display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;}
 .wg2-block .wg2-bi{font-size:9px;line-height:1;flex:0 0 auto;}
 .wg2-block .wg2-bt{font-size:8.5px;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
@@ -410,6 +473,29 @@ input[type=range]{width:100%; min-width:60vw; height:26px; accent-color:var(--pr
   cursor:pointer;box-sizing:border-box;overflow:hidden;}
 .wg2-busy-t{font-size:13px;font-weight:800;letter-spacing:.09em;color:#475569;line-height:1;}
 .wg2-busy-s{font-size:8px;color:#64748b;line-height:1.1;}
+/* 节次之外的安排：一只与一节等高的黑色小鸟，贴在最近的那一节上 */
+.wg2-bird{position:absolute;z-index:6;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  transition:transform .12s,box-shadow .12s;border-radius:8px;}
+/* 白色圆底：压在 busy 或课程块上也看得清，像一枚盖上去的印章 */
+.wg2-bird:before{content:"";position:absolute;width:calc(100% - 2px);height:calc(100% - 2px);
+  max-width:30px;max-height:30px;min-width:18px;min-height:18px;border-radius:50%;
+  background:rgba(255,255,255,.94);box-shadow:0 1px 4px rgba(15,23,42,.16);}
+.wg2-bird-svg{position:relative;width:100%;height:100%;max-width:30px;max-height:30px;display:block;
+  filter:drop-shadow(0 1px 1.5px rgba(15,23,42,.18));}
+.wg2-bird:active{transform:scale(.93);}
+.wg2-bird.closed{opacity:.42;}
+.wg2-bird.dragging{z-index:45;box-shadow:0 8px 20px rgba(15,23,42,.28);}
+.wg2-bird-dot{position:absolute;right:0;top:0;width:12px;height:12px;border-radius:50%;
+  background:#fff;border:1px solid #cbd5e1;color:#334155;font-size:8px;font-weight:800;font-style:normal;
+  line-height:10px;text-align:center;box-shadow:0 1px 3px rgba(15,23,42,.18);cursor:pointer;}
+/* 同一位置有好几只：叠成一摞，右上角标数量，点开看全部 */
+.wg2-bird.stack{cursor:pointer;}
+.wg2-bird.stack .wg2-bird-svg{filter:drop-shadow(-3px 3px 0 rgba(255,255,255,.96))
+  drop-shadow(-4px 4px 0 rgba(15,23,42,.13)) drop-shadow(0 1px 2px rgba(15,23,42,.2));}
+.wg2-bird-n{position:absolute;right:-4px;top:-4px;min-width:16px;height:16px;padding:0 4px;
+  border-radius:9px;background:#111827;color:#fff;font-size:10px;font-weight:800;font-style:normal;
+  line-height:16px;text-align:center;box-shadow:0 2px 5px rgba(15,23,42,.3);}
 body.wg-dragging{-webkit-user-select:none;user-select:none;}
 .multi-item{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;border:1px solid var(--line);
   background:var(--card);border-radius:12px;padding:11px 12px;margin-bottom:8px;cursor:pointer;}
@@ -424,13 +510,73 @@ body.wg-dragging{-webkit-user-select:none;user-select:none;}
 .wg2-ghost{position:absolute;left:1px;right:1px;z-index:40;border-radius:7px;border:2px dashed var(--primary);
   background:rgba(59,130,246,.14);box-sizing:border-box;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:1px;pointer-events:none;overflow:hidden;padding:1px 2px;}
-.wg2-ghost b{font-size:9px;font-weight:800;color:#1d4ed8;line-height:1.15;text-align:center;white-space:nowrap;overflow:hidden;}
+.wg2-ghost b{font-size:10px;font-weight:800;color:#1d4ed8;line-height:1.15;text-align:center;white-space:nowrap;overflow:hidden;}
 .wg2-ghost span{font-size:8px;color:#2563eb;line-height:1.1;text-align:center;white-space:nowrap;}
-.wg-float{position:fixed;left:0;top:0;z-index:9000;pointer-events:none;max-width:168px;
-  background:#fff;border:1.5px solid var(--primary);border-radius:10px;padding:5px 9px;
+/* v2.4.6 拖动时把块本身做成半透明的"洞"，真正的位置交给虚线预览，手指不会挡住时间 */
+.wg2-block.dragging{opacity:.38;box-shadow:none;transform:none;border-style:dashed;}
+.wg2-bird.dragging{opacity:.3;box-shadow:none;transform:none;}
+/* ===== v2.4.7 拖鸟：底部鸟窝托盘 + 竖直时间柱 ===== */
+/* 托盘压在底部导航栏上：拖动时导航栏让位，课表能多露出约 60px。
+   压在导航栏上就必须自己吃掉触摸事件，否则手指会点穿到 tab 按钮上直接切页 */
+.wg-nest{position:fixed;left:10px;right:10px;z-index:9200;pointer-events:auto;
+  border:1.6px dashed rgba(37,99,235,.55);border-radius:16px;background:rgba(255,255,255,.985);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  box-shadow:0 12px 32px rgba(15,23,42,.2);padding:7px 8px 9px;opacity:0;
+  transform:translateY(10px);transition:opacity .16s,transform .2s;}
+.wg-nest.show{opacity:1;transform:none;}
+.wg-nest-tip{font-size:9.5px;color:#64748b;text-align:center;margin-bottom:6px;font-weight:600;}
+.wg-nest-row{display:flex;gap:7px;}
+.wg-nest-item{flex:1;min-width:0;border:1.4px dashed #cbd5e1;background:#f8fafc;border-radius:12px;
+  padding:5px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:1px;
+  transition:border-color .14s,background .14s,transform .14s,box-shadow .14s;}
+.wg-nest-item i{display:block;width:20px;height:20px;font-style:normal;opacity:.62;}
+.wg-nest-item i svg{display:block;width:20px;height:20px;}
+.wg-nest-item b{font-size:11px;font-weight:800;color:#475569;line-height:1.25;}
+.wg-nest-item em{font-size:8px;font-style:normal;color:#94a3b8;line-height:1.2;white-space:nowrap;}
+.wg-nest-item.hot{border-style:solid;border-color:#2563eb;background:#eff6ff;
+  transform:translateY(-3px);box-shadow:0 6px 16px rgba(37,99,235,.26);}
+.wg-nest-item.hot i{opacity:1;}
+.wg-nest-item.hot b{color:#1d4ed8;}
+.wg-nest-item.hot em{color:#3b82f6;}
+/* 时间柱：一张浮起来的卡片，底部最早、顶部最晚，手指往上滑就是往后推 */
+.wg-nest-col{position:fixed;width:86px;z-index:9150;pointer-events:none;opacity:0;
+  background:rgba(255,255,255,.985);border:1.5px solid rgba(37,99,235,.32);border-radius:14px;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  box-shadow:0 12px 30px rgba(15,23,42,.22);transition:opacity .14s;}
+.wg-nest-col.show{opacity:1;}
+.wg-nest-rail{position:absolute;left:18px;bottom:10px;width:3px;border-radius:2px;
+  background:linear-gradient(180deg,rgba(37,99,235,.12),rgba(37,99,235,.6));}
+.wg-nest-rl{position:absolute;left:14px;width:11px;height:1px;background:rgba(37,99,235,.5);}
+.wg-nest-rl.major{left:10px;width:19px;height:1.5px;background:rgba(37,99,235,.75);}
+.wg-nest-rl b{position:absolute;left:24px;top:-6px;font-size:9px;font-weight:700;color:#7c8ba1;
+  white-space:nowrap;line-height:1;}
+.wg-nest-rl.major b{color:#3f5b7f;}
+.wg-nest-cap{position:absolute;left:0;right:0;top:4px;text-align:center;line-height:1.1;}
+.wg-nest-cap b{display:block;font-size:10.5px;font-weight:800;color:#2563eb;letter-spacing:.3px;}
+.wg-nest-cap em{display:block;font-style:normal;font-size:8px;color:#94a3b8;font-weight:600;margin-top:1px;}
+.wg-nest-cur{position:absolute;left:-5px;right:-5px;transform:translateY(50%);height:22px;
+  border-radius:7px;background:#2563eb;color:#fff;font-size:10.5px;font-weight:800;
+  text-align:center;line-height:22px;white-space:nowrap;letter-spacing:-.2px;
+  box-shadow:0 4px 12px rgba(37,99,235,.45);}
+.wg-nest-cur span{display:block;line-height:22px;}
+.wg-nest-cur em{font-style:normal;font-weight:600;opacity:.75;}
+/* 手里那只鸟：跟着手指走，跨周换页也不消失 */
+.wg-kite{position:fixed;z-index:9160;width:30px;height:30px;pointer-events:none;
+  transform:translate(-50%,-50%);filter:drop-shadow(0 4px 8px rgba(15,23,42,.32));
+  animation:wgKite 1.6s ease-in-out infinite;}
+@keyframes wgKite{0%,100%{transform:translate(-50%,-50%) rotate(-5deg)}
+  50%{transform:translate(-50%,-50%) rotate(5deg)}}
+/* 撞到左右边缘的那一下：屏幕侧边闪一道蓝光 */
+.wg-edge{position:fixed;top:0;bottom:0;width:26px;pointer-events:none;z-index:9000;opacity:0;}
+.wg-edge.left{left:0;background:linear-gradient(90deg,rgba(37,99,235,.42),rgba(37,99,235,0));}
+.wg-edge.right{right:0;background:linear-gradient(270deg,rgba(37,99,235,.42),rgba(37,99,235,0));}
+.wg-edge.hit{animation:wgEdgeHit .34s ease-out;}
+@keyframes wgEdgeHit{0%{opacity:1;transform:scaleX(1.15)}55%{opacity:.6}100%{opacity:0;transform:scaleX(1)}}
+.wg-float{position:fixed;left:0;top:0;z-index:9300;pointer-events:none;max-width:190px;
+  background:#fff;border:1.5px solid var(--primary);border-radius:10px;padding:4px 9px 5px;
   box-shadow:0 12px 28px rgba(15,23,42,.3);transform:translate(-50%,-100%);}
-.wg-float b{display:block;font-size:11px;font-weight:800;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.wg-float span{display:block;font-size:9.5px;color:#2563eb;margin-top:1px;white-space:nowrap;}
+.wg-float b{display:block;font-size:13px;font-weight:800;color:#1d4ed8;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wg-float span{display:block;font-size:9.5px;color:#64748b;margin-top:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .multi-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 .multi-grip{flex:0 0 auto;align-self:center;font-size:15px;color:#94a3b8;line-height:1;letter-spacing:-1px;padding-left:2px;}
 .multi-tip{font-size:11px;color:var(--muted);text-align:center;padding:12px 4px 2px;line-height:1.55;}
@@ -491,6 +637,38 @@ body.wg-dragging{-webkit-user-select:none;user-select:none;}
 .dp-go{border:none; background:var(--primary); color:#fff; border-radius:9px; padding:7px 11px;
   font-size:12.5px; font-weight:700; flex:0 0 auto;}
 
+/* 节次外的安排集中在时间轴上方，按真实时间排序；点一下就能打开详情 */
+.offgrid-hd{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.02em;margin:2px 0 7px;}
+.offgrid-hd span{font-weight:500;opacity:.8;margin-left:4px;}
+.offgrid{display:flex;flex-direction:column;gap:7px;margin-bottom:12px;}
+.og-item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);
+  border-radius:12px;padding:9px 11px;cursor:pointer;text-align:left;font-family:inherit;width:100%;box-sizing:border-box;
+  border-left:3px solid #3b82f6;}
+.og-item:active{background:#f8fafc;}
+.og-time{font-size:12.5px;font-weight:800;color:#334155;flex:0 0 auto;font-variant-numeric:tabular-nums;}
+.og-body{flex:1 1 auto;min-width:0;}
+.og-name{display:block;font-size:13.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.og-sub{display:block;font-size:10.5px;color:var(--muted);margin-top:2px;}
+.og-item.done .og-name{text-decoration:line-through;opacity:.55;}
+
+/* ===== 卡片改版（v2.4.3）：更大更醒目，可以一路读到底 ===== */
+.card-sheet{max-width:382px; padding:0 0 16px; overflow:hidden; border-radius:22px;}
+.card-sheet:before{content:""; display:block; height:5px;
+  background:linear-gradient(90deg,#3b82f6,#8b5cf6 55%,#ec4899);}
+.card-head{padding:14px 20px 0; margin-bottom:0;}
+.card-badge{font-size:11.5px; padding:4px 11px;
+  background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.15));}
+.card-body{padding:6px 22px 10px;}
+.card-icon{width:72px; height:72px; line-height:72px; margin:10px auto 12px; border-radius:50%;
+  background:linear-gradient(140deg,#eff6ff,#eef2ff 58%,#fdf2f8); font-size:40px;
+  box-shadow:inset 0 0 0 1px rgba(59,130,246,.12), 0 6px 16px rgba(59,130,246,.12);}
+.card-title{font-size:21px; letter-spacing:-.01em; margin-bottom:12px;}
+.card-points li{font-size:14.5px; line-height:1.68; padding:9px 0 9px 21px;}
+.card-points li:before{top:17px; width:6px; height:6px;
+  background:linear-gradient(180deg,#3b82f6,#8b5cf6);}
+.card-dots{padding:10px 0 2px;}
+.card-step{font-size:11.5px; font-weight:700; color:var(--muted); text-align:center; padding-top:1px;}
+.card-foot{padding:0 20px; margin-top:6px;}
 </style>
 <meta name="format-detection" content="telephone=no">
 <link rel="apple-touch-startup-image" href="icon-512.png">
@@ -522,7 +700,7 @@ body.kb-open .sheet{ max-height:calc(var(--vvh, 100vh) * .78); }
 </head>
 <body>
 <div class="app">
-  <header class="app-header">📅 北航计划追踪</header>
+  <header class="app-header">📅 计划追踪</header>
 
   <!-- Tab 1 今日 -->
   <section class="panel active" id="tab-today">
@@ -545,6 +723,10 @@ body.kb-open .sheet{ max-height:calc(var(--vvh, 100vh) * .78); }
     </div>
     <div class="summary" id="today-summary"></div>
     <div class="section-title" id="tl-title">时间轴（第 1–14 节）</div>
+    <div id="offgrid-wrap" style="display:none">
+      <div class="offgrid-hd">🕘 课表外安排 <span>按时间排序 · 不占节次</span></div>
+      <div class="offgrid" id="offgrid"></div>
+    </div>
     <div class="timeline" id="timeline"></div>
     <div class="section-title">当日计划</div>
     <div id="today-cards"></div>
@@ -582,21 +764,21 @@ body.kb-open .sheet{ max-height:calc(var(--vvh, 100vh) * .78); }
     <div class="section-title">节次时间（全局生效，可修改）</div>
     <div class="slot-editor" id="slot-editor"></div>
     <button class="btn btn-primary full" id="btn-save-slots">保存节次时间</button>
-    <div class="hint">节次时间不保证与北航实际完全一致，请按需修改后保存，保存后全局生效。</div>
+    <div class="hint">节次时间不保证与学校实际完全一致，请按需修改后保存，保存后全局生效。</div>
   </section>
 
   <!-- Tab 4 复盘 -->
   <section class="panel" id="tab-review">
     <div class="panel-head">
       <div class="panel-title">复盘</div>
-      <span class="review-week" id="review-week">第 8 周</span>
+      <button type="button" class="review-week" id="review-week">第 8 周</button>
     </div>
     <div class="review-summary" id="review-summary"></div>
-    <div class="section-title">本周完成度（按天）</div>
+    <div class="section-title" id="review-chart-title">本周完成度（按天）</div>
     <div class="chart-box" id="review-chart"></div>
     <div class="section-title" id="review-check-title">课前 / 课后 5 分钟 check</div>
     <div id="review-checkins"></div>
-    <div class="section-title">本周反思</div>
+    <div class="section-title" id="review-refl-title">本周反思</div>
     <div class="card">
       <textarea id="reflection-text" rows="5" placeholder="写下本周反思：学到什么、哪里没做好、下周如何改进……"></textarea>
       <button class="btn btn-primary full" id="btn-save-reflection" style="margin-top:10px;">保存本周反思</button>
@@ -672,7 +854,7 @@ body.kb-open .sheet{ max-height:calc(var(--vvh, 100vh) * .78); }
       <span class="lg"><span class="sw" style="background:var(--card);border:1px dashed var(--line)"></span>空闲</span>
     </div>
     <div class="wg-wrap" id="week-grid"></div>
-    <div class="hint" style="margin-top:8px;">点击色块查看详情或添加安排；长按任务块（约 0.3 秒）后上下拖改时间、左右拖换日期，时长不变，也能拖到已被占用的时段；同一时段有多个安排时显示 busy，点开后可长按其中一条拖出来改。</div>
+    <div class="hint" style="margin-top:8px;">点击色块查看详情或添加安排；长按任务块（约 0.3 秒）后上下拖改时间，跟手到分钟，松手才对齐到 5 分钟刻度。长按小鸟拖起来，屏幕底部会浮出三个鸟窝（早上 / 中午 / 晚上）——拖进哪个窝，窝的上方就长出一根时间柱，手指在柱面上上下滑，指到哪就是几点；不拖进窝、直接拖回课表格子，就变成块。拖到屏幕上下边缘停住，课表会自动翻；拖到左右边缘撞两下，直接翻到上/下一周，翻页后鸟一直跟着手。</div>
   </section>
 </div>
 
@@ -739,13 +921,15 @@ body.kb-open .sheet{ max-height:calc(var(--vvh, 100vh) * .78); }
       <div class="hint">只改变时间轴与周总览里的色块，节次选择器里的小蓝点保持不变。</div>
     </div>
     <div class="form-row">
-      <label>占用节次（可多选 · 黄点=有课 蓝点=已有计划 灰点=已翘课）</label>
-      <div class="periods" id="ps-periods"></div>
+      <label>占用时段</label>
+      <div class="seg-chips" id="ps-seg-chips"></div>
+      <button type="button" class="seg-add" id="btn-ps-seg-add">＋ 选择时段（可跨天、可不在课表内）</button>
+      <div class="hint">相邻节次、中间空不到 30 分钟会合成一张卡片；正好 30 分钟或更久就各算一张，完成度分别记。</div>
     </div>
     <div class="form-row">
       <label>预计时长（分钟）</label>
       <input type="number" id="ps-est" inputmode="numeric" min="0" placeholder="自动计算">
-      <div class="hint">默认按首节开始至末节结束自动计算，可手动修改。</div>
+      <div class="hint" id="ps-est-hint">默认按首节开始至末节结束自动计算，可手动修改。</div>
     </div>
     <div class="form-row">
       <label>实际时长（分钟）</label>
@@ -800,18 +984,53 @@ body.kb-open .sheet{ max-height:calc(var(--vvh, 100vh) * .78); }
     <div class="carry-msg" id="carry-msg"></div>
     <div class="carry-reco" id="carry-reco"></div>
     <div class="form-row">
-      <label>顺延日期</label>
-      <input type="date" id="carry-date">
-      <div class="carry-days" id="carry-days"></div>
-    </div>
-    <div class="form-row">
-      <label>顺延节次（黄点 = 有课，蓝点 = 已有计划，均可选）</label>
-      <div class="periods" id="carry-periods"></div>
+      <label>顺延时段</label>
+      <div class="seg-chips" id="carry-seg-chips"></div>
+      <button type="button" class="seg-add" id="btn-carry-seg-add">＋ 选择时段（可跨天、可不在课表内）</button>
+      <div class="hint">可以只选一段，也可以跨天选多段；断开的部分会拆成几张卡片，各算各的完成度。</div>
     </div>
     <div class="sheet-btns">
       <button class="btn btn-ghost" id="btn-carry-no">不顺延</button>
       <button class="btn btn-primary" id="btn-carry-save">顺延到所选时段</button>
     </div>
+  </div>
+</div>
+
+<!-- 时段选择（可跨天多选） -->
+<div class="backdrop" id="ms-backdrop"></div>
+<div class="sheet" id="ms-sheet">
+  <div class="sheet-head">
+    <div class="sheet-title" id="ms-title">选择时段</div>
+    <button class="sheet-close" id="btn-ms-cancel" aria-label="关闭">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="pmode" id="ms-mode">
+      <button type="button" class="pmode-btn on" data-msmode="slot">按课表节次</button>
+      <button type="button" class="pmode-btn" data-msmode="clock">按时间（可不在课表内）</button>
+    </div>
+    <div class="ms-days" id="ms-days"></div>
+    <div id="ms-slot-wrap">
+      <div class="periods" id="ms-periods"></div>
+    </div>
+    <div id="ms-clock-wrap" style="display:none">
+      <div class="time-row">
+        <input type="time" id="ms-t-start">
+        <span class="time-sep">–</span>
+        <input type="time" id="ms-t-end">
+      </div>
+      <button type="button" class="seg-add" id="btn-ms-add-clock" style="border-style:solid;">把这一段时间加入</button>
+      <div class="hint">早于第一节、午休、晚于最后一节都能选；加进去之后可以换日期继续加。</div>
+    </div>
+    <div class="ms-sum">
+      <div class="ms-sum-hd">已选时段</div>
+      <div id="ms-seg-list"></div>
+      <div class="ms-total" id="ms-total"></div>
+    </div>
+    <div class="ms-tip">切换上面「按课表节次」后，点日期条换一天可以接着选。中间空满 30 分钟就会拆成不同的卡片。</div>
+  </div>
+  <div class="sheet-btns">
+    <button class="btn btn-ghost" id="btn-ms-clear">清空</button>
+    <button class="btn btn-primary" id="btn-ms-ok">确定</button>
   </div>
 </div>
 
@@ -971,7 +1190,7 @@ body.kb-open .sheet{ max-height:calc(var(--vvh, 100vh) * .78); }
     <button class="btn btn-ghost full" id="btn-download-timetable" style="margin-bottom:4px;color:var(--primary);border-color:var(--primary);">🏫 去教务系统下载学期课表</button>
     <input type="file" id="excel-file" accept=".xlsx,.xls" hidden>
     <div class="hint">Excel 支持两种格式：① 学校官网导出的课表（自动识别，含周次）；② 矩阵课表——第一行「周一～周日」、第一列节次 1–14，单元格填「课程名@地点」，相邻行同名自动合并。</div>
-    <div class="hint">没有课表文件？点上方「去教务系统下载学期课表」跳转到北航本研教育管理系统，登录后在「课表查询 → 个人课表」点【导出课表】下载，务必选择【学期课表】而非周课表或推荐课表。</div>
+    <div class="hint">没有课表文件？点上方「去教务系统下载学期课表」会跳转到北航本研教育管理系统（其他学校请从本校教务导出同样格式的 Excel），登录后在「课表查询 → 个人课表」点【导出课表】下载，务必选择【学期课表】而非周课表或推荐课表。</div>
     <div class="hint">也可粘贴文本，每行一条：周X 节次 课程名 地点（地点可选） [周次（可选）]。周次留空 = 每周。</div>
     <pre class="example">周一 1-2 高等数学 A101
 周三 3,4 大学英语 B204 [1-4,6-17]
@@ -1037,6 +1256,7 @@ body.kb-open .sheet{ max-height:calc(var(--vvh, 100vh) * .78); }
       <div class="card-title" id="card-title"></div>
       <ul class="card-points" id="card-points"></ul>
     </div>
+    <div class="card-step" id="card-step"></div>
     <div class="card-dots" id="card-dots"></div>
     <div class="card-foot">
       <button class="btn" id="card-prev">上一步</button>
@@ -1128,9 +1348,12 @@ function cloneSlots(list){ return list.map(function(s){ return {p:s.p, s:s.s, e:
 
 // 内置课表：第 8–16 周课程（含真实周次），供首次启动一键导入
 var BUILTIN_COURSES = [];
-var data, viewDate, editingPlanId = null, selectedPeriods = [];
+var data, viewDate, editingPlanId = null;
+/* 一段 = 一张卡片：{date, periods, t}；多段计划共享 groupId，各段完成度分别记 */
+var planSegs = [], carrySegs = [], segPick = null;
+var reviewWeek = null;   /* 复盘页正在看第几周；null = 跟随当前周次 */
 var overviewWeekStart = null, currentTabName = "today";
-var carrySourceId = null, carrySelectedPeriods = [];
+var carrySourceId = null;
 var checkCourseId = null, checkKind = "pre";
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
@@ -1190,6 +1413,13 @@ function normalize(d){
       p.t = periodsToT(p.periods, SLOT_MIN);
     }
     p.task = p.task || "";
+    /* 老数据：多次顺延叠出的「（顺延）（顺延）」收敛成「（顺延×N）」，并记住基名与层级 */
+    var cn = splitCarryName(p.task);
+    if(cn.depth > 0){
+      if(!p.carryBase) p.carryBase = cn.base;
+      if(!p.carryDepth) p.carryDepth = cn.depth;
+      p.task = cn.base + (cn.depth > 1 ? "（顺延×" + cn.depth + "）" : "（顺延）");
+    }
     if(p.estMin == null) p.estMin = null;
     if(p.actMin == null) p.actMin = null;
     if(p.completion == null) p.completion = 0;
@@ -1214,6 +1444,11 @@ function normalize(d){
   var showWeekOverview = d.showWeekOverview !== false;
   var currentWeek = parseInt(d.currentWeek, 10);
   if(!currentWeek || currentWeek < 1) currentWeek = 8;
+  /* 自动跳周锚点：currentWeek 对应的那个周一（缺省时由 init 补，不动周次） */
+  var weekAnchor = (typeof d.weekAnchor === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d.weekAnchor)) ? mondayOf(d.weekAnchor) : null;
+  /* 真实本周对应第几周（周次与日期的换算基准，手动翻周不会改它） */
+  var weekBase = parseInt(d.weekBase, 10);
+  if(!weekBase || weekBase < 1) weekBase = currentWeek;
   var checkins = Array.isArray(d.checkins) ? d.checkins : [];
   var weeklyReflections = Array.isArray(d.weeklyReflections) ? d.weeklyReflections : [];
   var classNotes = Array.isArray(d.classNotes) ? d.classNotes.filter(function(n){ return n && n.courseId && n.date; }) : [];
@@ -1228,7 +1463,7 @@ function normalize(d){
   });
   var cardState = (d.cardState && typeof d.cardState === "object") ? d.cardState : {seen:{}, lastVersion:null};
   if(!cardState.seen || typeof cardState.seen !== "object") cardState.seen = {};
-  return {slots:slots, slotMode:slotModeV, courses:courses, plans:plans, currentWeek:currentWeek, checkins:checkins, weeklyReflections:weeklyReflections, showCheck:showCheck, showWeekOverview:showWeekOverview, classNotes:classNotes, skips:skips, cardState:cardState, semesterId:d.semesterId || null};
+  return {slots:slots, slotMode:slotModeV, courses:courses, plans:plans, currentWeek:currentWeek, weekAnchor:weekAnchor, weekBase:weekBase, checkins:checkins, weeklyReflections:weeklyReflections, showCheck:showCheck, showWeekOverview:showWeekOverview, classNotes:classNotes, skips:skips, cardState:cardState, semesterId:d.semesterId || null};
 }
 
 function loadData(){
@@ -1344,8 +1579,16 @@ function rangeOfPeriods(periods){
 }
 function hm(hhmm){ var a = String(hhmm || "0:0").split(":").map(Number); return (a[0] || 0) * 60 + (a[1] || 0); }
 function fmtMin(m){
+  /* 先取整：拖拽算出来的是浮点分钟，直接取模会让 19:54.35631793478251 这种
+     十几位小数漏到界面上；这里兜一层，任何入口都不会再输出小数 */
+  m = Math.round(Number(m) || 0);
   m = ((m % 1440) + 1440) % 1440;
   return pad(Math.floor(m / 60)) + ":" + pad(m % 60);
+}
+/* 结束时间刚好压在午夜：写成 00:00 会读成「比开始还早」，写成 24:00 才对得上 */
+function fmtMinEnd(m){
+  m = Math.round(Number(m) || 0);
+  return (m > 0 && m % 1440 === 0) ? "24:00" : fmtMin(m);
 }
 /* 把一套 slots 展开成「真实分钟区间」，跨午夜自动累加 24h */
 function slotMinutes(slots){
@@ -1419,6 +1662,7 @@ function planLabel(p){
   var r = planRange(p);
   var tt = r ? (r.start + "–" + r.end) : "时段待重排";
   if(slotMode() === "grad") return tt;
+  if(!p || !p.periods || !p.periods.length) return "课表外 · " + tt;
   return "第 " + periodsStr(p.periods) + " 节 · " + tt;
 }
 /* 课表的「本科原始节次」快照（course.src）：切换时间轴模式时按它恢复。
@@ -1447,7 +1691,9 @@ function minutesOfRange(range){
   if(m < 0) m += 24*60;
   return m;
 }
-function autoEstMinutes(){ return minutesOfRange(rangeOfPeriods(selectedPeriods)); }
+function autoEstMinutes(){
+  return segsMinutes(planSegs);
+}
 
 
 /* 某个日期落在第几教学周：以「今天是第 currentWeek 周」为锚点，按整周偏移推算 */
@@ -1550,8 +1796,11 @@ function renderToday(){
   var date = viewDate, day = weekdayOf(date);
   var courses = coursesOnDay(day, date), courseSet = coursePeriodsOnDay(day, date);
   var plans = data.plans.filter(function(p){ return p.date === date; })
-    .sort(function(a,b){ return (a.periods[0]||99) - (b.periods[0]||99); });
-  var completed = plans.filter(function(p){ return Number(p.completion) >= 100; }).length;
+    .sort(function(a,b){
+      var ta = planT(a), tb = planT(b);
+      var va = ta ? ta[0] : 1e9, vb = tb ? tb[0] : 1e9;
+      return va - vb;
+    });
   var skipSetToday = skippedPeriodsOn(date);
   var occupiedCourse = 0, totalP = data.slots.length;
   for(var q = 1; q <= totalP; q++){ if(courseSet[q] && !skipSetToday[q]) occupiedCourse++; }
@@ -1563,14 +1812,42 @@ function renderToday(){
   if(tlTitle) tlTitle.textContent = slotMode() === "grad"
     ? "时间轴（09:00 – 次日 01:00 · 每半小时）"
     : "时间轴（第 1–" + totalP + " 节）";
+  /* 今日页的一项任务可能占好几段：同 groupId 的卡片合成一张，段落在卡内单列 */
+  var todayUnits = [], seenGroup = {};
+  plans.forEach(function(p){
+    var groupPlans = planGroupPlans(p);
+    if(!groupPlans){ todayUnits.push({arr:[p], day:[p]}); return; }
+    if(seenGroup[p.groupId]) return;
+    seenGroup[p.groupId] = 1;
+    var arr = groupPlans.slice().sort(function(a,b){
+      var ta = planT(a), tb = planT(b);
+      return (ta ? ta[0] : 1e9) - (tb ? tb[0] : 1e9);
+    });
+    var dayArr = arr.filter(function(x){ return x.date === date; });
+    todayUnits.push({arr: arr, day: dayArr.length ? dayArr : [p]});
+  });
+  var doneUnits = todayUnits.filter(function(u){
+    if(u.arr.length > 1){ var g2 = planGroupTotal(u.day[0]); return (g2 ? g2.total : 0) >= 100; }
+    return clampPct(u.day[0].completion) >= 100;
+  }).length;
   document.getElementById("today-summary").innerHTML =
     '<div class="sum"><div class="sum-v">' + courses.length + '</div><div class="sum-l">门课/占' + occupiedCourse + (slotMode() === 'grad' ? '段' : '节') + '</div></div>' +
     '<div class="sum"><div class="sum-v">' + freeCount + '</div><div class="sum-l">空闲时段</div></div>' +
-    '<div class="sum"><div class="sum-v">' + plans.length + '</div><div class="sum-l">条计划</div></div>' +
-    '<div class="sum"><div class="sum-v">' + completed + '</div><div class="sum-l">已完成</div></div>';
+    '<div class="sum"><div class="sum-v">' + todayUnits.length + '</div><div class="sum-l">' + (todayUnits.length === plans.length ? '条计划' : '项任务') + '</div></div>' +
+    '<div class="sum"><div class="sum-v">' + doneUnits + '</div><div class="sum-l">已完成</div></div>';
 
   var pr = perRow(), total = data.slots.length, rowCount = Math.ceil(total / pr);
   var tl = "";
+  /* 计划的真实时间不正好是整节时，格子里补一段起止时间。
+     今日页的格子本身只按节次排，拖动微调后若仍落在同一节，格子文字会一模一样，
+     看上去就像「没变」——这段小字让变化立刻可见 */
+  function hm2min(str){ var a = String(str || "0:0").split(":"); return (+a[0]) * 60 + (+a[1]); }
+  function realTimeOf(p, seg){
+    var t = planT(p), s = slotOf(seg);
+    if(!t || !s) return "";
+    if(Math.abs(t[0] - hm2min(s.s)) < 1 && Math.abs(t[1] - hm2min(s.e)) < 1) return "";
+    return '<span class="tl-rt">' + fmtMin(t[0]) + "–" + fmtMin(t[1]) + "</span>";
+  }
   function segOf(p){
     var course = null, plan = null;
     for(var i=0;i<courses.length;i++){ if(courses[i].periods.indexOf(p) >= 0){ course = courses[i]; break; } }
@@ -1583,7 +1860,7 @@ function renderToday(){
       for(var k2=0;k2<plans.length;k2++){ if(plans[k2].periods.indexOf(p) >= 0){ skipPlan = plans[k2]; break; } }
       if(skipPlan){
         var spDone = clampPct(skipPlan.completion) >= 100 || !!skipPlan.closedAt;
-        content = "📝 " + esc(skipPlan.task) + (spDone ? " · 已结束" : "");
+        content = "📝 " + esc(skipPlan.task) + (spDone ? " · 已结束" : "") + realTimeOf(skipPlan, p);
         cls = "plan tappable" + (spDone ? " closed" : "");
         attr = ' data-planid="' + esc(skipPlan.id) + '"';
         key = "plan:" + skipPlan.id;
@@ -1597,7 +1874,7 @@ function renderToday(){
     }
     else if(plan){
       var pDone = clampPct(plan.completion) >= 100 || !!plan.closedAt;
-      content = "📝 " + esc(plan.task) + (pDone ? " · 已结束" : "");
+      content = "📝 " + esc(plan.task) + (pDone ? " · 已结束" : "") + realTimeOf(plan, p);
       cls = "plan tappable" + (pDone ? " closed" : "");
       attr = ' data-planid="' + esc(plan.id) + '"';
       key = "plan:" + plan.id;
@@ -1630,8 +1907,45 @@ function renderToday(){
   }
   document.getElementById("timeline").innerHTML = tl;
 
-  document.getElementById("today-cards").innerHTML = plans.length ?
-    plans.map(planCardHTML).join("") : '<div class="empty">今天还没有计划，点右上角 ＋ 添加</div>';
+  /* 节次外的安排单独一栏：按时间先后排，不挤进格子。
+     同组里已被别的段覆盖（时间重叠）的，卡片上已经并进那一段，这里不再重复列 */
+  var offgrid = plans.filter(function(p){
+    var t = planT(p);
+    if(!t || (p.periods && p.periods.length)) return false;
+    var g = planGroupPlans(p);
+    if(g){
+      for(var i = 0; i < g.length; i++){
+        var q = g[i], qt = planT(q);
+        if(q === p || !qt) continue;
+        if(!(qt[1] <= t[0] || qt[0] >= t[1])) return false;
+      }
+    }
+    return true;
+  });
+  var ogWrap = document.getElementById("offgrid-wrap"), og = document.getElementById("offgrid");
+  if(ogWrap && og){
+    if(offgrid.length){
+      ogWrap.style.display = "block";
+      og.innerHTML = offgrid.map(function(p){
+        var t = planT(p), done = clampPct(p.completion) >= 100 || !!p.closedAt;
+        var tone = planTone(p);
+        return '<button class="og-item' + (done ? " done" : "") + '" data-planid="' + esc(p.id) + '"' +
+          (tone ? ' style="border-left-color:' + tone.hex + '"' : "") + '>' +
+          '<span class="og-time">' + fmtMin(t[0]) + '–' + fmtMin(t[1]) + '</span>' +
+          '<span class="og-body"><span class="og-name">' + (p.occupied ? "🚫 " : "📝 ") + esc(p.task) + '</span>' +
+          '<span class="og-sub">' + (p.estMin != null ? ("预计 " + p.estMin + " 分钟") : "课表外时段") +
+          (done ? " · 已结束" : " · 完成 " + clampPct(p.completion) + "%") + '</span></span></button>';
+      }).join("");
+    } else {
+      ogWrap.style.display = "none";
+      og.innerHTML = "";
+    }
+  }
+
+  document.getElementById("today-cards").innerHTML = todayUnits.length ?
+    todayUnits.map(function(u){
+      return u.arr.length > 1 ? planGroupCardHTML(u.arr, u.day) : planCardHTML(u.day[0]);
+    }).join("") : '<div class="empty">今天还没有计划，点右上角 ＋ 添加</div>';
 }
 
 /* ============ 计划颜色（只影响色块，不影响节次小蓝点） ============ */
@@ -1699,6 +2013,122 @@ function pickPlanColor(k){
   renderPlanColors();
 }
 
+/* 顺延名后缀：多次顺延会叠成「（顺延）（顺延）」，统一收敛成「（顺延）」/「（顺延×N）」 */
+function splitCarryName(name){
+  var s = String(name == null ? "" : name);
+  var depth = 0;
+  var re = /\s*[（(]\s*顺延(?:\s*[×xX]\s*(\d+))?\s*[)）]\s*$/;
+  while(true){
+    var m = s.match(re);
+    if(!m) break;
+    depth += m[1] ? Math.max(1, parseInt(m[1], 10)) : 1;
+    s = s.slice(0, m.index);
+  }
+  return {base: s, depth: depth};
+}
+/* 给顺延出来的新计划起名：基名不变，只累加层级 */
+function carryTaskName(src){
+  var info = splitCarryName(src && (src.carryBase || src.task));
+  var depth = Math.max(info.depth, Number(src && src.carryDepth) || 0) + 1;
+  var base = info.base || String((src && src.task) || "");
+  return {base: base, depth: depth, name: base + (depth > 1 ? "（顺延×" + depth + "）" : "（顺延）")};
+}
+/* 卡片标题：老数据里已经叠了几层的，显示时收敛掉 */
+function planTitle(p){
+  if(!p) return "";
+  var info = splitCarryName(p.task);
+  if(info.depth <= 1) return p.task || "";
+  return info.base + "（顺延×" + info.depth + "）";
+}
+/* 多段计划：同一 groupId 的几张卡片共用一项任务，合计完成度按时长加权 */
+function planGroupPlans(p){
+  if(!p || !p.groupId) return null;
+  var arr = data.plans.filter(function(x){ return x.groupId === p.groupId; });
+  return arr.length > 1 ? arr : null;
+}
+function planWeight(p){
+  var m = Number(p.estMin);
+  if(m > 0) return m;
+  var t = planT(p);
+  return (t && t.length === 2) ? Math.max(1, t[1] - t[0]) : 1;
+}
+/* 整项实际占了几段：时间重叠或中间空不到 30 分钟的算一段 */
+function planGroupSpanCount(arr){
+  return mergeSegs((arr || []).map(function(x){
+    return {date: x.date, periods: x.periods || [], t: planT(x)};
+  })).length;
+}
+function planGroupTotal(p){
+  var arr = planGroupPlans(p);
+  if(!arr) return null;
+  var base = Number(arr[0].groupBase) || 0;
+  var sw = 0, sum = 0;
+  arr.forEach(function(x){
+    var w = planWeight(x);
+    sum += segProgressOf(x) * w; sw += w;
+  });
+  var avg = sw ? Math.round(sum / sw) : 0;
+  return {n: arr.length, spans: planGroupSpanCount(arr), total: base > 0 ? compFromPart(base, avg) : avg};
+}
+/* 今日页：一项任务只出现一张卡，多段在卡内分行列出、各自单算完成度 */
+function planGroupCardHTML(arr, dayPlans){
+  var head = dayPlans[0];
+  var grp = planGroupTotal(head);
+  var total = grp ? grp.total : clampPct(head.completion);
+  var isCarry = false, estSum = 0, estAny = false, actSum = 0, actAny = false, pw = 0, pv = 0;
+  arr.forEach(function(x){
+    if(x.partCompletion != null){
+      isCarry = true;
+      var w = planWeight(x);
+      pw += w; pv += clampPct(x.partCompletion) * w;
+    }
+    if(x.estMin != null && x.estMin !== ""){ estSum += Number(x.estMin) || 0; estAny = true; }
+    if(x.actMin != null && x.actMin !== ""){ actSum += Number(x.actMin) || 0; actAny = true; }
+  });
+  var partAvg = pw ? Math.round(pv / pw) : 0;
+  var tone = planTone(head), barColor = tone ? tone.hex : "#93c5fd";
+  var allDone = total >= 100;
+  /* 段与段时间重叠（或中间空不到 30 分钟）就算同一段：今天只列并集那一段，
+     整项段数也按合并后的算，免得「共 2 段」却只看到一行 */
+  function spanOf(list){
+    return mergeSegs(list.map(function(x){
+      return {date: x.date, periods: x.periods || [], t: planT(x), _pid: x.id};
+    }));
+  }
+  var daySpans = spanOf(dayPlans);
+  var spanCount = planGroupSpanCount(arr);
+  function spanComp(sp){
+    var sw = 0, sum = 0, first = null;
+    dayPlans.forEach(function(x){
+      var t = planT(x);
+      if(!t) return;
+      if(t[0] >= sp.t[0] && t[0] < sp.t[1]){
+        var w = planWeight(x);
+        sum += segProgressOf(x) * w; sw += w;
+        if(!first) first = x;
+      }
+    });
+    return {comp: sw ? Math.round(sum / sw) : 0, plan: first || head};
+  }
+  var html = '<div class="card plan-card colored' + (head.closedAt ? " closed" : "") + '"' +
+    ' style="border-left:4px solid ' + barColor + '" data-id="' + esc(head.id) + '">' +
+    '<div class="card-top"><div class="task">📝 ' + esc(planTitle(head)) + '</div>' +
+    '<div class="completion' + (allDone ? " done" : "") + '">' + total + '%</div></div>' +
+    '<div class="meta">预计 ' + (estAny ? estSum + ' 分钟' : '—') + ' · 实际 ' + (actAny ? actSum + ' 分钟' : '—') +
+      (dayPlans.length < arr.length ? ' · 今天 ' + daySpans.length + ' 段' : '') + '</div>' +
+    '<div class="progress"><div class="progress-fill' + (allDone ? " done" : "") + '" style="width:' + total + '%"></div></div>';
+  if(isCarry){
+    html += '<div class="field"><span class="field-label">总完成度</span><span class="field-val">' + total + '%</span></div>' +
+            '<div class="field"><span class="field-label">剩余部分完成度</span><span class="field-val">' + partAvg + '%</span></div>';
+  }
+  html += '<div class="field"><span class="field-label">这一项共 ' + spanCount + ' 段 · 合计完成度</span><span class="field-val">' + total + '%</span></div>' +
+    '<div class="grp-segs">' + daySpans.map(function(sp){
+      var sc = spanComp(sp);
+      return '<div class="grp-seg" data-seg-id="' + esc(sc.plan.id) + '"><span>' +
+        esc(segPeriodText(sp) + segRangeText(sp)) + '</span><b>' + sc.comp + '%</b></div>';
+    }).join("") + '</div>';
+  return html + '</div>';
+}
 function planCardHTML(p){
   var range = planRange(p);
   var timeStr = range ? esc(range.start + "–" + range.end) : "—";
@@ -1712,6 +2142,8 @@ function planCardHTML(p){
     extra += '<div class="field"><span class="field-label">总完成度</span><span class="field-val">' + comp + '%</span></div>' +
              '<div class="field"><span class="field-label">剩余部分完成度</span><span class="field-val">' + partComp + '%</span></div>';
   }
+  var grp = planGroupTotal(p);
+  if(grp && grp.spans > 1) extra += '<div class="field"><span class="field-label">这一项共 ' + grp.spans + ' 段 · 合计完成度</span><span class="field-val">' + grp.total + '%</span></div>';
   if(p.problem) extra += '<div class="field"><span class="field-label">问题</span><span class="field-val">' + esc(p.problem) + '</span></div>';
   if(p.reflection) extra += '<div class="field"><span class="field-label">感想</span><span class="field-val">' + esc(p.reflection) + '</span></div>';
   if(p.adjustment) extra += '<div class="field"><span class="field-label">建议调整</span><span class="field-val">' + esc(p.adjustment) + '</span></div>';
@@ -1719,7 +2151,7 @@ function planCardHTML(p){
   var barColor = tone ? tone.hex : "#93c5fd";
   return '<div class="card plan-card colored' + (p.closedAt ? " closed" : "") + '"' +
     ' style="border-left:4px solid ' + barColor + '" data-id="' + esc(p.id) + '">' +
-    '<div class="card-top"><div class="task">📝 ' + esc(p.task) + '</div><div class="completion' + (comp>=100 ? " done" : "") + '">' + comp + '%</div></div>' +
+    '<div class="card-top"><div class="task">📝 ' + esc(planTitle(p)) + '</div><div class="completion' + (comp>=100 ? " done" : "") + '">' + comp + '%</div></div>' +
     '<div class="meta">' + esc(planLabel(p)) + ' · 预计 ' + est + ' · 实际 ' + act + (p.occupied ? ' · 被占用' : '') + (p.closedAt ? ' · 该时段已结束' : '') + '</div>' +
     '<div class="progress"><div class="progress-fill' + (comp>=100 ? " done" : "") + '" style="width:' + comp + '%"></div></div>' + extra + '</div>';
 }
@@ -1732,7 +2164,10 @@ function renderAll(){
   if(!dates.length){ document.getElementById("all-list").innerHTML = '<div class="empty">暂无计划，点右上角 ＋ 添加</div>'; return; }
   var html = "";
   dates.forEach(function(date){
-    var plans = groups[date].sort(function(a,b){ return (a.periods[0]||99) - (b.periods[0]||99); });
+    var plans = groups[date].sort(function(a,b){
+      var ta = planT(a), tb = planT(b);
+      return (ta ? ta[0] : 1e9) - (tb ? tb[0] : 1e9);
+    });
     html += '<div class="date-group" data-dg="' + esc(date) + '"><div class="date-head">' + esc(date) + ' ' + (WD[weekdayOf(date)]||"") + '</div>' + plans.map(planCardHTML).join("") + '</div>';
   });
   document.getElementById("all-list").innerHTML = html;
@@ -1790,7 +2225,7 @@ function mondayOf(dateStr){
   return toDateStr(d);
 }
 /* ============ 周总览 v2：合并色块 / 长按拖拽 / 多任务 busy ============ */
-var wgRowH = 46, wgSegH = 46, wgDragState = null, wgSuppressUntil = 0;
+var wgRowH = 46, wgSegH = 46, wgDragState = null, wgSuppressUntil = 0, wgGeomCache = null;
 
 function wgSplitRuns(segs){
   var runs = [], cur = [];
@@ -1802,73 +2237,279 @@ function wgSplitRuns(segs){
   if(cur.length) runs.push(cur);
   return runs;
 }
-/* 绝对分钟 → 周总览里的纵向像素：每一节内部线性摊开，节间的空隙压到格线上，
-   这样 08:50 这种不在整点边上的时间也能画到正确位置 */
-function wgYOf(min, map, total, segH){
-  var a = map[1], b = map[total];
-  if(!a || !b) return 0;
-  if(min <= a[0]) return 0;
-  if(min >= b[1]) return total * segH;
+/* ---------- v2.4.7 周总览几何：节次分开，节内精确到分钟 ----------
+   总览保持「一节一格」的观感：课间、午休、晚饭不占列高（压到格线上），
+   一节内部仍按真实分钟等比摊开，所以块和鸟在节内的位置依然精确到分钟，
+   切到研究生轴（30 分钟一段）也不会算错。
+   课外的时段不再靠总览里的大空档来调，交给拖动时弹出的「鸟窝 + 时间柱」。 */
+function wgPxPerMin(){ return slotMode() === "grad" ? 0.66 : 46 / 45; }
+function wgGeomOf(){
+  var total = (data.slots || []).length;
+  var tMap = slotMinutes(data.slots);
+  if(!total || !tMap[1]) return {total: 0, tMap: {}, dayStart: 0, dayEnd: 0, pxPerMin: 1, edge: {}, bodyH: 0};
+  var dayStart = tMap[1][0], dayEnd = tMap[total][1], px = wgPxPerMin();
+  var edge = {1: 0}, acc = 0;
   for(var p = 1; p <= total; p++){
-    var s = map[p];
-    if(s && min >= s[0] && min <= s[1]) return (p - 1) * segH + (min - s[0]) / (s[1] - s[0]) * segH;
+    var sl = tMap[p];
+    acc += sl ? Math.round((sl[1] - sl[0]) * px) : 0;
+    edge[p + 1] = acc;
   }
-  for(var q = 1; q <= total; q++){
-    if(map[q] && min < map[q][0]) return (q - 1) * segH;
+  return {total: total, tMap: tMap, dayStart: dayStart, dayEnd: dayEnd,
+          pxPerMin: px, edge: edge, bodyH: acc};
+}
+function wgEdgeTop(g, p){ return g.edge[p] != null ? g.edge[p] : 0; }
+function wgEdgeBot(g, p){ return g.edge[p + 1] != null ? g.edge[p + 1] : g.bodyH; }
+/* 绝对分钟 → 像素：节内按比例摊开；节间空档（午休等）压到格线上，与格子边界一致 */
+function wgYOf(min, g){
+  var T = g.total;
+  if(!T) return 0;
+  if(min <= g.tMap[1][0]) return 0;
+  if(min >= g.tMap[T][1]) return g.bodyH;
+  for(var p = 1; p <= T; p++){
+    var s = g.tMap[p];
+    if(s && min >= s[0] && min <= s[1]){
+      var top = wgEdgeTop(g, p), h = wgEdgeBot(g, p) - top, span = s[1] - s[0];
+      return span > 0 ? top + (min - s[0]) / span * h : top;
+    }
   }
-  return total * segH;
+  for(var q = 1; q < T; q++){
+    if(g.tMap[q] && g.tMap[q + 1] && min > g.tMap[q][1] && min < g.tMap[q + 1][0]) return wgEdgeBot(g, q);
+  }
+  return g.bodyH;
+}
+/* 像素 → 绝对分钟（拖拽用）：落在节间空档时吸附到上一节的底边 */
+function wgMinOfY(y, g){
+  var T = g.total;
+  if(!T) return 0;
+  if(y <= 0) return g.dayStart;
+  if(y >= g.bodyH) return g.dayEnd;
+  for(var p = 1; p <= T; p++){
+    var top = wgEdgeTop(g, p), bot = wgEdgeBot(g, p);
+    if(y >= top && y <= bot){
+      var s = g.tMap[p];
+      var span = s[1] - s[0], h = bot - top;
+      if(h <= 0) return s[0];
+      return s[0] + (y - top) / h * span;
+    }
+  }
+  return g.dayEnd;
+}
+/* 课外时段的名字（鸟窝用） */
+function wgGapName(t0, t1){
+  var mid = (t0 + t1) / 2;
+  if(mid > 11 * 60 && mid < 15 * 60) return "午休";
+  if(mid >= 17 * 60 && mid < 19 * 60) return "晚饭";
+  if(mid < 9 * 60) return "早间";
+  if(mid >= 19 * 60) return "晚间";
+  return "空档";
+}
+/* 某条安排占用的真实分钟区间列表（课程按节次并段，计划用自己记的时间） */
+function wgTimeSpans(en, g){
+  if(en.kind === "plan"){
+    var t = planT(en.ref);
+    return (t && t[1] > t[0]) ? [[t[0], t[1]]] : [];
+  }
+  var out = [];
+  wgSplitRuns(en.segs || []).forEach(function(run){
+    var a = g.tMap[run[0]], b = g.tMap[run[run.length - 1]];
+    if(a && b) out.push([a[0], b[1]]);
+  });
+  return out;
 }
 function wgRangeLabel(segs){
   var r = rangeOfPeriods(segs);
   return r ? (r.start + "–" + r.end) : "";
 }
 
-function wgColumnHTML(ds, total, segH, bodyH){
+/* 节次之外的安排（早于第一节 / 晚于最后一节 / 落在两节之间的空档）：
+   总览里不占格子，缩成一只与一节等高的黑色小鸟，贴在最近的那一节上。
+   注意 t[0] 可能落在某一节内部（12:00–12:40 这种从课上拖到午休的），
+   只要它整体溢出，就挂在那一节的底边上，不能因为找不到「纯空档」而消失 */
+function wgOutAnchor(t, g){
+  var T = g.total;
+  if(!T || !t) return null;
+  var first = g.tMap[1], last = g.tMap[T];
+  if(!first || !last) return null;
+  function band(p){
+    var h = wgEdgeBot(g, p) - wgEdgeTop(g, p);
+    return {p: p, top: wgEdgeTop(g, p), h: h, where: "early"};
+  }
+  /* 落在两节之间：格间已被压成 0 像素，鸟就骑在这条格线上 */
+  function cross(p){
+    var h = wgEdgeBot(g, p) - wgEdgeTop(g, p);
+    return {p: p, top: wgEdgeBot(g, p) - h / 2, h: h, where: "gap"};
+  }
+  if(t[0] < first[0]){
+    var e = band(1); e.where = "early"; return e;
+  }
+  if(t[1] > last[1]){
+    var l = band(T); l.where = "late"; return l;
+  }
+  for(var q = 1; q < T; q++){
+    var a = g.tMap[q], b = g.tMap[q + 1];
+    if(a && b && t[0] >= a[1] && t[0] < b[0]) return cross(q);
+  }
+  /* 兜底：起点在某一节里，但尾巴溢出去了 */
+  for(var p = 1; p < T; p++){
+    var s = g.tMap[p];
+    if(s && t[0] >= s[0] && t[0] <= s[1]) return cross(p);
+  }
+  return null;
+}
+/* 某一天所有「课表外」的计划，按落在哪一节分组。
+   渲染和点开的面板都走这一份，避免又出现两套判定 */
+function wgOutGroups(ds, g){
+  g = g || wgGeomOf();
+  var groups = {}, order = [];
+  data.plans.forEach(function(p){
+    if(p.date !== ds) return;
+    if(p.periods && p.periods.length) return;
+    var t = planT(p);
+    if(!t || !wgOffGrid(t, g)) return;
+    var a = wgOutAnchor(t, g);
+    if(!a) return;
+    var key = a.where + ":" + a.p;
+    if(!groups[key]){ groups[key] = {a: a, key: key, list: []}; order.push(key); }
+    groups[key].list.push(p);
+  });
+  order.forEach(function(k){
+    groups[k].list.sort(function(x, y){
+      var a = planT(x), b = planT(y);
+      return ((a && a[0]) || 0) - ((b && b[0]) || 0);
+    });
+  });
+  return {groups: groups, order: order};
+}
+
+var WG_BIRD_SVG = '<svg class="wg2-bird-svg" viewBox="0 0 48 48" aria-hidden="true">' +
+  '<path d="M20.5 10.5 L17.5 3.5" stroke="#111827" stroke-width="3.6" stroke-linecap="round"/>' +
+  '<path d="M27.5 10.5 L30.5 3.5" stroke="#111827" stroke-width="3.6" stroke-linecap="round"/>' +
+  '<circle cx="24" cy="27" r="16.5" fill="#111827"/>' +
+  '<path d="M12.6 13.6 L22.4 19.4" stroke="#111827" stroke-width="4.6" stroke-linecap="round"/>' +
+  '<path d="M35.4 13.6 L25.6 19.4" stroke="#111827" stroke-width="4.6" stroke-linecap="round"/>' +
+  '<circle cx="18.4" cy="24.6" r="4.7" fill="#fff"/><circle cx="19.3" cy="25.3" r="2.1" fill="#111827"/>' +
+  '<circle cx="29.6" cy="24.6" r="4.7" fill="#fff"/><circle cx="28.7" cy="25.3" r="2.1" fill="#111827"/>' +
+  '<path d="M24 30.4 L31.8 35 L24 38.8 Z" fill="#f59e0b"/>' +
+  '</svg>';
+/* 这条计划算不算「课内」的。和 wgOffGrid 互为反面，两处必须是同一套判定，
+   否则会出现「画成小鸟了，periods 里还写着某一节」这种自相矛盾的条目 */
+function wgOnGrid(spans, g){
+  if(!spans || !spans.length) return false;
+  return !wgOffGrid(spans[0], g);
+}
+/* 擦边容忍：和课表重合不超过 20 分钟，就当它整段在课外。
+   11:55 开始（只蹭进 12:00 那节的最后 5 分钟）、14:20 结束（提前 20 分钟踩进
+   14:00 那节）都能直接变鸟 —— 那几分钟对用户没有意义，不该被画成课内块，
+   更不该挤进 busy。反过来，超过 20 分钟才算真的占用 */
+var WG_MIN_OV = 20;
+/* 整段躺在某一节里 → 哪怕只有十分钟也是课内的事，照常画块；
+   否则看它和课表的总重合：超过 20 分钟才画块（哪怕被课间切成两段），
+   只是擦边（11:55–12:35 这种从课上滑到午休的）才变成小鸟 */
+function wgOffGrid(t, g){
+  if(!t || !g) return false;
+  var T = g.total, inside = 0;
+  if(!T) return false;
+  for(var p = 1; p <= T; p++){
+    var s = g.tMap[p];
+    if(!s) continue;
+    if(t[0] >= s[0] && t[1] <= s[1]) return false;
+    inside += Math.max(0, Math.min(t[1], s[1]) - Math.max(t[0], s[0]));
+  }
+  return inside <= WG_MIN_OV;
+}
+/* 某天某一节上「真正算占用」的安排。总览的 busy 计数与点开的列表都走这一份，
+   两边不可能再对不上（之前 busy 说有 3 个、点开只有 2 个，就是两套判定） */
+function wgBusyReasons(ds, seg, g){
+  g = g || wgGeomOf();
+  var s = g.tMap[seg], res = [];
+  if(!s) return res;
+  var skipSet = skippedPeriodsOn(ds);
+  coursesOnDay(weekdayOf(ds), ds).forEach(function(c){
+    if(skipSet[seg]) return;
+    if((c.periods || []).indexOf(seg) >= 0) res.push({kind: "course", ref: c, ov: s[1] - s[0]});
+  });
+  data.plans.forEach(function(p){
+    if(p.date !== ds) return;
+    var t = planT(p);
+    if(!t) return;
+    var ov = Math.min(t[1], s[1]) - Math.max(t[0], s[0]);
+    /* 只用「超过 20 分钟」算占用：20 分钟以内的擦边在总览里已经变成小鸟了，
+       这里再算一条 busy 就会自相矛盾（鸟在外面飞、格子却显示忙碌） */
+    if(ov > WG_MIN_OV) res.push({kind: "plan", ref: p, ov: ov});
+  });
+  return res;
+}
+
+/* 计划块的像素高度 = 起止时间在总览上的真实跨度。
+   节次分开后，节间空档被压成了 0 像素，所以不能拿「时长 × 比例」直接算——
+   12:00–13:00 这种跨过午休的块会多出几十像素、压到下面几节去。
+   用 wgYOf 两端相减，块画出来的范围就正好是它在时间轴上占的那一段 */
+function wgBlockHeight(t0, t1, g){
+  return Math.max(16, wgYOf(t1, g) - wgYOf(t0, g));
+}
+
+function wgColumnHTML(ds, g){
+  var total = g.total;
   var day = weekdayOf(ds), isToday = ds === todayStr();
   var skipSet = skippedPeriodsOn(ds);
-  var entries = [], tMap = slotMinutes(data.slots);
+  var entries = [];
   coursesOnDay(day, ds).forEach(function(c){
     entries.push({kind: "course", ref: c, segs: (c.periods || []).slice().sort(function(a, b){ return a - b; })});
   });
   data.plans.filter(function(p){ return p.date === ds; })
-    .sort(function(a, b){ return ((a.periods && a.periods[0]) || 99) - ((b.periods && b.periods[0]) || 99); })
     .forEach(function(p){
       entries.push({kind: "plan", ref: p, t: planT(p), segs: (p.periods || []).slice().sort(function(a, b){ return a - b; })});
     });
+  var og = wgOutGroups(ds, g);
+  var outIds = {};
+  og.order.forEach(function(k){ og.groups[k].list.forEach(function(p){ outIds[p.id] = true; }); });
   entries.forEach(function(en){
-    en.segs = en.segs.filter(function(s){ return s >= 1 && s <= total; });
+    en.segs = (en.segs || []).filter(function(s){ return s >= 1 && s <= total; });
+    en.spans = wgTimeSpans(en, g);
+    /* 只有「压根没有节次归属」的计划才可能变成小鸟：
+       按节次建的计划即使当前轴起点更晚（如本科 08:00 的课切到 09:00 起的研究生轴），
+       也仍然吸附在它原来那一节上，不会突然变成一只鸟。
+       07:00–08:05 这种尾巴只蹭进第一节 5 分钟的，轴内残余不够 20 分钟，走小鸟 */
+    en.out = en.kind === "plan" && !!outIds[en.ref.id];
   });
 
-  /* 每一节上压着哪些安排：翘掉的课不算占位，用来切分 busy 块 */
+  /* 每一节上压着哪些安排：直接问 wgBusyReasons，和点开的面板用同一份判定，
+     所以「busy 说 3 个、点开只有 2 个」这类对不上的情况不会再出现。
+     重叠不足 20 分钟的擦边不算占用 */
   var segCover = {};
-  entries.forEach(function(en){
-    var coverKey = (en.kind === "plan" ? "p:" : "c:") + en.ref.id;
-    en.segs.forEach(function(s){
-      if(en.kind === "course" && skipSet[s]) return;
-      (segCover[s] = segCover[s] || []).push(coverKey);
-    });
-  });
+  for(var sp = 1; sp <= total; sp++){
+    var rs = wgBusyReasons(ds, sp, g);
+    if(rs.length >= 2){
+      segCover[sp] = rs.map(function(x){ return (x.kind === "plan" ? "p:" : "c:") + x.ref.id; });
+    }
+  }
 
   /* 空白热区铺底：点空白处仍然可以加计划 */
   var cells = "";
   for(var p = 1; p <= total; p++){
+    var cTop = wgEdgeTop(g, p), cH = wgEdgeBot(g, p) - cTop;
     cells += '<div class="wg2-cell" data-d="' + esc(ds) + '" data-freep="' + p + '" style="top:' +
-             ((p - 1) * segH) + 'px;height:' + segH + 'px"></div>';
+             cTop + 'px;height:' + cH + 'px"></div>';
   }
 
   /* 同一来源的连续时段合成一整块，跨行贯通 */
   var blocks = "";
   entries.forEach(function(en){
+    if(en.out) return;
     var isPlan = en.kind === "plan";
-    /* 课程按节次铺满整格；计划按真实时间定位，所以可以落在格子中间（15 分钟级） */
-    var runs = isPlan ? [null] : wgSplitRuns(en.segs);
+    /* 课程按节次铺满整格；计划按真实时间定位，可以落在格子中间。
+       只有当计划的时间真的落在网格上时才按时间画，否则退回它记录的节次，
+       这样跨模式切换时条目不会因为「换算不出节次」而跑到轴外面 */
+    var useTime = isPlan && !!en.t && wgOnGrid(en.spans, g);
+    var runs = useTime ? [null] : wgSplitRuns(en.segs);
     runs.forEach(function(run){
       var top, h;
-      if(isPlan && en.t){
-        top = wgYOf(en.t[0], tMap, total, segH);
-        h = Math.max(16, wgYOf(en.t[1], tMap, total, segH) - top);
-      } else if(run){
-        top = (run[0] - 1) * segH; h = run.length * segH;
+      if(useTime){
+        top = wgYOf(en.t[0], g);
+        h = wgBlockHeight(en.t[0], en.t[1], g);
+      } else if(run && run.length){
+        top = wgEdgeTop(g, run[0]);
+        h = wgEdgeBot(g, run[run.length - 1]) - top;
       } else { return; }
       var o = en.ref, cls = en.kind, icon, name;
       if(isPlan){
@@ -1890,7 +2531,7 @@ function wgColumnHTML(ds, total, segH, bodyH){
         ? '<span class="wg2-bn">' + esc(name) + '</span>'
         : '<span class="wg2-bn"><span class="wg2-bi">' + icon + '</span>' + esc(name) + '</span>';
       var sub = h >= 52 ? '<span class="wg2-bt">' +
-        esc((isPlan && en.t) ? (fmtMin(en.t[0]) + "–" + fmtMin(en.t[1])) : wgRangeLabel(run)) + '</span>' : '';
+        esc(useTime ? (fmtMin(en.t[0]) + "–" + fmtMinEnd(en.t[1])) : (run ? wgRangeLabel(run) : "")) + '</span>' : '';
       var toneCss = (isPlan && !o.occupied) ? planToneCss(o) : "";
       blocks += '<div class="wg2-block ' + cls + (short ? " short" : "") + '" style="top:' + top +
                 'px;height:' + h + 'px' + (toneCss ? ";" + toneCss : "") + '"' + attr + '>' + body + sub + '</div>';
@@ -1898,14 +2539,12 @@ function wgColumnHTML(ds, total, segH, bodyH){
   });
 
   /* 同一时段有 ≥2 个安排 → 盖一层 busy，点击看列表。
-     块边界跟着「这一节上压着哪几个安排」走：连上三节的课里放了 1 节 + 2 节两个任务，
-     就切成两块 busy（1 节、2–3 节），不再糊成一整条；
-     翘掉的课已从占位里剔除，对应那节不足两个安排，busy 自然不出现。 */
+     块边界跟着「这一节上压着哪几个安排」走，切分逻辑不变 */
   var busy = "", run = [], runKey = "", busyN = {};
   function flushBusy(){
     if(!run.length) return;
     /* 上下各收 1px：相邻两块之间留出细缝，一眼能看出是两块而不是一整条 */
-    var bTop = (run[0] - 1) * segH + 1, bH = run.length * segH - 2;
+    var bTop = wgEdgeTop(g, run[0]) + 1, bH = wgEdgeBot(g, run[run.length - 1]) - wgEdgeTop(g, run[0]) - 2;
     var n = busyN[run[0]] || 2;
     busy += '<div class="wg2-busy" style="top:' + bTop + 'px;height:' + bH + 'px" data-d="' + esc(ds) +
             '" data-busy-seg="' + run[0] + '">' +
@@ -1923,8 +2562,44 @@ function wgColumnHTML(ds, total, segH, bodyH){
   }
   flushBusy();
 
+  /* 节次外的计划：小黑鸟落在最近的一节上。
+     同一位置有多只时不横着挤成一排（第三只就叠死了），而是像 busy 一样合成一摞：
+     点开看全部，再逐条拖出来调时间 */
+  var birds = "";
+  og.order.forEach(function(key){
+    var grp = og.groups[key], a = grp.a, list = grp.list;
+    if(!list.length) return;
+    var bw = Math.min(a.h, 34);
+    /* 周一 / 周天这两列正好贴着屏幕左右两边，鸟又习惯挂在列的右边缘，
+       手指一按就压进「撞边换周」的感应带里了。这两列的鸟往列中间收：
+       周一放到列中间，周天贴列左，离屏幕边都留出 40px 以上 */
+    var hpos = day === 1 ? ('left:calc(50% - ' + (bw / 2).toFixed(1) + 'px);right:auto')
+             : day === 7 ? 'left:6px;right:auto'
+             : 'right:2px;left:auto';
+    var style = 'top:' + a.top.toFixed(1) + 'px;height:' + a.h.toFixed(1) + 'px;width:' + bw.toFixed(1) +
+                'px;' + hpos;
+    var allDone = list.every(function(p){ return clampPct(p.completion) >= 100 || !!p.closedAt; });
+    if(list.length === 1){
+      var p0 = list[0];
+      birds += '<div class="wg2-bird' + (allDone ? " closed" : "") + '" style="' + style + '"' +
+               ' data-birdid="' + esc(p0.id) + '" data-d="' + esc(ds) + '" data-birdwhere="' + a.where + '">' +
+               WG_BIRD_SVG +
+               '<span class="wg2-bird-dot" data-birdopen="' + esc(p0.id) + '">i</span></div>';
+    } else {
+      var tip = list.map(function(p){
+        var t = planT(p) || [0, 0];
+        return fmtMin(t[0]) + "–" + fmtMin(t[1]) + " " + (p.task || "");
+      }).join("\n");
+      birds += '<div class="wg2-bird stack' + (allDone ? " closed" : "") + '" style="' + style + '"' +
+               ' data-birdgroup="' + esc(key) + '" data-d="' + esc(ds) + '" data-birdwhere="' + a.where + '"' +
+               ' title="' + esc(tip) + '">' +
+               WG_BIRD_SVG +
+               '<span class="wg2-bird-n">' + list.length + '</span></div>';
+    }
+  });
+
   return '<div class="wg2-col' + (isToday ? " is-today" : "") + '" data-d="' + esc(ds) +
-         '" style="height:' + bodyH + 'px">' + cells + blocks + busy + '</div>';
+         '" style="height:' + g.bodyH + 'px">' + cells + blocks + busy + birds + '</div>';
 }
 
 function renderWeekOverview(){
@@ -1938,13 +2613,13 @@ function renderWeekOverview(){
   }
   document.getElementById("week-range").textContent = overviewWeekStart + " ～ " + days[6];
 
-  var pr = perRow(), total = data.slots.length, rows = Math.ceil(total / pr);
-  wgRowH = pr > 1 ? 40 : 46;
-  wgSegH = wgRowH / pr;
-  var bodyH = rows * wgRowH;
+  var g = wgGeomOf();
+  var total = g.total, bodyH = g.bodyH;
+  wgSegH = total ? bodyH / total : 46;
+  wgGeomCache = g;
 
-  var html = '<div class="wg2" style="--rowh:' + wgRowH + 'px;--segh:' + wgSegH + 'px">';
-  html += '<div class="wg2-hrow"><div class="wg2-hcell">' + (pr > 1 ? "时" : "节") + '</div>';
+  var html = '<div class="wg2" style="--bodyh:' + bodyH + 'px">';
+  html += '<div class="wg2-hrow"><div class="wg2-hcell">' + (slotMode() === "grad" ? "时" : "节") + '</div>';
   for(var h = 0; h < 7; h++){
     var dsh = days[h], tdy = dsh === todayStr();
     html += '<div class="wg2-hday' + (tdy ? " is-today" : "") + '">' + (WD[weekdayOf(dsh)] || "") +
@@ -1952,16 +2627,21 @@ function renderWeekOverview(){
   }
   html += '</div><div class="wg2-brow">';
 
+  /* 左侧时间轴：每条标签贴着自己那一节的顶边，节次长度不等也不会错位 */
   var tl = "";
-  for(var r = 0; r < rows; r++){
-    var p0 = r * pr + 1, s0 = slotOf(p0) || {s: ""};
-    tl += '<div class="wg2-tlab" style="top:' + (r * wgRowH) + 'px;height:' + wgRowH + 'px">' +
-          (pr > 1 ? '<b>' + s0.s + '</b>' : '<b>' + p0 + '</b><span>' + s0.s + '</span>') + '</div>';
+  for(var r = 1; r <= total; r++){
+    var tp = g.tMap[r];
+    if(!tp) continue;
+    var tTop = wgEdgeTop(g, r), tH = wgEdgeBot(g, r) - tTop;
+    if(tH < 12) continue;
+    tl += '<div class="wg2-tlab" style="top:' + tTop + 'px;height:' + tH + 'px">' +
+          (slotMode() === "grad" ? '<b>' + fmtMin(tp[0]) + '</b>'
+                                 : '<b>' + r + '</b><span>' + fmtMin(tp[0]) + '</span>') + '</div>';
   }
   html += '<div class="wg2-times" style="height:' + bodyH + 'px">' + tl + '</div>';
 
   for(var c = 0; c < 7; c++){
-    html += wgColumnHTML(days[c], total, wgSegH, bodyH);
+    html += wgColumnHTML(days[c], g);
   }
   html += '</div></div>';
   el.innerHTML = html;
@@ -1993,20 +2673,19 @@ function wgDayAt(x){
   return best <= 26 ? day : null;
 }
 function wgHitTest(x, y){
-  var cols = wgCols(), total = data.slots.length, best = null, bestD = 1e9;
+  var cols = wgCols(), best = null, bestD = 1e9, g = wgGeomCache;
+  if(!g) return null;
   for(var i = 0; i < cols.length; i++){
     var r = cols[i].rect;
     if(x >= r.left && x <= r.right){
       if(y < r.top - 34 || y > r.bottom + 34) return null;
-      var seg = Math.floor((y - r.top) / wgSegH);
-      return {day: cols[i].day, seg: Math.max(0, Math.min(total - 1, seg))};
+      return {day: cols[i].day, min: wgMinOfY(y - r.top, g)};
     }
     var d = Math.min(Math.abs(x - r.left), Math.abs(x - r.right));
     if(d < bestD){ bestD = d; best = {day: cols[i].day, rect: r}; }
   }
   if(!best || bestD > 70) return null;
-  var s2 = Math.floor((y - best.rect.top) / wgSegH);
-  return {day: best.day, seg: Math.max(0, Math.min(total - 1, s2))};
+  return {day: best.day, min: wgMinOfY(y - best.rect.top, g)};
 }
 function wgAutoScroll(x){
   var wrap = document.getElementById("week-grid");
@@ -2015,10 +2694,404 @@ function wgAutoScroll(x){
   if(x < r.left + 28) wrap.scrollLeft -= 12;
   else if(x > r.right - 28) wrap.scrollLeft += 12;
 }
+
+/* ===== v2.4.6 拖动运行时：上下自动翻、左右撞两次换周、虚线预览、可放鸟的框 ===== */
+var wgRaf = 0;
+function wgRafStart(){ if(!wgRaf) wgRaf = requestAnimationFrame(wgTick); }
+function wgRafStop(){ if(wgRaf) cancelAnimationFrame(wgRaf); wgRaf = 0; }
+function wgShiftDay(ds, delta){
+  var d = parseDate(ds);
+  if(!d) return ds;
+  d.setDate(d.getDate() + delta);
+  return toDateStr(d);
+}
+function wgScrollY(){ return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0; }
+function wgDoScrollV(dy){
+  var before = wgScrollY();
+  window.scrollBy(0, dy);
+  return wgScrollY() - before;
+}
+/* 视口上下边缘 96px 内自动滚：手停在屏幕上方/下方，课表自己翻。
+   翻页会把内容整体挪走，所以要把手指的基准跟着挪回来，块才会一直黏在手指下面 */
+function wgTick(){
+  var st = wgDragState;
+  if(!st || !st.active){ wgRafStop(); return; }
+  var vh = window.innerHeight || document.documentElement.clientHeight || 800;
+  var y = st.lastY, x = st.lastX, edge = Math.min(96, vh * 0.16), dy = 0;
+  if(y < edge) dy = -Math.min(16, Math.ceil((edge - y) / 4));
+  else if(y > vh - edge) dy = Math.min(16, Math.ceil((y - (vh - edge)) / 4));
+  if(dy) wgDoScrollV(dy);
+  /* 每帧都量一次实际滚动量（自动翻页可能有惯性尾巴），差多少补多少 */
+  var cur = wgScrollY();
+  if(st.lastScrollY == null) st.lastScrollY = cur;
+  var moved = cur - st.lastScrollY;
+  st.lastScrollY = cur;
+  wgAutoScroll(x);
+  var d = wgDayAt(x), need = false;
+  /* 撞周时手指贴在屏幕边，那儿压着的是一列被裁掉一半的格子：
+     每帧都拿它回填日期，刚翻过去的周会被拽回边缘那一列 —— 边缘一律不动日期 */
+  if(d && !wgEdgeZone(x) && d !== st.tDay && !(st.nest && st.nest.on)){ st.tDay = d; need = true; }
+  if(moved){ st.startY -= moved; need = true; }
+  if(need) wgApplyPointer(x, y);
+  wgRaf = requestAnimationFrame(wgTick);
+}
+/* 左右边缘：撞一下有反馈，连着撞两下就翻到上/下一周 */
+function wgEdgeZone(x){
+  var wrap = document.getElementById("week-grid");
+  if(!wrap) return 0;
+  var r = wrap.getBoundingClientRect();
+  var w = Math.max(18, Math.min(26, r.width * 0.07));
+  if(x <= r.left + w) return -1;
+  if(x >= r.right - w) return 1;
+  return 0;
+}
+function wgAtHScrollEnd(side){
+  var wrap = document.getElementById("week-grid");
+  if(!wrap) return true;
+  var max = wrap.scrollWidth - wrap.clientWidth;
+  if(max <= 2) return true;
+  return side < 0 ? wrap.scrollLeft <= 1 : wrap.scrollLeft >= max - 1;
+}
+function wgFlashEdge(side){
+  var f = document.getElementById("wg-edge");
+  if(!f){ f = document.createElement("div"); f.id = "wg-edge"; document.body.appendChild(f); }
+  f.className = "wg-edge " + (side < 0 ? "left" : "right");
+  void f.offsetWidth;
+  f.classList.add("hit");
+  clearTimeout(f._t);
+  f._t = setTimeout(function(){ if(f.parentNode) f.className = "wg-edge " + (side < 0 ? "left" : "right"); }, 360);
+}
+function wgEdgeBump(side){
+  var st = wgDragState;
+  if(!st || !side) return;
+  var now = Date.now();
+  if(st.bumpCool && now < st.bumpCool) return;
+  st.hits = (st.hits || []).filter(function(h){ return now - h.t < 2000 && h.side === side; });
+  st.hits.push({t: now, side: side});
+  wgFlashEdge(side);
+  try{ if(navigator.vibrate) navigator.vibrate(10); }catch(err){}
+  if(st.hits.length >= 2){
+    st.hits = []; st.bumpCool = now + 900;
+    wgFlipWeek(side);
+  }
+}
+/* 换周时把整块表格重画，原来的块元素会被扔掉：改用浮动牌继续拖，
+   目标日期整体挪 ±7 天，松手就是「挪到上/下一周的同一天」 */
+function wgFlipWeek(side){
+  var st = wgDragState;
+  if(!st || !st.active) return;
+  var delta = side < 0 ? -7 : 7;
+  /* 翻周是「把这只鸟挪到上/下一周的同一天」，跟手指一路扫过哪些列没关系：
+     手指从周三的鸟一路划到屏幕左边，途中压过的每一列都会改 tDay，
+     拿它平移就成了「上周一」。所以始终以按下时那天为基准，翻几次就加减几周 */
+  st.weekShift = (st.weekShift || 0) + (side < 0 ? -1 : 1);
+  st.tDay = wgShiftDay(st.day, st.weekShift * 7);
+  /* 换周重画会顺带挪动页面滚动位置：把这点整体位移从位移基准里扣掉，
+     手指没动，时间就不该动（也别整个重设 startY，那会把上下蹭的中间位置当新原点） */
+  var scy = wgScrollY();
+  if(st.lastScrollY != null) st.startY -= (scy - st.lastScrollY);
+  st.lastScrollY = scy;
+  var base = overviewWeekStart || mondayOf(todayStr());
+  overviewWeekStart = mondayOf(wgShiftDay(base, delta));
+  /* 换周会把整块表格重画，原来那只鸟的元素跟着没了 —— 改用 fixed 的「手里鸟」，
+     只要有它在，手指不动也一直看得见；落点由虚线预览指示 */
+  st.block = null; st.mode = "lift";
+  st.nestRanges = null;
+  if(st.nest) wgNestLeave();
+  renderWeekOverview();
+  wgEnsureFloat();
+  wgKeepBird();
+  wgMoveFloat(st.lastX, st.lastY);
+  wgUpdateView();
+  toast(delta < 0 ? "← 上一周" : "下一周 →");
+}
+function wgEnsureFloat(){
+  var st = wgDragState;
+  if(!st) return null;
+  if(st.float && st.float.parentNode) return st.float;
+  var fl = document.createElement("div");
+  fl.className = "wg-float"; fl.id = "wg-float";
+  fl.innerHTML = "<b></b><span></span>";
+  document.body.appendChild(fl);
+  st.float = fl;
+  return fl;
+}
+/* ===== v2.4.7 拖鸟：底部「鸟窝」+ 竖直时间柱 =====
+   总览回到「一节一格」，课间午休不再占列高，课外时间改在这里调：
+   长按小鸟 → 屏幕底部浮出虚线托盘，里面三个窝（早上 / 中午 / 晚上）；
+   把鸟拖到窝上，窝的上方长出一根时间柱，手指在柱上上下滑就能把时间
+   推到那一分钟；不拖到窝、直接拖回课表格子，就照旧变成块。 */
+var wgNestEl = null, wgNestColEl = null;
+/* 三个窝的图标用内联 SVG 画：emoji 在部分安卓机上会被渲染成方块 */
+var WG_NEST_ICO = {
+  early: '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+    '<path d="M2.5 18.5h19" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>' +
+    '<path d="M7 18.5a5 5 0 0 1 10 0z" fill="#fbbf24"/>' +
+    '<path d="M12 3.5v3M5.4 7.2l2 2M18.6 7.2l-2 2" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/></svg>',
+  noon: '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+    '<circle cx="12" cy="12" r="5" fill="#fbbf24"/>' +
+    '<path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M5 5l1.7 1.7M17.3 17.3L19 19M19 5l-1.7 1.7M6.7 17.3L5 19" ' +
+    'stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/></svg>',
+  late: '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+    '<path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z" fill="#818cf8"/></svg>'
+};
+
+/* 三个窝各自覆盖的课外时段 —— 全部取真实空档，从窝里调出来的时间一定落在课外。
+   两头各放宽 20 分钟（和 WG_MIN_OV 同一个容忍度）：课本来说 12:00 下课，
+   但 11:55 开始、14:20 结束也只是擦边，照样算课外，不该被挡在窝外 */
+var WG_NEST_SLACK = 20;
+function wgNestRanges(g){
+  var out = [], T = g.total;
+  if(!T) return out;
+  var first = g.tMap[1], last = g.tMap[T];
+  /* 早上：第一节前 3 小时 → 第一节开始后 20 分钟 */
+  out.push({kind: "early", name: "早上", icon: "🌅",
+            tMin: Math.max(0, first[0] - 180), tMax: Math.min(24 * 60, first[0] + WG_NEST_SLACK)});
+  /* 中午：10:20–15:40 之间的第一个像样空档（通常就是午休），两头各放宽 20 分钟 */
+  var noon = null;
+  for(var p = 1; p < T; p++){
+    var a = g.tMap[p], b = g.tMap[p + 1];
+    if(!a || !b) continue;
+    if(a[1] >= 10 * 60 + 20 && b[0] <= 15 * 60 + 40 && b[0] - a[1] >= 20){
+      noon = {tMin: a[1] - WG_NEST_SLACK, tMax: b[0] + WG_NEST_SLACK};
+      break;
+    }
+  }
+  if(!noon){
+    /* 没有午休空档（比如研究生轴是连续 30 分钟一段）：给它一个 12:30–14:30 的默认区间，
+       落点还落在课上的话，松手会自动变回块，不会凭空多出一条课外计划 */
+    var mid = Math.round((first[0] + Math.min(last[1], 24 * 60)) / 2);
+    mid = Math.max(12 * 60 + 30, Math.min(13 * 60 + 30, mid));
+    noon = {tMin: mid - 60, tMax: mid + 60};
+  }
+  out.push({kind: "noon", name: "中午", icon: "☀️", tMin: noon.tMin, tMax: noon.tMax});
+  /* 晚上：最后一节结束（可提前 20 分钟）→ 午夜，至少留两个半小时（不然睡前那点时间不够调） */
+  var lmax = 24 * 60;
+  var lmin = Math.min(last[1] - WG_NEST_SLACK, lmax - 150);
+  out.push({kind: "late", name: "晚上", icon: "🌙", tMin: lmin, tMax: lmax});
+  return out;
+}
+
+function wgNestTray(){
+  var st = wgDragState, g = wgGeomCache;
+  if(!st || !g) return null;
+  if(wgNestEl) return wgNestEl;
+  var ranges = st.nestRanges || (st.nestRanges = wgNestRanges(g));
+  var el = document.createElement("div");
+  el.id = "wg-nest";
+  el.className = "wg-nest";
+  /* 块和鸟都能拖进窝：块进去之后时间落在课外，松手就变成小鸟 */
+  var tip = st.birdMode ? "拖进鸟窝调时间 · 拖回课表格子变成块"
+                        : "拖进鸟窝变成课外小鸟 · 拖回课表格子还是块";
+  el.innerHTML = '<div class="wg-nest-tip">' + tip + '</div>' +
+    '<div class="wg-nest-row">' + ranges.map(function(r){
+      return '<div class="wg-nest-item" data-nest="' + r.kind + '">' +
+             '<i>' + WG_NEST_ICO[r.kind] + '</i><b>' + r.name + '</b>' +
+             '<em>' + fmtMin(r.tMin) + '–' + fmtMinEnd(r.tMax) + '</em></div>';
+    }).join("") + '</div>';
+  document.body.appendChild(el);
+  wgNestEl = el;
+  wgNestPlace();
+  requestAnimationFrame(function(){ if(wgNestEl) wgNestEl.classList.add("show"); });
+  return el;
+}
+/* 安全区高度（刘海屏底部那条 home indicator）：托盘压住导航栏，但不能压到它下面去 */
+function wgSafeB(){
+  var v = getComputedStyle(document.documentElement).getPropertyValue("--safe-b");
+  var n = parseFloat(v);
+  return isNaN(n) ? 0 : n;
+}
+function wgNestBottom(){ return Math.round(6 + wgSafeB()); }
+function wgNestPlace(){
+  if(!wgNestEl) return;
+  /* 盖住底部导航栏：拖动就这么一会儿，导航栏先让位，底下两节课不再被托盘吃掉 */
+  wgNestEl.style.bottom = wgNestBottom() + "px";
+}
+function wgNestHide(){
+  if(wgNestEl && wgNestEl.parentNode) wgNestEl.parentNode.removeChild(wgNestEl);
+  wgNestEl = null;
+  wgNestColHide();
+}
+function wgNestItem(kind){
+  if(!wgNestEl) return null;
+  return wgNestEl.querySelector('.wg-nest-item[data-nest="' + kind + '"]');
+}
+function wgNestHit(x, y){
+  if(!wgNestEl) return null;
+  var items = wgNestEl.querySelectorAll(".wg-nest-item");
+  for(var i = 0; i < items.length; i++){
+    var r = items[i].getBoundingClientRect();
+    if(x >= r.left - 8 && x <= r.right + 8 && y >= r.top - 12 && y <= r.bottom + 14)
+      return items[i].dataset.nest;
+  }
+  return null;
+}
+/* 时间柱：从窝的上沿向上长，底 = 最早、顶 = 最晚，手指往上滑就是往后推 */
+function wgNestColShow(){
+  var st = wgDragState, n = st && st.nest;
+  if(!n) return;
+  var rg = n.rg;
+  var trayH = wgNestEl ? wgNestEl.offsetHeight : 72;
+  var bottom = wgNestBottom() + trayH + 8;
+  var vh = window.innerHeight || 800;
+  var span0 = Math.max(30, rg.tMax - rg.tMin);
+  /* 高度跟着时间范围走：只有 100 分钟的午休就不用撑满一屏，少挡一点课表 */
+  var H = Math.max(160, Math.min(252, vh - bottom - 96, 44 + span0 * 1.3));
+  n.H = H; n.bottom = bottom;
+  var item = wgNestItem(n.kind);
+  var rect = item ? item.getBoundingClientRect()
+                  : {left: (window.innerWidth || 390) / 2 - 20, width: 40};
+  var cx = rect.left + rect.width / 2;
+
+  if(!wgNestColEl){
+    wgNestColEl = document.createElement("div");
+    wgNestColEl.id = "wg-nest-col";
+    wgNestColEl.className = "wg-nest-col";
+    document.body.appendChild(wgNestColEl);
+  }
+  wgNestColEl.style.left = Math.round(cx - 39) + "px";
+  wgNestColEl.style.bottom = bottom + "px";
+  wgNestColEl.style.height = H + "px";
+
+  var span = Math.max(30, rg.tMax - rg.tMin);
+  var lines = "";
+  var topPad0 = H < 190 ? 34 : 42;
+  var usable0 = Math.max(60, H - topPad0 - 10);
+  for(var t = Math.ceil(rg.tMin / 30) * 30; t <= rg.tMax; t += 30){
+    var major = (t % 60 === 0);
+    lines += '<div class="wg-nest-rl' + (major ? " major" : "") + '" style="bottom:' +
+             (10 + (t - rg.tMin) / span * usable0).toFixed(1) + 'px">' +
+             (major ? '<b>' + fmtMinEnd(t) + '</b>' : "") + '</div>';
+  }
+  wgNestColEl.innerHTML = '<div class="wg-nest-rail"></div>' + lines +
+    '<div class="wg-nest-cap"><b>' + esc(rg.name) + '</b>' +
+    '<em>' + fmtMin(rg.tMin) + "–" + fmtMinEnd(rg.tMax) + '</em></div>' +
+    '<div class="wg-nest-cur" id="wg-nest-cur"><span></span></div>';
+  wgNestColEl.classList.add("show");
+  wgNestPaint();
+}
+function wgNestColHide(){
+  if(wgNestColEl && wgNestColEl.parentNode) wgNestColEl.parentNode.removeChild(wgNestColEl);
+  wgNestColEl = null;
+}
+function wgNestPaint(){
+  var st = wgDragState, n = st && st.nest;
+  if(!n || !wgNestColEl) return;
+  var rg = n.rg, span = Math.max(30, rg.tMax - rg.tMin);
+  var cur = wgNestColEl.querySelector("#wg-nest-cur");
+  if(!cur) return;
+  var t = Math.max(rg.tMin, Math.min(rg.tMax, st.t0));
+  var topPad = n.H < 190 ? 34 : 42;
+  var usable = Math.max(60, n.H - topPad - 10);
+  var y = 10 + Math.max(0, Math.min(1, (t - rg.tMin) / span)) * usable;
+  cur.style.bottom = y.toFixed(1) + "px";
+  /* 起止时间都写出来：只给开始时间的话，用户还得自己加时长才知道几点结束 */
+  cur.firstChild.textContent = fmtMin(st.t0) + "–" + fmtMinEnd(st.t1);
+}
+function wgNestEnter(kind, x, y){
+  var st = wgDragState, g = wgGeomCache;
+  if(!st || !g) return;
+  var ranges = st.nestRanges || (st.nestRanges = wgNestRanges(g));
+  var rg = null;
+  for(var i = 0; i < ranges.length; i++) if(ranges[i].kind === kind) rg = ranges[i];
+  if(!rg) return;
+  if(st.nest && st.nest.kind === kind) return;
+  var base;
+  if(st.t0 >= rg.tMin && st.t0 + st.dur <= rg.tMax) base = st.t0;
+  else base = Math.round((rg.tMin + rg.tMax - st.dur) / 2);
+  base = Math.max(rg.tMin, Math.min(Math.max(rg.tMin, rg.tMax - st.dur), base));
+  st.nest = {kind: kind, rg: rg, on: true, anchorY: y, baseT: base, H: 260, bottom: 0};
+  /* 手指在屏幕底部经常会落在别的列上，进窝就把日期还原成按下时那一天 */
+  st.tDay = st.day;
+  st.t0 = base; st.t1 = base + st.dur;
+  st.moved = true;
+  wgNestTray();
+  wgNestColShow();
+  var items = document.querySelectorAll(".wg-nest-item");
+  for(var k = 0; k < items.length; k++){
+    if(items[k].dataset.nest === kind) items[k].classList.add("hot");
+    else items[k].classList.remove("hot");
+  }
+  try{ if(navigator.vibrate) navigator.vibrate(12); }catch(err){}
+}
+function wgNestLeave(y){
+  var st = wgDragState;
+  if(!st || !st.nest) return;
+  st.nest = null;
+  wgNestColHide();
+  if(st.block) st.block.style.visibility = "";
+  var items = document.querySelectorAll(".wg-nest-item");
+  for(var k = 0; k < items.length; k++) items[k].classList.remove("hot");
+  /* 从鸟窝里出来接着拖：把起点基准对齐到当前手位，时间不会跳一下 */
+  if(y != null && st.mode === "block"){
+    st.t0Base = st.t0;
+    st.startY = y;
+  }
+}
+/* 手指还在不在「柱 + 窝」这块地方 */
+function wgNestInside(x, y){
+  if(!wgNestEl) return false;
+  var tr = wgNestEl.getBoundingClientRect();
+  if(y >= tr.top - 8 && y <= tr.bottom + 40 && x >= tr.left - 14 && x <= tr.right + 14) return true;
+  if(wgNestColEl){
+    var cr = wgNestColEl.getBoundingClientRect();
+    if(x >= cr.left - 30 && x <= cr.right + 30 && y >= cr.top - 20 && y <= cr.bottom + 10) return true;
+  }
+  return false;
+}
+function wgNestMove(y){
+  var st = wgDragState, n = st.nest;
+  var span = Math.max(30, n.rg.tMax - n.rg.tMin);
+  var vh = window.innerHeight || 800;
+  var colTop = vh - n.bottom - n.H;      /* 卡片顶 */
+  var colBot = vh - n.bottom;            /* 卡片底 */
+  var topPad = n.H < 190 ? 34 : 42, botPad = 10;
+  var usable = Math.max(60, n.H - topPad - botPad);
+  var yTop = colTop + topPad, yBot = colBot - botPad;
+  /* 手指还在底部的窝里（或已经滑到卡片顶上出去了）：先不动时间。
+     只有真的滑进柱面，才开始「指到哪就是几点」——柱子上标着刻度，
+     手指从下往上扫，时间就一格一格往后走，两个方向都够滑 */
+  if(y > yBot || y < yTop - 20) return;
+  var ratio = (yBot - y) / usable;
+  ratio = Math.max(0, Math.min(1, ratio));
+  var t = n.rg.tMin + ratio * span;
+  var hi = Math.max(n.rg.tMin, n.rg.tMax - st.dur);
+  st.t0 = Math.max(n.rg.tMin, Math.min(hi, t));
+  st.t1 = st.t0 + st.dur;
+  st.moved = true;
+  wgNestPaint();
+}
+/* 手里那只鸟：跨周、跨列都跟着手指，撞边换周后也不会凭空消失 */
+function wgKeepBird(){
+  var st = wgDragState;
+  if(!st || !st.birdMode) return null;
+  var el = document.getElementById("wg-kite");
+  if(!el){
+    el = document.createElement("div");
+    el.id = "wg-kite"; el.className = "wg-kite";
+    el.innerHTML = WG_BIRD_SVG;
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function wgPlaceBird(el, x, y){
+  if(!el) return;
+  el.style.left = Math.round(x) + "px";
+  el.style.top = Math.round(y - 33) + "px";
+}
+function wgDropBird(){
+  var el = document.getElementById("wg-kite");
+  if(el && el.parentNode) el.parentNode.removeChild(el);
+}
+
 function wgMoveFloat(x, y){
   var st = wgDragState;
   if(!st || !st.float) return;
-  st.float.style.left = x + "px";
+  /* 贴着屏幕左/右边缘时把牌子收回来，时间不能被裁掉（牌最宽 190） */
+  var vw = window.innerWidth || 390;
+  var half = Math.min(98, Math.max(58, (st.float.offsetWidth || 150) / 2 + 8));
+  var fx = Math.max(half + 2, Math.min(vw - half - 2, x));
+  st.float.style.left = fx + "px";
   st.float.style.top = (y - 40) + "px";
 }
 function wgEnsureTip(block){
@@ -2031,42 +3104,62 @@ function wgEnsureTip(block){
   return tip;
 }
 function wgUpdateView(){
-  var st = wgDragState;
-  if(!st || !st.active) return;
-  var span = st.span, total = data.slots.length;
-  var seg = Math.max(0, Math.min(total - span, st.targetSeg));
+  var st = wgDragState, g = wgGeomCache;
+  if(!st || !st.active || !g) return;
   var same = st.tDay === st.day;
-  var label = wgRangeLabel(wgSegsFrom(seg, span));
+  var label = fmtMin(st.t0) + "–" + fmtMinEnd(st.t1);
 
+  /* 原来的块/鸟淡成半透明的「洞」，位置跟着走；真正要放的位置交给虚线预览 */
   if(st.block){
-    if(same){
-      st.block.classList.remove("lifted");
-      st.block.style.top = (seg * wgSegH) + "px";
-    } else {
-      st.block.classList.add("lifted");
-    }
-    wgEnsureTip(st.block).textContent = label;
-  }
-  if(st.float){
-    var fsp = st.float.querySelector("span");
-    if(fsp) fsp.textContent = (same ? "" : (WD[weekdayOf(st.tDay)] + " · ")) + label;
+    st.block.classList.add("dragging");
+    /* 进了鸟窝，原来那块留在课表格子里只会误导（时间已经跑到柱子上去了），先藏起来 */
+    st.block.style.visibility = (st.nest && st.nest.on) ? "hidden" : "";
+    if(same && !st.block.classList.contains("wg2-bird")) st.block.style.top = wgYOf(st.t0, g) + "px";
+    if(same) st.block.classList.remove("lifted");
+    else st.block.classList.add("lifted");
+    if(st.block.classList.contains("wg2-block")) wgEnsureTip(st.block).textContent = label;
   }
 
-  var g = document.getElementById("wg-ghost");
-  var show = (st.mode === "lift") || !same;
-  if(!show){ if(g && g.parentNode) g.parentNode.removeChild(g); return; }
-  var col = wgColByDay(st.tDay);
-  if(!col){ if(g && g.parentNode) g.parentNode.removeChild(g); return; }
-  if(!g){
-    g = document.createElement("div");
-    g.id = "wg-ghost"; g.className = "wg2-ghost";
-    g.innerHTML = "<b></b><span></span>";
+  /* 手指上方那颗时间牌：始终比手指高，时间不会被手指挡住 */
+  var fl = wgEnsureFloat();
+  if(fl){
+    fl.firstChild.textContent = (same ? "" : ((WD[weekdayOf(st.tDay)] || "") + " · ")) + label;
+    fl.lastChild.textContent = (st.plan && st.plan.task) ? st.plan.task : "";
+    /* 进了鸟窝，时间交给柱子上的游标显示，浮牌让位 */
+    fl.style.display = (st.nest && st.nest.on) ? "none" : "";
   }
-  if(g.parentNode !== col) col.appendChild(g);
-  g.style.top = (seg * wgSegH) + "px";
-  g.style.height = (span * wgSegH) + "px";
-  g.firstChild.textContent = label;
-  g.lastChild.textContent = same ? "" : (WD[weekdayOf(st.tDay)] || "");
+  /* 手里那只鸟：跨周、跨列都跟着手指，撞边换周后也不会凭空消失 */
+  if(st.nest && st.nest.on){
+    wgDropBird();
+  } else {
+    var kite = wgKeepBird();
+    if(kite) wgPlaceBird(kite, st.lastX != null ? st.lastX : st.startX, st.lastY != null ? st.lastY : st.startY);
+  }
+
+  /* 已经进了鸟窝：总览里的虚线块先收起来，注意力交给时间柱 */
+  if(st.nest && st.nest.on){
+    var gh0 = document.getElementById("wg-ghost");
+    if(gh0 && gh0.parentNode) gh0.parentNode.removeChild(gh0);
+    wgNestPaint();
+    return;
+  }
+
+  var col = wgColByDay(st.tDay);
+  var gh = document.getElementById("wg-ghost");
+  if(!col){ if(gh && gh.parentNode) gh.parentNode.removeChild(gh); return; }
+  if(!gh){
+    gh = document.createElement("div");
+    gh.id = "wg-ghost"; gh.className = "wg2-ghost";
+    gh.innerHTML = "<b></b><span></span>";
+  }
+  if(gh.parentNode !== col) col.appendChild(gh);
+  gh.style.top = wgYOf(st.t0, g) + "px";
+  /* 和正式渲染用同一个公式，松手前后的高度不会跳 */
+  gh.style.height = Math.max(12, wgBlockHeight(st.t0, st.t1, g)) + "px";
+  gh.firstChild.textContent = label;
+  var ghH = Math.max(12, wgBlockHeight(st.t0, st.t1, g));
+  gh.lastChild.textContent = same ? "松手放到这里" : (WD[weekdayOf(st.tDay)] || "");
+  gh.lastChild.style.display = ghH >= 26 ? "" : "none";
 }
 
 function wgBeginDrag(){
@@ -2075,7 +3168,12 @@ function wgBeginDrag(){
   st.active = true;
   document.body.classList.add("wg-dragging");
   if(st.block) st.block.classList.add("dragging");
+  wgEnsureFloat();
+  /* 块和鸟都先亮出三个鸟窝：块也能直接拖进去变成课外的小鸟 */
+  wgNestTray();
+  wgMoveFloat(st.lastX != null ? st.lastX : st.startX, st.lastY != null ? st.lastY : st.startY);
   wgUpdateView();
+  wgRafStart();
   try{ if(navigator.vibrate) navigator.vibrate(12); }catch(err){}
 }
 
@@ -2083,17 +3181,31 @@ function wgBlockPointerDown(e){
   if(Date.now() < wgSuppressUntil) return;
   if(wgDragState) return;
   if(!e.target || !e.target.closest) return;
-  var block = e.target.closest("#week-grid .wg2-block[data-planid]");
+  var block = e.target.closest("#week-grid .wg2-block[data-planid], #week-grid .wg2-bird[data-birdid]");
   if(!block) return;
   if(e.pointerType === "mouse" && e.button !== 0) return;
-  var plan = findPlanById(block.dataset.planid);
-  if(!plan || !plan.periods || !plan.periods.length) return;
-  var segs = plan.periods.slice().sort(function(a, b){ return a - b; });
+  var pid = block.dataset.planid || block.dataset.birdid;
+  var plan = findPlanById(pid);
+  if(!plan) return;
+  var g = wgGeomCache;
+  if(!g) return;
+  var t = planT(plan);
+  if(!t || !(t[1] > t[0])){ toast("这条还没有时间段，先打开它设置"); return; }
   var d0 = block.dataset.d || plan.date;
+  var rect = block.getBoundingClientRect();
+  var dur = t[1] - t[0];
   wgDragState = {
     mode: "block", block: block, float: null, plan: plan,
     day: d0, tDay: d0,
-    seg0: segs[0] - 1, targetSeg: segs[0] - 1, span: segs.length,
+    t0: t[0], t1: t[1], t0Base: t[0], dur: dur,
+    allowOut: !(plan.periods && plan.periods.length),
+    grabMin: Math.max(0, Math.min(dur, wgMinOfY(e.clientY - rect.top, g) - t[0])),
+    /* 长按的是小鸟（或本身就是课表外的安排）→ 拖起来时底部给出三个鸟窝 */
+    birdMode: block.classList.contains("wg2-bird") ||
+              (!(plan.periods && plan.periods.length) && wgOffGrid(t, g)),
+    nest: null, nestRanges: null,
+    lastX: e.clientX, lastY: e.clientY, zone: wgEdgeZone(e.clientX),
+    bumpY: e.clientY, bumpOk: !wgEdgeZone(e.clientX), hits: [], bumpCool: 0, weekShift: 0,
     startX: e.clientX, startY: e.clientY, active: false, moved: false, timer: null
   };
   wgDragState.timer = setTimeout(wgBeginDrag, 320);
@@ -2103,6 +3215,77 @@ function wgSegsFrom(seg0, span){
   var arr = [];
   for(var i = 0; i < span; i++) arr.push(seg0 + i + 1);
   return arr;
+}
+
+/* 落点吸附：拖动过程完全跟手（像素与分钟线性），只在松手这一刻对齐到 5 分钟刻度，
+   保证写进去的时间是干净的整数分钟（以前浮点 19:54.35631793478251 就是因为没取整） */
+var WG_SNAP_MIN = 5;
+function wgSnapStart(min, dur, g, slack){
+  slack = slack || 0;
+  var snapped = Math.round(min / WG_SNAP_MIN) * WG_SNAP_MIN;
+  return Math.max(g.dayStart - slack, Math.min(g.dayEnd + slack - dur, snapped));
+}
+
+/* 把手指位置换算成时间并刷新预览（拖动中每一帧都走这里） */
+function wgApplyPointer(x, y){
+  var st = wgDragState, g = wgGeomCache;
+  if(!st || !st.active || !g) return;
+
+  /* ① 拖到鸟窝上：进窝，之后手指在柱上上下滑就是调时间。
+        块和鸟都走这一条 —— 课内的块拖进窝，松手就变成课外的小鸟 */
+  var hit = wgNestHit(x, y);
+  if(hit){
+    wgNestEnter(hit, x, y);
+    wgMoveFloat(x, y);
+    wgUpdateView();
+    return;
+  }
+  if(st.nest && st.nest.on){
+    if(wgNestInside(x, y)){
+      wgNestMove(y);
+      wgMoveFloat(x, y);
+      wgUpdateView();
+      return;
+    }
+    /* 手指离开「柱 + 窝」：退出鸟窝，接着按普通拖拽算 */
+    wgNestLeave(y);
+  }
+
+  /* 从鸟堆/小鸟提起来的，一直按「手指在哪就落到哪」走；
+     拖到课表格子上就是这个格子的时间，松手自然变成块 */
+  /* 手指贴着左右边缘 = 在撞周，不是在调时间。撞第二下得上下蹭，这里若还按位移
+     算时间，蹭一下就把这只鸟的时间推走了 —— 边缘上时间一律冻住 */
+  var atEdge = !!wgEdgeZone(x);
+  if(st.mode === "lift" || st.birdMode){
+    /* 撞周时手指压在屏幕边缘，横向上多半是压在一列被裁掉一半的边上：
+       这会儿按「手指在哪就落哪」会把跨周后的落点又拽回边缘那一列，
+       时间和日期一起被改掉 —— 撞周期间一律不落点，鸟保持在原处 */
+    var h = atEdge ? null : wgHitTest(x, y);
+    if(h){
+      st.tDay = h.day;
+      /* 时间按手指的垂直位移走，不按「这一格对应几点」反推。
+         轴外的鸟（06:00）在轴上被压成第一节顶端的一个图标，拿格子反推的话
+         一按就先变成 08:00 —— 看着像没挪，其实时间被改了。
+         位移里的滚动量每帧由 wgTick 补进 startY，所以自动翻页也不会漂 */
+      var want = st.t0Base + (y - st.startY) / g.pxPerMin;
+      st.t0 = Math.max(g.dayStart - 360, Math.min(g.dayEnd + 360 - st.dur, want));
+      st.t1 = st.t0 + st.dur;
+      st.moved = true;
+    }
+  } else if(!atEdge){
+    /* 按真实分钟平移，不做任何吸附 —— 拖到哪儿就是哪一分钟，一像素一像素地跟手。
+       基准是最初按下时的起点（t0Base），不能拿上一帧算出的 t0 再叠一次，
+       否则每触发一次 pointermove 就把位移累加一遍，轻轻一拖会跑出好几节。 */
+    var raw = st.t0Base + (y - st.startY) / g.pxPerMin;
+    /* 课表外的条目可以一直拖到轴外（前后各留 6 小时），课外的时间本就不该被夹住；
+       课内条目只给 1 小时余量，够拖到早读或睡前，又不至于误拖跑飞 */
+    var slack = st.allowOut ? 360 : 60;
+    var start = Math.max(g.dayStart - slack, Math.min(g.dayEnd + slack - st.dur, raw));
+    if(Math.abs(start - st.t0) > 0.01 || st.tDay !== st.day) st.moved = true;
+    st.t0 = start; st.t1 = start + st.dur;
+  }
+  wgMoveFloat(x, y);
+  wgUpdateView();
 }
 
 function wgPointerMove(e){
@@ -2116,30 +3299,40 @@ function wgPointerMove(e){
   if(!st) return;
   var x = (e.clientX === undefined) ? st.startX : e.clientX;
   var y = (e.clientY === undefined) ? st.startY : e.clientY;
+  st.lastX = x; st.lastY = y;
   if(!st.active){
     if(Math.abs(y - st.startY) > 8 || Math.abs(x - st.startX) > 8) wgAbortDrag();
     return;
   }
   if(e.cancelable) e.preventDefault();
   wgAutoScroll(x);
-  var total = data.slots.length;
-  if(st.mode === "lift"){
-    var hit = wgHitTest(x, y);
-    if(hit){
-      st.tDay = hit.day;
-      st.targetSeg = Math.max(0, Math.min(total - st.span, hit.seg));
-      st.moved = true;
-    }
-    wgMoveFloat(x, y);
+  var g = wgGeomCache;
+  if(!g) return;
+  var day = wgDayAt(x);
+  var z = wgEdgeZone(x);
+  /* 手指压在左右边缘是在「撞周」，不是在挑格子。
+     从周三的鸟一路划到屏幕左边，途中会扫过每一列 —— 拿某一次扫到的列当落点，
+     最后就落在最左边那一列（看着像「还在原来的位置」）。所以贴边期间日期锁死在
+     「按下那天 ± 翻过的周数」，只有把手移开边缘，才重新按手指所在列算 */
+  if(!z){
+    st.weekShift = 0;   /* 离开边缘：这一轮翻周结束，下次贴着谁算谁 */
+    st.edgeDay = null;
+    if(day && !(st.nest && st.nest.on)) st.tDay = day;
   } else {
-    var seg = Math.round((st.seg0 * wgSegH + (y - st.startY)) / wgSegH);
-    seg = Math.max(0, Math.min(total - st.span, seg));
-    var day = wgDayAt(x);
-    if(day) st.tDay = day;
-    if(seg !== st.targetSeg || st.tDay !== st.day) st.moved = true;
-    st.targetSeg = seg;
+    if(!st.edgeDay) st.edgeDay = st.day;
+    st.tDay = wgShiftDay(st.edgeDay, (st.weekShift || 0) * 7);
   }
-  wgUpdateView();
+  /* 撞边缘：已经滚到这一侧尽头才触发，手指在边上横向来回蹭两下就换周。
+     两下分别是：①从外面撞进来（z 变了）②停在边上上下蹭一下。
+     但如果按下时就贴着边（周天那只鸟），先不算数 —— 得先把手指挪出去再回来，
+     否则一按住就已经「撞」了一下，稍微一动就误翻周 */
+  if(z && wgAtHScrollEnd(z)){
+    if(z !== st.zone) wgEdgeBump(z);
+    else if(st.bumpOk && Math.abs(y - (st.bumpY || y)) >= 10) wgEdgeBump(z);
+    st.bumpY = y;
+  } else if(!z) st.bumpOk = true;
+  st.zone = z;
+  wgApplyPointer(x, y);
 }
 
 function wgPointerUp(){
@@ -2150,43 +3343,75 @@ function wgPointerUp(){
   var st = wgDragState;
   if(!st) return;
   if(st.timer) clearTimeout(st.timer);
+  wgRafStop();
   var active = st.active, moved = st.moved;
   wgDragState = null;
   document.body.classList.remove("wg-dragging");
-  if(st.block){ st.block.classList.remove("dragging"); st.block.classList.remove("lifted"); }
+  if(st.block){
+    st.block.classList.remove("dragging"); st.block.classList.remove("lifted");
+    st.block.style.visibility = "";   /* 进过鸟窝的块被藏起来过，收尾时还原 */
+  }
   if(st.float && st.float.parentNode) st.float.parentNode.removeChild(st.float);
-  var g = document.getElementById("wg-ghost");
-  if(g && g.parentNode) g.parentNode.removeChild(g);
+  var ghost = document.getElementById("wg-ghost");
+  if(ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost);
+  wgNestHide();
+  wgDropBird();
+  var edge = document.getElementById("wg-edge");
+  if(edge && edge.parentNode) edge.parentNode.removeChild(edge);
   if(!active) return;
   if(moved) wgSuppressUntil = Date.now() + 800;
-  var seg = Math.max(0, Math.min(data.slots.length - st.span, st.targetSeg));
+  var g = wgGeomCache;
   var day = st.tDay || st.day;
-  if(seg === st.seg0 && day === st.day){
+  var dropDur = Math.round(st.dur);
+  var dropT0 = st.t0;
+  /* 从鸟窝里松手：整段收在这个窝覆盖的课外时段内，不会滑到课上去 */
+  var fromNest = !!(st.nest && st.nest.on);
+  if(fromNest){
+    var rg = st.nest.rg;
+    var lo = rg.tMin, hi = Math.max(rg.tMin, rg.tMax - dropDur);
+    dropT0 = Math.max(lo, Math.min(hi, dropT0));
+  }
+  /* 只在这一刻对齐到 5 分钟刻度并取整：数据干净，拖动过程又完全跟手。
+     从窝里出来的按课外对待，余量给足 —— 早上的窝可能一直回到 05:00，
+     不能被 dayStart 又夹回 07:00 */
+  dropT0 = g ? wgSnapStart(dropT0, dropDur, g, fromNest ? 900 : (st.allowOut ? 360 : 60))
+             : Math.round(dropT0);
+  var oldT = planT(st.plan);
+  var sameT = !!oldT && Math.abs(oldT[0] - dropT0) < 1 && Math.abs(oldT[1] - (dropT0 + dropDur)) < 1;
+  if(!g || (day === st.day && sameT)){
     if(st.mode === "lift") toast("没有移动，已取消");
     renderWeekOverview();
     return;
   }
   st.plan.date = day;
-  st.plan.periods = wgSegsFrom(seg, st.span);
-  st.plan.t = periodsToT(st.plan.periods, slotMinutes(data.slots));
+  st.plan.t = [dropT0, dropT0 + dropDur];
+  st.plan.periods = wgOnGrid([st.plan.t], g)
+    ? tToPeriods(st.plan.t, slotMinutes(data.slots), data.slots)
+    : [];
   saveData();
   refreshAll();
   try{ if(window.syncReminders) syncReminders(); }catch(err){}
   var head = (day === st.day) ? "" : (WD[weekdayOf(day)] + " " + day.slice(5).replace("-", "/") + " · ");
-  toast("已移到 " + head + periodsLabel(st.plan.periods));
+  toast("已移到 " + head + fmtMin(dropT0) + "–" + fmtMinEnd(dropT0 + dropDur));
 }
 
 function wgAbortDrag(){
   var st = wgDragState;
   if(!st) return;
   if(st.timer) clearTimeout(st.timer);
+  wgRafStop();
   var wasActive = st.active;
   wgDragState = null;
   document.body.classList.remove("wg-dragging");
-  if(st.block){ st.block.classList.remove("dragging"); st.block.classList.remove("lifted"); }
+  if(st.block){
+    st.block.classList.remove("dragging"); st.block.classList.remove("lifted");
+    st.block.style.visibility = "";   /* 进过鸟窝的块被藏起来过，收尾时还原 */
+  }
   if(st.float && st.float.parentNode) st.float.parentNode.removeChild(st.float);
   var g = document.getElementById("wg-ghost");
   if(g && g.parentNode) g.parentNode.removeChild(g);
+  wgNestHide();
+  wgDropBird();
   if(wasActive) renderWeekOverview();
 }
 
@@ -2198,19 +3423,28 @@ function wgTouchMove(e){
 function wgLiftFromSheet(planId, x, y){
   var plan = findPlanById(planId);
   if(!plan) return;
-  if(!plan.periods || !plan.periods.length){ toast("这条还没有时间段，先打开它设置"); return; }
-  var segs = plan.periods.slice().sort(function(a, b){ return a - b; });
+  var g0 = wgGeomCache;
+  if(!g0) return;
+  var t0 = planT(plan);
+  if(!t0 || !(t0[1] > t0[0])){ toast("这条还没有时间段，先打开它设置"); return; }
   closeMultiSheet();
   wgSuppressUntil = Date.now() + 1000;
   var fl = document.createElement("div");
   fl.className = "wg-float";
   fl.id = "wg-float";
-  fl.innerHTML = "<b>" + esc(plan.task || "计划") + "</b><span></span>";
+  fl.innerHTML = "<b></b><span>" + esc(plan.task || "计划") + "</span>";
   document.body.appendChild(fl);
+  var dur = t0[1] - t0[0];
   wgDragState = {
     mode: "lift", block: null, float: fl, plan: plan,
     day: plan.date, tDay: plan.date,
-    seg0: segs[0] - 1, targetSeg: segs[0] - 1, span: segs.length,
+    t0: t0[0], t1: t0[1], t0Base: t0[0], dur: dur, grabMin: 0,
+    allowOut: !(plan.periods && plan.periods.length),
+    /* 从鸟堆面板里拖出来的一律按「鸟」走：底部会给三个窝 */
+    birdMode: true,
+    nest: null, nestRanges: null,
+    lastX: x, lastY: y, zone: wgEdgeZone(x),
+    bumpY: y, bumpOk: !wgEdgeZone(x), hits: [], bumpCool: 0, weekShift: 0,
     startX: x, startY: y, active: true, moved: false, timer: null
   };
   var wrap = document.getElementById("week-grid");
@@ -2221,20 +3455,18 @@ function wgLiftFromSheet(planId, x, y){
     }
   }
   document.body.classList.add("wg-dragging");
+  wgNestTray();
   wgMoveFloat(x, y);
   wgUpdateView();
+  wgRafStart();
   try{ if(navigator.vibrate) navigator.vibrate(14); }catch(err){}
 }
 
 /* ---------- 一个时段多个安排：列出并选择，可长按拖出 ---------- */
 function openMultiSheet(ds, seg){
-  var items = [];
-  coursesOnDay(weekdayOf(ds), ds).forEach(function(c){
-    if((c.periods || []).indexOf(seg) >= 0) items.push({kind: "course", ref: c});
-  });
-  data.plans.filter(function(p){ return p.date === ds && (p.periods || []).indexOf(seg) >= 0; })
-    .forEach(function(p){ items.push({kind: "plan", ref: p}); });
-
+  /* 和总览上那块 busy 用同一份判定：重叠不足 20 分钟的擦边不会出现在这里，
+     列表条数必然等于 busy 上写的「N 个安排」 */
+  var items = wgBusyReasons(ds, seg);
   document.getElementById("multi-title").textContent = "这个时段有 " + items.length + " 个安排";
   var html = "", hasPlan = false;
   items.forEach(function(it){
@@ -2261,6 +3493,31 @@ function openMultiSheet(ds, seg){
 function closeMultiSheet(){
   document.getElementById("multi-sheet").classList.remove("open");
   document.getElementById("multi-backdrop").classList.remove("open");
+}
+/* 点开一摞小鸟：列出这一格上的全部课表外安排，长按任意一条可以拖进课表 */
+function openBirdSheet(ds, key){
+  var og = wgOutGroups(ds);
+  var grp = og.groups[key];
+  if(!grp || !grp.list.length) return;
+  var list = grp.list;
+  var whereName = grp.a.where === "early" ? "早上" : (grp.a.where === "late" ? "晚上" : "课间");
+  document.getElementById("multi-title").textContent = whereName + " · " + list.length + " 个课表外安排";
+  var html = "";
+  list.forEach(function(p){
+    var t = planT(p) || [0, 0];
+    var done = clampPct(p.completion) >= 100 || !!p.closedAt;
+    html += '<button class="multi-item" data-mi="p" data-mref="' + esc(p.id) + '">' +
+            '<span class="multi-ico">' + (p.occupied ? "🚫" : "🐦") + '</span>' +
+            '<span class="multi-body"><b>' + esc(p.task || "计划") + '</b>' +
+            '<span>' + fmtMin(t[0]) + "–" + fmtMin(t[1]) + ' · 完成 ' + clampPct(p.completion) + '%' +
+            (done ? " · 已结束" : "") + '</span></span>' +
+            '<span class="multi-grip">⠿</span></button>';
+  });
+  html += '<div class="multi-tip">这些安排都没占用课表节次。长按任意一条<b>拖到周视图</b>的格子上松手，' +
+          '就能把它变成课内计划</div>';
+  document.getElementById("multi-list").innerHTML = html;
+  document.getElementById("multi-sheet").classList.add("open");
+  document.getElementById("multi-backdrop").classList.add("open");
 }
 
 function shiftWeek(days){
@@ -2321,7 +3578,7 @@ function semStats(id){
 function blankData(mode){
   mode = mode === "grad" ? "grad" : "school";
   return {slots: cloneSlots(mode === "grad" ? GRAD_SLOTS : DEFAULT_SLOTS), slotMode: mode,
-    courses:[], plans:[], currentWeek:1, checkins:[], weeklyReflections:[],
+    courses:[], plans:[], currentWeek:1, weekAnchor: mondayOf(todayStr()), weekBase:1, checkins:[], weeklyReflections:[],
     showCheck:true, showWeekOverview:true, classNotes:[], skips:[],
     cardState: (typeof data !== "undefined" && data && data.cardState) ? JSON.parse(JSON.stringify(data.cardState)) : {seen:{}, lastVersion:null},
     semesterId: semState ? semState.current : null};
@@ -2338,6 +3595,7 @@ function switchSemester(id){
   if(!nd) nd = blankData("school");
   nd.semesterId = id;
   data = nd;
+  autoSyncWeek();   /* 换学期也按真实日期对齐周次 */
   saveData(); refreshAll(); renderSlotEditor(); renderData();
   closeSemSheet();
   toast("已切换到「" + semCurrentName() + "」");
@@ -2510,7 +3768,6 @@ function applySlotMode(mode){
   });
   data.slots = cloneSlots(target);
   data.slotMode = mode;
-  selectedPeriods = conv(selectedPeriods);
   saveData(); refreshAll(); renderSlotEditor(); renderData();
   toast(mode === "grad" ? "已切换为研究生时间模式" : "已切回本科时间模式，课表按原始节次恢复");
 }
@@ -2552,17 +3809,76 @@ function renderVersionHint(){
   document.getElementById("version-hint").textContent =
     (inApp ? "📱 本机 App 版本 v" : "🌐 网页版 v") + v + " · 点「检查更新」获取最新版";
 }
+/* ============ 自动跳周（v2.4.12） ============
+   记录「当前周次对应哪一周的周一」作锚点，过了周一零点就自动 +1，
+   复盘、周总览、课表看到的就是真实这一周。
+   手动调周次会把锚点重置成本周一，所以提前看下周、回看上周都不会被自动跳周带跑。 */
+var WEEK_MIN = 1, WEEK_MAX = 30;
+function autoSyncWeek(){
+  if(!data) return 0;
+  var thisMon = mondayOf(todayStr());
+  if(!data.weekAnchor){
+    /* 老数据（2.4.11 及更早）没有锚点：按最近一次记录的创建时间估算停在哪一周，
+       但至少推进一周 —— 过了周一还挂着上周的周次，就是没跟上的状态。 */
+    var lastTs = 0;
+    (data.plans || []).forEach(function(p){ if(p.createdAt && p.createdAt > lastTs) lastTs = p.createdAt; });
+    (data.weeklyReflections || []).forEach(function(r){ if(r.updatedAt && r.updatedAt > lastTs) lastTs = r.updatedAt; });
+    var step = 1;
+    if(lastTs){
+      var weeks = Math.round((parseDate(thisMon) - parseDate(mondayOf(toDateStr(new Date(lastTs))))) / 604800000);
+      if(weeks > 1) step = Math.min(weeks, 4);
+    }
+    var was = data.currentWeek;
+    data.currentWeek = Math.max(WEEK_MIN, Math.min(WEEK_MAX, was + step));
+    data.weekAnchor = thisMon;
+    data.weekBase = data.currentWeek;
+    saveData();
+    return data.currentWeek !== was ? data.currentWeek : 0;
+  }
+  var diff = Math.round((parseDate(thisMon) - parseDate(data.weekAnchor)) / 604800000);
+  if(diff <= 0){
+    /* 系统时间被调回、换设备：只把锚点拉齐，不动周次 */
+    if(diff < 0){ data.weekAnchor = thisMon; data.weekBase = data.currentWeek; saveData(); }
+    return 0;
+  }
+  var before = data.currentWeek;
+  data.currentWeek = Math.max(WEEK_MIN, Math.min(WEEK_MAX, before + diff));
+  data.weekAnchor = thisMon;
+  data.weekBase = data.currentWeek;
+  saveData();
+  return data.currentWeek !== before ? data.currentWeek : 0;
+}
 function refreshAll(){ renderToday(); renderAll(); renderTimetable(); renderReview(); renderData(); if(data.showWeekOverview !== false) renderWeekOverview(); }
 
 /* ============ 复盘（周报 / 课前课后 check） ============ */
-function weekDateRange(){
-  var now = new Date();
-  var d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  var wd = (d.getDay() + 6) % 7; // 0=周一
-  d.setDate(d.getDate() - wd);
+/* 某一周（默认当前周）的周一到周日。周次与日期的对应关系挂在锚点上，
+   所以回看第 5 周时，取到的是第 5 周真正的那七天。 */
+function weekDateRange(week){
+  var w = (week == null) ? data.currentWeek : Number(week);
+  var base = parseDate((data && data.weekAnchor) || mondayOf(todayStr()));
+  var baseWeek = (data && data.weekBase) || data.currentWeek;
+  var d = new Date(base.getFullYear(), base.getMonth(), base.getDate() + (w - baseWeek) * 7);
   var start = toDateStr(d);
   var end = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 6);
   return {start: start, end: toDateStr(end)};
+}
+/* 同一天里「原计划 + 它顺延出来的那一段」只算原计划，不重复计 */
+function isSameDayCarry(p){
+  if(!p || p.partCompletion == null || !p.carriedFrom) return false;
+  var par = findPlanById(p.carriedFrom);
+  return !!(par && par.date === p.date);
+}
+/* 复盘口径的计划：顺延段按「这一段做了多少」，原计划按整体完成度 */
+function reviewPlans(range){
+  return data.plans.filter(function(p){
+    if(p.date < range.start || p.date > range.end) return false;
+    return !isSameDayCarry(p);
+  });
+}
+function reviewComp(p){
+  if(!p) return 0;
+  if(p.partCompletion != null) return clampPct(p.partCompletion);
+  return clampPct(p.completion);
 }
 function findCourse(id){
   for(var i=0;i<data.courses.length;i++){ if(data.courses[i].id === id) return data.courses[i]; }
@@ -2594,13 +3910,21 @@ function getReflection(week){
   return null;
 }
 function renderReview(){
-  var week = data.currentWeek;
+  var week = (reviewWeek == null) ? data.currentWeek : reviewWeek;
   document.getElementById("review-week").textContent = "第 " + week + " 周";
-  var range = weekDateRange();
-  var plans = data.plans.filter(function(p){ return p.date >= range.start && p.date <= range.end; });
-  var done = plans.filter(function(p){ return (p.completion || 0) >= 100; }).length;
+  var range = weekDateRange(week);
+  var isPast = (reviewWeek != null && reviewWeek !== data.currentWeek);
+  var wkName = isPast ? ("第 " + week + " 周") : "本周";
+  var ct = document.getElementById("review-chart-title");
+  if(ct) ct.textContent = wkName + "完成度（按天）";
+  var rt = document.getElementById("review-refl-title");
+  if(rt) rt.textContent = wkName + "反思";
+  var sb = document.getElementById("btn-save-reflection");
+  if(sb) sb.textContent = "保存" + wkName + "反思";
+  var plans = reviewPlans(range);
+  var done = plans.filter(function(p){ return reviewComp(p) >= 100; }).length;
   var rate = plans.length ? Math.round(done / plans.length * 100) : 0;
-  var avg = plans.length ? Math.round(plans.reduce(function(s, p){ return s + (p.completion || 0); }, 0) / plans.length) : 0;
+  var avg = plans.length ? Math.round(plans.reduce(function(s, p){ return s + reviewComp(p); }, 0) / plans.length) : 0;
   var weekCourses = data.courses.filter(function(c){ return courseActiveInWeek(c, week); });
   var preDone = 0, postDone = 0;
   weekCourses.forEach(function(c){
@@ -2610,7 +3934,7 @@ function renderReview(){
   });
   var showCheck = data.showCheck !== false;
   var summaryHtml =
-    '<div class="rs"><div class="rs-v">' + plans.length + '</div><div class="rs-l">本周计划</div></div>' +
+    '<div class="rs"><div class="rs-v">' + plans.length + '</div><div class="rs-l">' + wkName + '计划</div></div>' +
     '<div class="rs"><div class="rs-v">' + rate + '%</div><div class="rs-l">完成率</div></div>' +
     '<div class="rs"><div class="rs-v">' + avg + '%</div><div class="rs-l">平均完成度</div></div>';
   if(showCheck){
@@ -2631,8 +3955,8 @@ function renderReviewChart(range){
   for(var i = 0; i < 7; i++){
     var d = parseDate(range.start); d.setDate(d.getDate() + i);
     var ds = toDateStr(d);
-    var plans = data.plans.filter(function(p){ return p.date === ds; });
-    var avg = plans.length ? Math.round(plans.reduce(function(s, p){ return s + (p.completion || 0); }, 0) / plans.length) : 0;
+    var plans = reviewPlans({start: ds, end: ds});
+    var avg = plans.length ? Math.round(plans.reduce(function(s, p){ return s + reviewComp(p); }, 0) / plans.length) : 0;
     var color = avg >= 80 ? "#16a34a" : "#3b82f6";
     html += '<div class="bar-row"><span class="bar-label">' + (WD[weekdayOf(ds)] || "") + '</span>' +
       '<div class="bar-track"><div class="bar-fill" style="width:' + avg + '%;background:' + color + '"></div></div>' +
@@ -2643,10 +3967,10 @@ function renderReviewChart(range){
 function renderCheckins(week, weekCourses){
   var el = document.getElementById("review-checkins");
   if(!weekCourses.length){
-    el.innerHTML = '<div class="empty-mini">本周没有课程，无法进行课前/课后 check。</div>';
+    el.innerHTML = '<div class="empty-mini">' + ((week === data.currentWeek) ? "本周" : ("第 " + week + " 周")) + '没有课程，无法进行课前/课后 check。</div>';
     return;
   }
-  var range = weekDateRange();
+  var range = weekDateRange(week);
   var html = "";
   weekCourses.slice().sort(function(a,b){ return (a.day - b.day) || (a.periods[0] - b.periods[0]); }).forEach(function(c){
     var ci = getCheckin(c.id, week);
@@ -2674,8 +3998,9 @@ function openCheckSheet(courseId, kind){
   checkKind = kind;
   document.getElementById("check-title").textContent = kind === "pre" ? "课前回顾" : "课后总结";
   document.getElementById("check-label").textContent = kind === "pre" ? "课前简要回顾上周内容" : "课后简要总结本节课";
-  document.getElementById("check-course").textContent = c.name + " · " + (WD[c.day] || "") + " 第 " + periodsStr(c.periods) + " 节 · 第 " + data.currentWeek + " 周";
-  var ci = getCheckin(courseId, data.currentWeek);
+  var cw = (reviewWeek == null) ? data.currentWeek : reviewWeek;
+  document.getElementById("check-course").textContent = c.name + " · " + (WD[c.day] || "") + " 第 " + periodsStr(c.periods) + " 节 · 第 " + cw + " 周";
+  var ci = getCheckin(courseId, cw);
   document.getElementById("check-text").value = ci ? (kind === "pre" ? (ci.pre || "") : (ci.post || "")) : "";
   document.getElementById("check-sheet").classList.add("open");
   document.getElementById("check-backdrop").classList.add("open");
@@ -2685,10 +4010,11 @@ function closeCheckSheet(){
   document.getElementById("check-backdrop").classList.remove("open");
 }
 function saveCheck(){
+  var cw = (reviewWeek == null) ? data.currentWeek : reviewWeek;
   var text = document.getElementById("check-text").value.trim();
-  var ci = getCheckin(checkCourseId, data.currentWeek);
+  var ci = getCheckin(checkCourseId, cw);
   if(!ci){
-    ci = {id: uid(), courseId: checkCourseId, week: data.currentWeek, pre: "", post: ""};
+    ci = {id: uid(), courseId: checkCourseId, week: cw, pre: "", post: ""};
     data.checkins.push(ci);
   }
   if(checkKind === "pre") ci.pre = text; else ci.post = text;
@@ -2696,17 +4022,18 @@ function saveCheck(){
   toast(checkKind === "pre" ? "课前回顾已保存" : "课后总结已保存");
 }
 function saveReflection(){
+  var w = (reviewWeek == null) ? data.currentWeek : reviewWeek;
   var text = document.getElementById("reflection-text").value.trim();
-  var refl = getReflection(data.currentWeek);
+  var refl = getReflection(w);
   if(!refl){
-    refl = {week: data.currentWeek, text: "", updatedAt: Date.now()};
+    refl = {week: w, text: "", updatedAt: Date.now()};
     data.weeklyReflections.push(refl);
   }
   refl.text = text;
   refl.updatedAt = Date.now();
   saveData();
   document.getElementById("reflection-saved").textContent = "已保存于 " + new Date(refl.updatedAt).toLocaleString("zh-CN");
-  toast("本周反思已保存");
+  toast((w === data.currentWeek ? "本周" : ("第 " + w + " 周")) + "反思已保存");
 }
 /* ============ 课程操作（记录 / 翘课） ============ */
 var caCourseId = null, caDate = null;
@@ -2824,18 +4151,26 @@ function setSkipAll(skip){
 }
 
 /* ============ 计划 Sheet ============ */
+/* 一个计划 = 一个时段段；多段计划会拆成多张卡片，共享 groupId，各段完成度分别记 */
 function openPlanSheet(plan, date, presetPeriods){
   editingPlanId = plan ? plan.id : null;
   document.getElementById("ps-title").textContent = plan ? "编辑计划" : "添加计划";
   document.getElementById("btn-ps-delete").style.display = plan ? "flex" : "none";
-  document.getElementById("ps-date").value = plan ? plan.date : (date || viewDate || todayStr());
+  var d0 = plan ? plan.date : (date || viewDate || todayStr());
+  document.getElementById("ps-date").value = d0;
   document.getElementById("ps-task").value = plan ? plan.task : "";
   selectedPlanColor = (plan && plan.color) ? plan.color : "";
   renderPlanColors();
-  selectedPeriods = plan ? plan.periods.slice() : (presetPeriods && presetPeriods.length ? presetPeriods.slice() : []);
-  renderPeriodButtons();
+  if(plan){
+    planSegs = [{date: plan.date, periods: (plan.periods || []).slice(), t: planT(plan)}];
+  } else if(presetPeriods && presetPeriods.length){
+    planSegs = [{date: d0, periods: presetPeriods.slice(), t: periodsToT(presetPeriods, slotMinutes(data.slots))}];
+  } else {
+    planSegs = [];
+  }
+  renderPlanSegChips();
   var est = plan && plan.estMin != null ? plan.estMin : autoEstMinutes();
-  document.getElementById("ps-est").value = est;
+  document.getElementById("ps-est").value = est || "";
   document.getElementById("ps-act").value = plan && plan.actMin != null ? plan.actMin : "";
   var comp = plan ? (Number(plan.completion) || 0) : 0;
   document.getElementById("ps-completion").value = comp;
@@ -2864,6 +4199,345 @@ function closePlanSheet(){
   document.getElementById("plan-backdrop").classList.remove("open");
   editingPlanId = null;
 }
+/* ---------- 时段段（一张卡片一段） ---------- */
+var SEG_GAP_MAX = 29;   /* 两段之间空出来的时间不到 30 分钟（含重叠）就算同一段；正好 30 分钟就断成两张卡片 */
+function segLength(seg){
+  if(!seg) return 0;
+  var t = seg.t;
+  if(t && t.length === 2 && t[1] > t[0]) return t[1] - t[0];
+  var r = rangeOfPeriods(seg.periods);
+  return r ? minutesOfRange(r) : 0;
+}
+function segsMinutes(segs){
+  var n = 0;
+  (segs || []).forEach(function(x){ n += segLength(x); });
+  return n;
+}
+function segRangeText(seg){
+  var t = seg.t;
+  if(!t || t.length !== 2 || t[1] <= t[0]){
+    var r = rangeOfPeriods(seg.periods);
+    return r ? (r.start + "–" + r.end) : "时段待重排";
+  }
+  return fmtMin(t[0]) + "–" + fmtMin(t[1]);
+}
+function segPeriodText(seg){
+  if(!seg.periods || !seg.periods.length) return slotMode() === "grad" ? "" : "课表外 · ";
+  if(slotMode() === "grad") return "";
+  return "第 " + periodsStr(seg.periods) + " 节 · ";
+}
+function cmpSeg(a, b){
+  if(a.date !== b.date) return a.date < b.date ? -1 : 1;
+  var ta = a.t || [0, 0], tb = b.t || [0, 0];
+  return ta[0] - tb[0];
+}
+/* 两段时间挨得太近就算同一段：重叠，或中间空出来的时间不超过 SEG_GAP_MAX（29）分钟 */
+function segsTouch(a, b){
+  if(!a || !b || a.date !== b.date) return false;
+  if(!a.t || a.t.length !== 2 || !b.t || b.t.length !== 2) return false;
+  var gap = Math.max(a.t[0], b.t[0]) - Math.min(a.t[1], b.t[1]);
+  return gap <= SEG_GAP_MAX;
+}
+function segMember(x){
+  return {date: x.date, periods: (x.periods || []).slice(), t: x.t ? x.t.slice() : null,
+    _src: x._src, _id: x._id};
+}
+/* 把同一天里重叠或首尾相接的段并成一段：起止取并集，节次标签看起点那一段 */
+function mergeSegs(segs){
+  var sorted = (segs || []).slice().sort(cmpSeg);
+  var out = [];
+  sorted.forEach(function(sg){
+    var last = out[out.length - 1];
+    if(last && segsTouch(last, sg)){
+      var startSeg = (sg.t[0] < last.t[0]) ? sg : last;
+      var per;
+      if(last.periods.length && sg.periods.length){
+        per = last.periods.slice();
+        sg.periods.forEach(function(pp){ if(per.indexOf(pp) < 0) per.push(pp); });
+        per.sort(function(a, b){ return a - b; });
+      } else {
+        per = startSeg.periods.slice();
+      }
+      last.t = [Math.min(last.t[0], sg.t[0]), Math.max(last.t[1], sg.t[1])];
+      last.periods = per;
+      last._members = last._members.concat([segMember(sg)]);
+      if(!last._src && sg._src) last._src = sg._src;
+      return;
+    }
+    out.push({date: sg.date, periods: (sg.periods || []).slice(),
+      t: sg.t ? sg.t.slice() : null, _src: sg._src, _id: sg._id,
+      _members: [segMember(sg)]});
+  });
+  return out;
+}
+function segChipHTML(seg, idx, delAttr){
+  return '<div class="seg-chip"><div class="seg-txt">' +
+    '<span class="seg-day">' + esc(seg.date.slice(5)) + " " + (WD[weekdayOf(seg.date)] || "") + '</span>' +
+    esc(segPeriodText(seg) + segRangeText(seg)) +
+    '<span class="seg-min">' + segLength(seg) + ' 分钟</span></div>' +
+    '<button type="button" class="seg-x" ' + delAttr + '="' + idx + '">✕</button></div>';
+}
+function renderSegChips(listId, segs, emptyText){
+  var box = document.getElementById(listId);
+  if(!box) return;
+  if(!segs || !segs.length){
+    box.innerHTML = '<div class="seg-empty">' + esc(emptyText || "还没选时段") + '</div>';
+    return;
+  }
+  box.innerHTML = segs.map(function(seg, i){ return segChipHTML(seg, i, "data-seg-del"); }).join("");
+}
+function renderPlanSegChips(){
+  renderSegChips("ps-seg-chips", planSegs, "还没选时段，点下面按钮选");
+  var dEl = document.getElementById("ps-date");
+  if(dEl){
+    if(planSegs.length){
+      dEl.value = planSegs[0].date;
+      dEl.readOnly = planSegs.length > 1;
+      dEl.style.opacity = planSegs.length > 1 ? ".55" : "";
+    } else { dEl.readOnly = false; dEl.style.opacity = ""; }
+  }
+  var estEl = document.getElementById("ps-est");
+  var hintEl = document.getElementById("ps-est-hint");
+  if(estEl){
+    if(planSegs.length > 1){
+      estEl.readOnly = true;
+      estEl.style.opacity = ".55";
+      estEl.value = segsMinutes(planSegs) || "";
+      if(hintEl) hintEl.textContent = "多段合计 " + segsMinutes(planSegs) + " 分钟，保存时按各段时长比例分到每张卡片。";
+    } else {
+      estEl.readOnly = false;
+      estEl.style.opacity = "";
+      if(hintEl) hintEl.textContent = "默认按首节开始至末节结束自动计算，可手动修改。";
+    }
+  }
+}
+function removePlanSeg(idx){
+  planSegs.splice(idx, 1);
+  renderPlanSegChips();
+  renderConflict();
+}
+function removeCarrySeg(idx){
+  carrySegs.splice(idx, 1);
+  renderCarrySegChips();
+}
+function renderCarrySegChips(){
+  renderSegChips("carry-seg-chips", carrySegs, "还没选顺延时段");
+}
+
+/* ---------- 时段选择器（可跨天、可课表外） ---------- */
+function openSegPicker(opts){
+  opts = opts || {};
+  var segs = (opts.segs || []).map(function(x){
+    return {date: x.date, periods: (x.periods || []).slice(), t: (x.t && x.t.length === 2) ? x.t.slice() : null};
+  });
+  var start = opts.minDate || todayStr();
+  segs.forEach(function(x){ if(x.date < start) start = x.date; });
+  segPick = {
+    title: opts.title || "选择时段",
+    mode: "slot",
+    start: start,
+    days: opts.days || 14,
+    cursor: opts.baseDate || (segs.length ? segs[0].date : start),
+    picked: {},
+    extra: [],
+    onOk: opts.onOk || null
+  };
+  segs.forEach(function(x){
+    if(x.periods && x.periods.length){
+      var arr = segPick.picked[x.date] || (segPick.picked[x.date] = []);
+      x.periods.forEach(function(pp){ if(arr.indexOf(pp) < 0) arr.push(pp); });
+      arr.sort(function(a, b){ return a - b; });
+    } else {
+      segPick.extra.push({_id: uid(), date: x.date, periods: [], t: x.t});
+    }
+  });
+  if(segPick.cursor < segPick.start) segPick.cursor = segPick.start;
+  document.getElementById("ms-title").textContent = segPick.title;
+  document.getElementById("ms-t-start").value = "";
+  document.getElementById("ms-t-end").value = "";
+  document.getElementById("ms-sheet").classList.add("open");
+  document.getElementById("ms-backdrop").classList.add("open");
+  renderSegPicker();
+}
+function closeSegPicker(){
+  document.getElementById("ms-sheet").classList.remove("open");
+  document.getElementById("ms-backdrop").classList.remove("open");
+  segPick = null;
+}
+function segsFromPicked(picked){
+  var out = [];
+  Object.keys(picked || {}).forEach(function(d){
+    var ps = picked[d].slice().sort(function(a, b){ return a - b; });
+    if(!ps.length) return;
+    var cur = [];
+    function flush(){
+      if(!cur.length) return;
+      out.push({date: d, periods: cur.slice(), t: periodsToT(cur, slotMinutes(data.slots))});
+      cur = [];
+    }
+    ps.forEach(function(pp){
+      if(!cur.length){ cur = [pp]; return; }
+      var prev = cur[cur.length - 1];
+      var sp = slotOf(prev), sc = slotOf(pp);
+      var gap = (sp && sc) ? (hm(sc.s) - hm(sp.e)) : 9999;
+      if(pp === prev + 1 && gap <= SEG_GAP_MAX) cur.push(pp);
+      else { flush(); cur = [pp]; }
+    });
+    flush();
+  });
+  out.sort(cmpSeg);
+  return out;
+}
+function segPickerResult(){
+  var out = segsFromPicked(segPick.picked);
+  out.forEach(function(x){ x._src = "picked"; });
+  segPick.extra.forEach(function(x){
+    out.push({date: x.date, periods: [], t: x.t.slice(), _src: "extra", _id: x._id});
+  });
+  /* 节次选的和按时间填的可能重叠（第 14 节 21:35–22:20 与 22:00–23:00），并成一段 */
+  return mergeSegs(out);
+}
+function renderSegPicker(){
+  if(!segPick) return;
+  var btns = document.querySelectorAll("#ms-mode [data-msmode]");
+  for(var i = 0; i < btns.length; i++) btns[i].classList.toggle("on", btns[i].dataset.msmode === segPick.mode);
+  document.getElementById("ms-slot-wrap").style.display = segPick.mode === "slot" ? "block" : "none";
+  document.getElementById("ms-clock-wrap").style.display = segPick.mode === "clock" ? "block" : "none";
+  renderSegDays();
+  renderSegGrid();
+  renderSegSummary();
+}
+function renderSegDays(){
+  var box = document.getElementById("ms-days");
+  var counts = {};
+  segPickerResult().forEach(function(x){ counts[x.date] = (counts[x.date] || 0) + 1; });
+  var html = "";
+  for(var i = 0; i < segPick.days; i++){
+    var d = parseDate(segPick.start); d.setDate(d.getDate() + i);
+    var ds = toDateStr(d);
+    var n = counts[ds] || 0;
+    var nm = (ds === todayStr()) ? "今天" : (WD[weekdayOf(ds)] || "");
+    html += '<button type="button" class="ms-day' + (ds === segPick.cursor ? " active" : "") + '" data-ms-day="' + ds + '">' +
+      nm + '<b>' + ds.slice(5).replace("-", "/") + '</b>' + (n ? '<span class="ms-n">' + n + ' 段</span>' : '') + '</button>';
+  }
+  box.innerHTML = html;
+  var act = box.querySelector(".ms-day.active");
+  if(act && act.scrollIntoView) { try{ act.scrollIntoView({block: "nearest", inline: "center"}); }catch(e){} }
+}
+function renderSegGrid(){
+  var box = document.getElementById("ms-periods");
+  if(!box) return;
+  var ds = segPick.cursor;
+  var planSet = plansOn(ds, editingPlanId);
+  box.className = "periods" + (perRow() > 1 ? " grad" : "");
+  box.innerHTML = periodPickerHTML(segPick.picked[ds] || [], ds, planSet, "pbtn", "data-ms-p");
+}
+function renderSegSummary(){
+  var list = segPickerResult();
+  var box = document.getElementById("ms-seg-list");
+  if(!list.length){
+    box.innerHTML = '<div class="seg-empty">还没选时段</div>';
+    document.getElementById("ms-total").textContent = "";
+    return;
+  }
+  box.innerHTML = list.map(function(x, i){
+    return '<div class="seg-chip"><div class="seg-txt">' +
+      '<span class="seg-day">' + esc(x.date.slice(5)) + " " + (WD[weekdayOf(x.date)] || "") + '</span>' +
+      esc(segPeriodText(x) + segRangeText(x)) +
+      '<span class="seg-min">' + segLength(x) + ' 分钟</span></div>' +
+      '<button type="button" class="seg-x" data-ms-del="' + i + '">✕</button></div>';
+  }).join("");
+  var total = 0; list.forEach(function(x){ total += segLength(x); });
+  document.getElementById("ms-total").textContent = "共 " + list.length + " 段 · " + total + " 分钟";
+}
+function segPickerToggle(p){
+  var ds = segPick.cursor;
+  var arr = (segPick.picked[ds] || []).slice();
+  var k = arr.indexOf(p);
+  if(k >= 0) arr.splice(k, 1);
+  else {
+    arr.push(p);
+    var cs = coursePeriodsOnDay(weekdayOf(ds), ds);
+    var sk = skippedPeriodsOn(ds);
+    var ps = plansOn(ds, editingPlanId);
+    if(sk[p]) quickToast("翘课有利于管理时间");
+    else if(cs[p] || ps[p]) quickToast("一心二用也是一石二鸟");
+  }
+  arr.sort(function(a, b){ return a - b; });
+  if(arr.length) segPick.picked[ds] = arr; else delete segPick.picked[ds];
+  renderSegPicker();
+}
+function segPickerDelete(i){
+  var list = segPickerResult();
+  var it = list[i];
+  if(!it) return;
+  /* 合并出来的段可能同时来自节次勾选和按时间填的，两边一起删 */
+  (it._members || [it]).forEach(function(m){
+    if(m._src === "extra"){
+      segPick.extra = segPick.extra.filter(function(x){ return x._id !== m._id; });
+    } else {
+      var arr = (segPick.picked[m.date] || []).slice();
+      (m.periods || []).forEach(function(pp){
+        var k = arr.indexOf(pp);
+        if(k >= 0) arr.splice(k, 1);
+      });
+      if(arr.length) segPick.picked[m.date] = arr; else delete segPick.picked[m.date];
+    }
+  });
+  renderSegPicker();
+}
+function segPickerAddClock(){
+  var sv = document.getElementById("ms-t-start").value;
+  var ev = document.getElementById("ms-t-end").value;
+  if(!sv || !ev){ toast("请填写开始与结束时间"); return; }
+  var a = hm(sv), b = hm(ev);
+  if(b <= a) b += 1440;
+  if(b > 1440){ toast("一段不能跨过零点，请拆成两段"); return; }
+  if(b - a < 5){ toast("时间太短了"); return; }
+  segPick.extra.push({_id: uid(), date: segPick.cursor, periods: [], t: [a, b]});
+  renderSegPicker();
+  quickToast("已加入 " + fmtMin(a) + "–" + fmtMin(b));
+}
+function segPickerOk(){
+  var segs = segPickerResult().map(function(x){
+    return {date: x.date, periods: (x.periods || []).slice(), t: x.t ? x.t.slice() : null};
+  });
+  var cb = segPick.onOk;
+  closeSegPicker();
+  if(cb) cb(segs);
+}
+function openPlanSegPicker(){
+  var base = document.getElementById("ps-date").value || todayStr();
+  var minD = (base < todayStr()) ? base : todayStr();
+  openSegPicker({
+    title: "选择时段（可跨天）",
+    baseDate: planSegs.length ? planSegs[0].date : base,
+    segs: planSegs,
+    minDate: minD,
+    days: 21,
+    onOk: function(segs){
+      planSegs = segs;
+      renderPlanSegChips();
+      renderConflict();
+      if(!segs.length) document.getElementById("ps-date").readOnly = false;
+    }
+  });
+}
+function openCarrySegPicker(){
+  var base = todayStr();
+  openSegPicker({
+    title: "选择顺延时段",
+    baseDate: carrySegs.length ? carrySegs[0].date : base,
+    segs: carrySegs,
+    minDate: base,
+    days: 14,
+    onOk: function(segs){
+      carrySegs = segs;
+      renderCarrySegChips();
+    }
+  });
+}
+
 function periodPickerHTML(selected, date, planSet, cls, attr){
   cls = cls || "pbtn"; attr = attr || "data-p";
   var courseSet = coursePeriodsOnDay(weekdayOf(date), date);
@@ -2891,47 +4565,31 @@ function periodPickerHTML(selected, date, planSet, cls, attr){
   for(var q = 1; q <= total; q++) html += btn(q);
   return html;
 }
-function renderPeriodButtons(){
-  var container = document.getElementById("ps-periods");
-  var date = document.getElementById("ps-date").value || todayStr();
-  var planSet = plansOn(date, editingPlanId);
-  container.className = "periods" + (perRow() > 1 ? " grad" : "");
-  container.innerHTML = periodPickerHTML(selectedPeriods, date, planSet, "pbtn", "data-p");
-}
 function renderConflict(){
-  var date = document.getElementById("ps-date").value || todayStr();
-  var conflicts = conflictCourses(date, selectedPeriods);
   var el = document.getElementById("ps-conflict");
-  if(conflicts.length){
+  if(!el) return;
+  var names = {};
+  planSegs.forEach(function(seg){
+    conflictCourses(seg.date, seg.periods || []).forEach(function(c){ names[c.name] = 1; });
+  });
+  var arr = Object.keys(names);
+  if(arr.length){
     el.style.display = "block";
-    el.textContent = "⚠️ 与课程冲突：" + conflicts.map(function(c){ return c.name; }).join("、");
+    el.textContent = "⚠️ 与课程冲突：" + arr.join("、");
   } else { el.style.display = "none"; }
-}
-function togglePeriod(p){
-  var idx = selectedPeriods.indexOf(p);
-  if(idx >= 0) selectedPeriods.splice(idx, 1);
-  else {
-    var date = document.getElementById("ps-date").value || todayStr();
-    if(skippedPeriodsOn(date)[p]) quickToast("翘课有利于管理时间");
-    else if(coursePeriodsOnDay(weekdayOf(date), date)[p] || plansOn(date, editingPlanId)[p]) quickToast("一心二用也是一石二鸟");
-    selectedPeriods.push(p);
-  }
-  selectedPeriods.sort(function(a,b){ return a-b; });
-  renderPeriodButtons();
-  document.getElementById("ps-est").value = autoEstMinutes();
-  renderConflict();
 }
 function savePlan(){
   var task = document.getElementById("ps-task").value.trim();
-  var date = document.getElementById("ps-date").value;
   if(!task){ toast("请填写任务名称"); return; }
-  if(!date){ toast("请选择日期"); return; }
-  if(!selectedPeriods.length){ toast("请选择占用节次"); return; }
+  if(!planSegs.length){ toast("请先选择时段"); return; }
+  var segs = mergeSegs(planSegs);   /* 重叠/挨太近的并在同一段，避免同一段被记两次 */
+  var first = segs[0];
+  var totalSpan = segsMinutes(segs);
   var estRaw = document.getElementById("ps-est").value.trim();
-  var estMin = estRaw === "" ? autoEstMinutes() : (parseInt(estRaw,10) || 0);
+  var estTotal = estRaw === "" ? totalSpan : (parseInt(estRaw, 10) || 0);
   var actRaw = document.getElementById("ps-act").value.trim();
-  var actMin = actRaw === "" ? null : (parseInt(actRaw,10) || 0);
-  var completion = parseInt(document.getElementById("ps-completion").value,10) || 0;
+  var actMin = actRaw === "" ? null : (parseInt(actRaw, 10) || 0);
+  var completion = parseInt(document.getElementById("ps-completion").value, 10) || 0;
   var occupied = false;
   if(editingPlanId){ var _occ = findPlanById(editingPlanId); if(_occ) occupied = !!_occ.occupied; }
   var remindStart = document.getElementById("ps-remind-start").checked;
@@ -2940,37 +4598,65 @@ function savePlan(){
   var remindProgress = document.getElementById("ps-remind-progress").checked;
   var planColor = selectedPlanColor || "";
   if(remindDdl && !ddlAt){ toast("请设置 DDL 提醒时间"); return; }
-  var periods = selectedPeriods.slice().sort(function(a,b){ return a-b; });
-  var savedId = null;
-  if(editingPlanId){
-    var p = null;
-    for(var i=0;i<data.plans.length;i++){ if(data.plans[i].id === editingPlanId){ p = data.plans[i]; break; } }
-    if(p){
-      var isCarryPlan = p.partCompletion != null;
-      /* 只改了文字、没动时段时保留原来的真实时间，避免被重新吸附到格子上 */
-      var samePer = (p.periods || []).join(",") === periods.join(",");
-      p.date = date; p.task = task; p.periods = periods; p.estMin = estMin; p.actMin = actMin;
-      if(!samePer || !p.t) p.t = periodsToT(periods, slotMinutes(data.slots));
-      p.completion = completion; p.occupied = occupied;
-      p.remindStart = remindStart; p.remindDdl = remindDdl; p.remindProgress = remindProgress; p.ddlAt = remindDdl ? ddlAt : null;
-      if(planColor) p.color = planColor; else delete p.color;
-      if(isCarryPlan){
-        p.partStartComp = carryPartStart;
-        p.partCompletion = clampPct(document.getElementById("ps-part").value);
-        p.completion = compFromPart(carryPartStart, p.partCompletion);
-      } else {
-        p.completion = completion;
-      }
-      syncPlanDescendants(p);
-      savedId = p.id;
-    }
-  } else {
-    var np = {id:uid(), date:date, periods:periods, t:periodsToT(periods, slotMinutes(data.slots)), task:task, estMin:estMin, actMin:actMin,
-      completion:completion, problem:"", reflection:"", adjustment:"", occupied:occupied, remindStart:remindStart, remindDdl:remindDdl, remindProgress:remindProgress, ddlAt:remindDdl ? ddlAt : null, createdAt:Date.now(), color: planColor};
-    data.plans.push(np);
-    savedId = np.id;
+  function estOf(i){
+    if(segs.length === 1) return estTotal;
+    if(totalSpan <= 0) return Math.round(estTotal / segs.length);
+    var v = Math.round(estTotal * segLength(segs[i]) / totalSpan);
+    return Math.max(0, v);
   }
-  saveData(); refreshAll(); closePlanSheet(); toast("已保存");
+  var basePlan = editingPlanId ? findPlanById(editingPlanId) : null;
+  var groupId = null, groupBase = 0;
+  if(basePlan){
+    groupBase = Number(basePlan.groupBase) || 0;
+    groupId = basePlan.groupId || (segs.length > 1 ? uid() : null);
+  } else if(segs.length > 1){
+    groupId = uid();
+  }
+  if(basePlan){
+    var isCarryPlan = basePlan.partCompletion != null;
+    basePlan.date = first.date;
+    basePlan.periods = (first.periods || []).slice();
+    basePlan.t = first.t ? first.t.slice() : periodsToT(first.periods, slotMinutes(data.slots));
+    basePlan.task = task;
+    basePlan.estMin = estOf(0);
+    basePlan.actMin = actMin;
+    basePlan.occupied = occupied;
+    basePlan.remindStart = remindStart; basePlan.remindDdl = remindDdl; basePlan.remindProgress = remindProgress;
+    basePlan.ddlAt = remindDdl ? ddlAt : null;
+    if(planColor) basePlan.color = planColor; else delete basePlan.color;
+    if(groupId) basePlan.groupId = groupId; else delete basePlan.groupId;
+    if(isCarryPlan){
+      basePlan.partStartComp = carryPartStart;
+      basePlan.partCompletion = clampPct(document.getElementById("ps-part").value);
+      basePlan.completion = compFromPart(carryPartStart, basePlan.partCompletion);
+    } else {
+      basePlan.completion = completion;
+    }
+    syncPlanDescendants(basePlan);
+  } else {
+    var np = {id: uid(), date: first.date, periods: (first.periods || []).slice(),
+      t: first.t ? first.t.slice() : periodsToT(first.periods, slotMinutes(data.slots)),
+      task: task, estMin: estOf(0), actMin: actMin, completion: completion,
+      problem: "", reflection: "", adjustment: "", occupied: occupied,
+      remindStart: remindStart, remindDdl: remindDdl, remindProgress: remindProgress,
+      ddlAt: remindDdl ? ddlAt : null, createdAt: Date.now(), color: planColor};
+    if(groupId){ np.groupId = groupId; np.groupBase = groupBase; }
+    data.plans.push(np);
+  }
+  /* 多出来的段：各自成为同组的一张卡片，完成度从 0 开始单独记 */
+  for(var i = 1; i < segs.length; i++){
+    var sp = segs[i];
+    var cp = {id: uid(), date: sp.date, periods: (sp.periods || []).slice(),
+      t: sp.t ? sp.t.slice() : periodsToT(sp.periods, slotMinutes(data.slots)),
+      task: task, estMin: estOf(i), actMin: null, completion: 0,
+      problem: "", reflection: "", adjustment: "", occupied: false,
+      remindStart: false, remindDdl: false, remindProgress: false, ddlAt: null,
+      createdAt: Date.now(), color: planColor, groupId: groupId};
+    if(groupBase) cp.groupBase = groupBase;
+    data.plans.push(cp);
+  }
+  saveData(); refreshAll(); closePlanSheet();
+  toast(segs.length > 1 ? ("已保存 " + segs.length + " 段") : "已保存");
 }
 function deletePlan(){
   var id = editingPlanId;
@@ -3070,6 +4756,25 @@ function findFreeSegments(periods){
   segs.push(cur);
   return segs;
 }
+/* 推荐时只取「刚好够用」的几节，别把一整天都占上 */
+function trimSegToNeed(seg, need){
+  if(!seg || !seg.length) return null;
+  var acc = [], total = 0;
+  for(var i = 0; i < seg.length; i++){
+    var sl = slotOf(seg[i]);
+    if(!sl) continue;
+    if(acc.length){
+      var prev = slotOf(acc[acc.length - 1]);
+      var gap = hm(sl.s) - hm(prev.e);
+      if(gap > SEG_GAP_MAX) break;
+      total += Math.max(0, gap);
+    }
+    total += hm(sl.e) - hm(sl.s);
+    acc.push(seg[i]);
+    if(total >= need) return acc;
+  }
+  return total >= need ? acc : null;
+}
 function recommendCarryover(plan){
   var remaining = calcRemainingMinutes(plan);
   if(remaining < 15) return null;
@@ -3082,10 +4787,9 @@ function recommendCarryover(plan){
       var day = weekdayOf(ds);
       var prefer = (day === srcDay) ? 0 : 1;
       findFreeSegments(freePeriodsOn(ds)).forEach(function(seg){
-        var range = rangeOfPeriods(seg);
-        if(range && minutesOfRange(range) >= remaining){
-          candidates.push({date: ds, periods: seg, prefer: prefer, offset: offset});
-        }
+        var fit = trimSegToNeed(seg, remaining);
+        if(!fit) return;
+        candidates.push({date: ds, periods: fit, prefer: prefer, offset: offset});
       });
     }
     candidates.sort(function(a,b){ return (a.prefer - b.prefer) || (a.offset - b.offset); });
@@ -3124,11 +4828,10 @@ function openCarryoverSheet(planId){
   } else {
     recoEl.innerHTML = "未来 7 天未找到足够的空闲时段，可手动选择顺延时段。";
   }
-  var defDate = reco ? reco.date : (function(){ var d = new Date(); d.setDate(d.getDate() + 1); return toDateStr(d); })();
-  carrySelectedPeriods = reco ? reco.periods.slice() : [];
-  document.getElementById("carry-date").value = defDate;
-  renderCarryPeriods();
-  renderCarryDays();
+  carrySegs = reco
+    ? [{date: reco.date, periods: reco.periods.slice(), t: periodsToT(reco.periods, slotMinutes(data.slots))}]
+    : [];
+  renderCarrySegChips();
   document.getElementById("carry-sheet").classList.add("open");
   document.getElementById("carry-backdrop").classList.add("open");
 }
@@ -3137,67 +4840,49 @@ function closeCarryoverSheet(){
   document.getElementById("carry-backdrop").classList.remove("open");
   carrySourceId = null;
 }
-function renderCarryPeriods(){
-  var container = document.getElementById("carry-periods");
-  var date = document.getElementById("carry-date").value || todayStr();
-  var planSet = {};
-  data.plans.forEach(function(pl){ if(pl.date === date){ pl.periods.forEach(function(pp){ planSet[pp] = 1; }); } });
-  container.className = "periods" + (perRow() > 1 ? " grad" : "");
-  container.innerHTML = periodPickerHTML(carrySelectedPeriods, date, planSet, "pbtn", "data-carry-p");
-}
-function renderCarryDays(){
-  var container = document.getElementById("carry-days");
-  var cur = document.getElementById("carry-date").value;
-  var names = {0:"今天", 1:"明天", 2:"后天", 3:"大后天"};
-  var html = "";
-  for(var i = 0; i <= 3; i++){
-    var d = new Date(); d.setDate(d.getDate() + i);
-    var ds = toDateStr(d);
-    var wd = WD[weekdayOf(ds)] || "";
-    html += '<button type="button" class="carry-day' + (ds === cur ? " active" : "") + '" data-carry-day="' + ds + '">' +
-      '<b>' + names[i] + '</b>' + wd + ' ' + ds.slice(5) + '</button>';
-  }
-  container.innerHTML = html;
-}
-function toggleCarryPeriod(p){
-  var idx = carrySelectedPeriods.indexOf(p);
-  if(idx >= 0){
-    carrySelectedPeriods.splice(idx, 1);
-  } else {
-    var cd = document.getElementById("carry-date").value || todayStr();
-    var cs = coursePeriodsOnDay(weekdayOf(cd), cd);
-    var skSet = skippedPeriodsOn(cd);
-    var ps = {};
-    data.plans.forEach(function(pl){ if(pl.date === cd){ pl.periods.forEach(function(x){ ps[x] = 1; }); } });
-    if(skSet[p]) quickToast("翘课有利于管理时间");
-    else if(cs[p] || ps[p]) quickToast("一心二用也是一石二鸟");
-    carrySelectedPeriods.push(p);
-  }
-  carrySelectedPeriods.sort(function(a,b){ return a-b; });
-  renderCarryPeriods();
-}
 function applyCarryover(){
-  var date = document.getElementById("carry-date").value;
-  if(!date){ toast("请选择顺延日期"); return; }
-  if(!carrySelectedPeriods.length){ toast("请选择顺延节次"); return; }
-  var src = null;
-  for(var i = 0; i < data.plans.length; i++){ if(data.plans[i].id === carrySourceId){ src = data.plans[i]; break; } }
+  if(!carrySegs.length){ toast("请选择顺延时段"); return; }
+  var src = findPlanById(carrySourceId);
   if(!src) return;
+  var segs = mergeSegs(carrySegs);   /* 同上：重叠的顺延段并成一段 */
   var remaining = calcRemainingMinutes(src);
-  var np = {id: uid(), date: date, periods: carrySelectedPeriods.slice().sort(function(a,b){ return a-b; }),
-    task: src.task + "（顺延）", estMin: remaining > 0 ? remaining : (src.estMin || 0), actMin: null,
-    completion: src.completion || 0, partCompletion: 0, partStartComp: src.completion || 0,
-    problem: "", reflection: "", adjustment: "", createdAt: Date.now(), carriedFrom: src.id, occupied: false,
-    color: src.color || ""};
-  np.t = periodsToT(np.periods, slotMinutes(data.slots));
-  data.plans.push(np);
+  var totalNeed = remaining > 0 ? remaining : (Number(src.estMin) || 0);
+  var totalSpan = segsMinutes(segs);
+  var base = clampPct(src.completion);
+  var cn = carryTaskName(src);
+  var groupId = segs.length > 1 ? uid() : null;
+  var used = 0;
+  var firstId = null;
+  segs.forEach(function(seg, i){
+    var share;
+    if(segs.length === 1){
+      share = totalNeed > 0 ? totalNeed : segLength(seg);
+    } else if(totalSpan > 0){
+      share = Math.round(totalNeed * segLength(seg) / totalSpan);
+    } else {
+      share = Math.round(totalNeed / segs.length);
+    }
+    if(i === segs.length - 1 && totalNeed > 0) share = Math.max(0, totalNeed - used);
+    used += share;
+    var np = {id: uid(), date: seg.date, periods: (seg.periods || []).slice(),
+      t: seg.t ? seg.t.slice() : periodsToT(seg.periods, slotMinutes(data.slots)),
+      task: cn.name, carryBase: cn.base, carryDepth: cn.depth,
+      estMin: share > 0 ? share : segLength(seg), actMin: null,
+      completion: base, partCompletion: 0, partStartComp: base,
+      problem: "", reflection: "", adjustment: "", createdAt: Date.now(),
+      carriedFrom: src.id, occupied: false, color: src.color || ""};
+    if(groupId){ np.groupId = groupId; np.groupBase = base; }
+    data.plans.push(np);
+    if(!firstId) firstId = np.id;
+  });
   src.carried = true;
-  src.carriedToId = np.id;
+  src.carriedToId = firstId;
   src.closedAt = Date.now();
   saveData(); refreshAll(); closeCarryoverSheet();
-  toast("已顺延到 " + date + " 第 " + periodsStr(np.periods) + " 节");
+  toast(segs.length > 1
+    ? ("已顺延为 " + segs.length + " 段，从 " + segs[0].date.slice(5) + " 开始")
+    : ("已顺延到 " + segs[0].date + " " + segRangeText(segs[0])));
 }
-
 /* ============ 课程 ============ */
 function openCourseSheet(){
   document.getElementById("cs-name").value = "";
@@ -3841,7 +5526,7 @@ function onSyncAction(){
 }
 
 /* ============ 应用更新 ============ */
-var APP_VERSION_NAME = "2.4.2";
+var APP_VERSION_NAME = "2.4.16";
 
 function isInApp(){
   return typeof window.AndroidBridge !== "undefined" && window.AndroidBridge != null;
@@ -3849,13 +5534,19 @@ function isInApp(){
 var EDU_SYSTEM_URL = "https://byxt.buaa.edu.cn/jwapp/sys/jwsybuaa/login/index.html";
 function openEduSystem(){
   askConfirm("去下载学期课表",
-    "即将跳转到北航本研教育管理系统。\n登录后进入「课表查询 → 个人课表」，点击【导出课表】下载 Excel。\n\n⚠️ 请务必下载【学期课表】（整学期全部周次），不要下载周课表或推荐课表。\n下载完成后回到本应用，点「从 Excel 文件导入」选择该文件即可自动导入。",
+    "即将跳转到北航本研教育管理系统（其他学校请从本校教务系统导出同样格式的 Excel）。\n登录后进入「课表查询 → 个人课表」，点击【导出课表】下载 Excel。\n\n⚠️ 请务必下载【学期课表】（整学期全部周次），不要下载周课表或推荐课表。\n下载完成后回到本应用，点「从 Excel 文件导入」选择该文件即可自动导入。",
     function(){
       if(isInApp()){
         try{ window.AndroidBridge.openBrowser(EDU_SYSTEM_URL); return; }catch(e){}
       }
       window.open(EDU_SYSTEM_URL, "_blank");
     });
+}
+/* 个人版 / 公开版的判定：内置课表为空就是公开版。
+   注意这个函数必须留在「检查更新」整段之外 —— 公开版构建时会把那段整体替换成多源实现，
+   放在里面会被一起换掉，cardsForVersion 就会调到空函数。 */
+function isPublicEdition(){
+  return !(typeof BUILTIN_COURSES !== "undefined" && BUILTIN_COURSES && BUILTIN_COURSES.length);
 }
 /* ============ 检查更新（网页 / PWA / App 统一） ============ */
 /* 个人版用 version.json，公开版用 version-public.json（用内置课程是否为空区分） */
@@ -3978,54 +5669,188 @@ function closeOnboarding(){
 /* ============ 教程 / 更新卡片 ============ */
 var TUTORIAL_CARDS = [
   {id:"intro-1", group:"第一步 · 认识它", icon:"🚀", title:"三步开始用", sub:"导入课表 → 排计划 → 复盘", points:[
-    "这个工具只做三件事：把你的课表铺成时间轴、在空档里排计划、事后填完成度做复盘。",
-    "所有数据都存在这台设备上（localStorage），不联网、不上传；换设备或清理浏览器前，记得先导出备份。",
-    "底部五个入口：今日、全部计划、课表、周总览、复盘；所有设置都在「数据」页。",
-    "照着下面几张卡往下看，十分钟就能上手。"
+    "这个工具只做三件事：把你的课表铺成时间轴、在空档里排计划、事后填完成度做复盘。没有账号、没有云同步、没有社交。",
+    "所有数据都存在这台设备上（localStorage），不联网也不上传。换设备或清理浏览器之前，先在「数据」页导出 JSON 备份。",
+    "底部五个入口：今日、全部计划、课表、周总览、复盘；导出、同步码、时间轴模式这些设置都在「数据」页。",
+    "第一次打开还没有课表。去「数据 → 批量导入」贴学校官网导出的 Excel，或手动添加课程，课表立刻就能用。",
+    "下面 10 张卡按真实使用顺序排，点「下一个」能一路读完；也可以随时关掉，之后从「数据 → 📖 教程」挑着看。"
   ]},
   {id:"intro-2", group:"第一步 · 认识它", icon:"📚", title:"先把课表放进来", sub:"课表页：Excel 批量导入 / 手动添加", points:[
-    "「课表」页点「批量导入」，选导出的 Excel（或 JSON 备份）即可一次导入整学期课程；也可以点「新增课程」逐门添加：星期几、第几节、上到第几周。",
-    "每门课只在自己上课的周次出现：只上 8–11 周的课，翻到第 12 周就不会再挂着。",
-    "点课表里的任一节课，可以看详情、临时标记「这次翘课」——翘掉的那节不再算被占用，可以拿来排计划。"
+    "「课表」页点「批量导入」，选导出的 Excel（或 JSON 备份）就能一次导入整学期；也可以逐门添加：星期几、第几节、上到第几周。",
+    "每门课只在自己上课的周次出现：只上 8–11 周的课，翻到第 12 周就不会再挂着，冲突检测也按当周判断。",
+    "点任意一节课进详情，可以记当堂笔记——笔记跟着「课程 + 日期」走，不会和别的课混在一起。",
+    "同一页还能临时标记「这次翘课」，可以只翘某一节，也可以「全翘」。翘掉的节不再算被占用，能直接拿来排计划。"
   ]},
   {id:"intro-3", group:"第一步 · 认识它", icon:"🕐", title:"今日时间轴怎么读", sub:"黄色是课、蓝色是计划、虚线是空闲", points:[
-    "时间轴按节次铺开：黄色块是课程，蓝色块是计划，虚线格是空闲。课程与计划叠在同一节时会出现 busy，点开能看到这一节究竟压了哪些事。",
-    "顶部 ‹ › 切前后一天；点日期会展开月历，单击选中、双击直接跳到那天，底部还有「今天」一键回来。",
-    "今天这一天的标题下面会标出「第几周」，所见即所在教学周。"
+    "时间轴按节次铺开：黄色是课程，蓝色是计划，虚线格是空闲。课程和计划压在同一节会出现 busy，点开能看到这一节究竟叠了哪些事。",
+    "顶部 ‹ › 切前后一天；点中间的日期会展开月历，单击先选中、双击直接跳到那天，底部还有「今天」一键回来。",
+    "标题下面会标出「第几周」，所见即所在教学周——翻到下周看课表，看到的就是下周真实要上的课。",
+    "点任意一格都能直接加计划：点空闲格会自动带上这一节，点课程格进课程详情，点计划格进计划详情。"
   ]},
 
   {id:"intro-4", group:"第二步 · 每天怎么用", icon:"➕", title:"添加一条计划", sub:"右下 ＋ 或点任意空闲格", points:[
     "点右下角 ＋，或直接点时间轴上的空闲节次——后者会自动预选好这一节，少点两下。",
-    "可以只占一节，也可以拖成跨节的长计划；填预计时长，方便事后判断排得紧不紧。",
-    "计划可以选颜色（默认蓝色），今日时间轴、计划卡片、周总览三处同步变色，用来区分不同科目或优先级。",
-    "三个提醒按需开：开始时提醒、DDL 提醒、填写进度提醒。"
+    "可以只占一节，也可以连选几节做成长计划；预计时长默认按「首节开始到末节结束」算，觉得不准就手动改。",
+    "九种颜色不只是好看：今日时间轴、计划卡片、周总览三处同步变色，一屏扫过去就能分清哪块是数学、哪块是英语。",
+    "三个提醒按需开：开始前 5 分钟、自定义 DDL、以及「结束后 15 分钟还没填进度」的追债提醒。"
   ]},
-  {id:"intro-5", group:"第二步 · 每天怎么用", icon:"✅", title:"填进度、被占用与顺延", sub:"时段过去后回来补一笔", points:[
-    "时段结束后在计划卡片上填完成度，这是复盘页所有数字的来源。",
-    "如果这段时间被别的事顶掉了，勾「被占用」——它不会被算成没完成，但仍会计入占用时长。",
-    "完成度不足 80% 时会问要不要顺延：把没做完的部分挪到新时段，新计划按「剩余部分」计进度，不会和原计划重复计数。"
+  {id:"intro-5", group:"第二步 · 每天怎么用", icon:"🐦", title:"课表外的时段也能排", sub:"早起、午休、睡前，都不占节次", points:[
+    "有些事天生不在课表里：早上七点背单词、午休整理笔记、睡前复盘。以前只能硬塞进第一节或最后一节，时间就假了。",
+    "现在在添加计划的「占用时段」里切到「按时间点」，直接填几点到几点就行，早于第一节、夹在午休、晚于最后一节都行。",
+    "今日页会把这些安排单独列在时间轴上方，叫「课表外安排」，按时间先后排好，一眼看得出今天从几点开始忙。",
+    "周总览里它们不占格子，只缩成一只黑色小鸟：早上的印在第一节（下一个节次），晚上的印在最后一节（上一个节次），中午的骑在两节交界线、上下各占一半。",
+    "点小鸟（或右上角那个小圆圈）就能打开详情；长按约 0.3 秒可以拖着改时间，松手落点精确到 15 分钟，跟拖普通计划块一样。"
   ]},
-  {id:"intro-6", group:"第二步 · 每天怎么用", icon:"🗓", title:"周总览：一屏看完整周", sub:"色块表格 + busy + 长按拖动", points:[
-    "周总览把周一到周日横排，每列一天的安排，今天那列两侧各一条浅蓝细线，横滑时左侧节次轴固定不动。",
-    "同一时段压了两个以上安排时会出现 busy 块，点开可看到这一时段的全部安排；连上三节的课里放了两个任务，会分成两块 busy，各管各的节次。",
-    "长按任务块可以拖到别的日期或别的时段，时长保持不变；拖到已被占用的地方也行，事后会提示冲突。",
-    "点课程格、计划格、空闲格都能直接看详情或加安排。"
+  {id:"intro-6", group:"第二步 · 每天怎么用", icon:"✅", title:"填进度、被占用与顺延", sub:"时段过去后回来补一笔", points:[
+    "时段结束后在计划卡片上填完成度。复盘页的完成率、占用时长、连续天数，全是从这一个数字长出来的。",
+    "如果这段时间被别的事顶掉了，勾「被占用」——它不会被算成没完成，但仍计入占用时长，复盘时能看出「不是我不想做，是时间被抢了」。",
+    "完成度不足 80% 时会问要不要顺延：把没做完的部分挪到新时段，新计划按「剩余部分」计进度，原计划的完成度不会被重复计算。",
+    "剩余时长不是拍脑袋填的：按你这次的速度折算（完成一半用了 30 分钟，剩下大概还要 30 分钟），顺延过去更接近真实。",
+    "顺延可以一层套一层，父计划改了完成度，子计划的起点会跟着刷新，链条不会断。"
   ]},
-  {id:"intro-7", group:"第二步 · 每天怎么用", icon:"🎓", title:"本科 / 研究生时间轴", sub:"「数据」页一键切换", points:[
-    "本科是 08:00–22:20 共 14 节、每节 45 分钟；研究生是 09:00–次日 01:00、每半小时一段。在「数据」页的「研究生时间模式」切换。",
-    "切换时课表会照导入时的原始节次铺回去，不会每切一次偏一点；计划记的是真实时间，只换显示位置，时间本身不动。",
-    "早于 09:00 的安排落在研究生轴之外，会吸附到最近一格显示，时间仍是你填的那个；切回本科自动回到原位。"
+  {id:"intro-7", group:"第二步 · 每天怎么用", icon:"🗓", title:"周总览：一屏看完整周", sub:"色块表格 + busy + 长按拖动", points:[
+    "周一到周日横排，每列一天。今天那列两侧各一条浅蓝细线，横滑时左侧节次轴固定不动，扫一眼就知道今天挤不挤。",
+    "同一时段压了两个以上安排会出现 busy 块，点开列出这一时段的全部安排；连上三节的课里放了两个任务，会按「这一节压着谁」切成两块 busy，各管各的。",
+    "长按任意计划块约 0.3 秒就能拖：上下改时间（15 分钟一档）、左右换日期，松手即存。拖到已被占用的地方也行，事后会提示冲突。",
+    "也可以反过来：点 busy 块 → 在列表里长按某一条 → 面板收起，把它拖到周视图的格子里。",
+    "格子高度是按真实分钟算的：45 分钟一节就是 46 像素，30 分钟一段就是 20 像素，长短不一的节次会如实显示，所以切换时间轴也不会串位置。"
   ]},
 
-  {id:"intro-8", group:"第三步 · 数据与设置", icon:"📊", title:"复盘、备份与教程入口", sub:"数据只在你手里", points:[
-    "「复盘」页按周汇总完成度、占用时长与计划数，并支持课前 / 课后 5 分钟 check，用来记录当堂状态。",
-    "「数据」页可以导出 JSON（完整备份，换设备首选）和 CSV（给 Excel 看），也能导入恢复。",
-    "换手机时用「生成同步码」：旧设备生成一串码，新设备粘贴「从同步码恢复」，两边数据会合并而不是覆盖。",
-    "想再看这些说明，随时到「数据 → 📖 教程」；那里也保留了每个版本改了什么。"
+  {id:"intro-8", group:"第三步 · 玩明白它", icon:"🎓", title:"本科 / 研究生两套时间轴", sub:"「数据」页一键切换", points:[
+    "本科是 08:00–22:20 共 14 节、每节 45 分钟；研究生是 09:00–次日 01:00、每半小时一段。在「数据」页的「研究生时间模式」切换。",
+    "课表记住的是导入时的原始节次，切回本科直接照原样铺回去，不会每切一次偏一点；万一被切歪，重新导入一次 Excel 就正了。",
+    "计划记住的是「几点到几点」，不是「第几节」。切换只换显示位置，时间本身一动不动，来回切多少次都一样。",
+    "早于 09:00 的安排落在研究生轴之外，会吸附到第一节显示，但你填的时间不变；切回本科自动回到原位。",
+    "今日 tab 按整节对齐（格子不会碎），周总览按真实时间摆放（能落在格子中间），两处各司其职。"
+  ]},
+  {id:"intro-9", group:"第三步 · 玩明白它", icon:"✨", title:"藏起来的小机关", sub:"这些地方点一点会有惊喜", points:[
+    "点今日页顶部的日期能展开月历，有小圆点的日子表示那天已经有计划；双击某天直接跳过去。",
+    "复盘页有「课前 / 课后 5 分钟 check」，用来记当堂状态——上课前 5 分钟和下课铃响那会儿，是记性最好的两个时刻。",
+    "换手机用「数据 → 生成同步码」：旧设备生成一串码，新设备粘进去，两边数据是合并而不是覆盖，不会丢东西。",
+    "「全部计划」顶部有「今日计划」按钮，点一下自动翻到今天那一组并高亮；今天没有计划时会直接把你带回今日页。",
+    "课表页点某节课可以记当堂笔记；这些笔记按「课程 + 日期」存，翻回去看某天的课，笔记还在那节课下面。"
+  ]},
+  {id:"intro-10", group:"第三步 · 玩明白它", icon:"📊", title:"复盘、备份与教程入口", sub:"数据只在你手里", points:[
+    "「复盘」页按周汇总完成度、占用时长和计划数，能看出这周是真忙还是假忙、哪些时段总被浪费。",
+    "「数据」页可以导出 JSON（完整备份，换设备首选）和 CSV（丢进 Excel 自己算），也能导入恢复。",
+    "导出前建议先填一遍完成度——备份的是数据，复盘靠的是这些数字。",
+    "想再看这些说明，随时到「数据 → 📖 教程」；教程可以一张张点开单看，也可以点开后顺着「下一个」把整组读完。",
+    "每个版本改了什么也收在这里，默认只展开最近 3 个版本，需要翻旧账时点底部「展开更早的版本更新」。"
   ]}
 ];
 var tutShowAll = false;
 var UPDATE_CARDS = {
+  "2.4.16": [
+    {id:"upd-2416-1", kind:"feat", icon:"✂️", title:"两段之间空满 30 分钟就分开", points:[
+      "并段的分界线从「不超过 30 分钟」收紧到「不到 30 分钟」：中间空 29 分钟以内仍算一段，正好空 30 分钟就拆成两张卡、各记各的完成度。",
+      "重叠的照样必并，跨天照样不并；选时段、今日页、全部计划的合计段数三处口径一致。",
+      "顺带修好：一次跳过两个版本（比如 2.4.14 → 2.4.16），2.4.15 和 2.4.16 的更新卡会分开各弹一次，不再只看到最后一版。"
+    ]}
+  ],
+  "2.4.15": [
+    {id:"upd-2415-1", kind:"feat", icon:"🧩", title:"今日页一项任务只占一张卡", points:[
+      "同一项任务今天占了几段（比如第 14 节 21:35–22:20 再加一段 22:00–23:00），今日页合并成一张卡，不再一段一张。",
+      "时间重叠、或者两段之间空了不到半小时的，直接算作一段：选时段时就会并起来，不再重复计时长。",
+      "卡上显示整项的合计完成度，下面按段列出各自的时间和完成度，点哪一段就改哪一段。",
+      "「全部计划」仍按段平铺，一段一张，方便单独看某一段。"
+    ]},
+    {id:"upd-2415-2", kind:"fix", icon:"🏷️", title:"顺延任务名不再叠后缀", points:[
+      "顺延过的任务再顺延，名字原来会叠成「物理作业（顺延）（顺延）」，现在收成「物理作业（顺延×2）」。",
+      "旧数据在加载时自动整理，不用手动改名。"
+    ]}
+  ],
+  "2.4.14": [
+    {id:"upd-2414-1", kind:"feat", icon:"🧩", title:"一项任务可以分好几段做", points:[
+      "添加计划时能跨天挑时段：今天一段、明天一段，选完一次存好。",
+      "选中的相邻节次会合成一张卡片；中间隔开半小时或更久就拆成几张，各自记完成度。",
+      "每张卡片底部显示「这一项共 N 段 · 合计完成度」，合计按各段时长加权。",
+      "点任意一张卡片仍然是改这一段，其他段不受影响。"
+    ]},
+    {id:"upd-2414-2", kind:"feat", icon:"⏩", title:"顺延也能选课表外的时间", points:[
+      "顺延面板里可以按课表节次选，也可以切到「按时间」填 21:00–21:40 这种课表外的段。",
+      "顺延同样支持跨天多段，剩余时长按各段时长分到每张卡片。"
+    ]},
+    {id:"upd-2414-3", kind:"feat", icon:"🎯", title:"推荐顺延只占够用的那几节", points:[
+      "推荐的时段会按剩余时长裁到刚好够用的节数，不会一次把一整天都占上。"
+    ]}
+  ],
+  "2.4.13": [
+    {id:"upd-2413-1", kind:"feat", icon:"🗓", title:"复盘看第几周，点一下就换", points:[
+      "复盘页右上角的「第 X 周」现在是按钮，点开是 1–30 的周次格，选哪周就看哪周的完成率、每日柱和课前课后 check。",
+      "这里只换复盘看哪一周，今日和课表不受影响；面板底部一键「回到本周」。",
+      "回看某周时，那一周的日期范围按周次真实换算，不会把本周的计划算进去。"
+    ]},
+    {id:"upd-2413-2", kind:"feat", icon:"🔁", title:"顺延任务的完成度，按它自己那一段算", points:[
+      "一条计划顺延到另一天，那天复盘只看「这一段做了多少」，不再把前几天的进度重复算进来。",
+      "原计划和它的顺延段落在同一天时，只按原计划的完成度计一次，不会重复相加。",
+      "完成率、平均完成度、每日柱状图用的是同一套口径。"
+    ]},
+    {id:"upd-2413-3", kind:"feat", icon:"📅", title:"跨过周一再打开，周次一次补齐", points:[
+      "停用几周再回来，周次按真实周数补到本周，不用自己数。",
+      "打开着跨过零点也会自己跳。"
+    ]}
+  ],
+  "2.4.12": [
+    {id:"upd-2412-1", kind:"feat", icon:"📅", title:"到了周一，周次自己往前走", points:[
+      "每周一零点之后打开，当前周次自动 +1，复盘、周总览、课表看的都是这一周。",
+      "隔几周没打开，回来按真实日期一次补齐，不用自己数。",
+      "提前看下周、回看上周都照旧：手动调过周次之后，以调的那一刻所在周为准，不会被多推一格。",
+      "一直开着跨过零点也会自己跳，不用关掉重开。"
+    ]}
+  ],
+  "2.4.11": [
+    {id:"upd-2411-1", kind:"feat", icon:"🐦", title:"课表之外，排成一只小鸟", points:[
+      "早于第一节、午休、晚自习之后这些时间，不占课表格子，在周总览里是一只小鸟，挂在对应的高度上，一眼看出大概几点。",
+      "总览还是一节一格：课间和午休不撑开列高，一屏能看全一天。",
+      "小鸟和块一样是正经计划，点开能看详情、改任务、打勾。"
+    ]},
+    {id:"upd-2411-2", kind:"feat", icon:"🪹", title:"拖到屏幕底部，三个鸟窝帮你挑时间", points:[
+      "长按小鸟，屏幕底部浮出三个虚线鸟窝：早上、中午、晚上。拖进哪个窝，窝的上方就长出一根时间柱。",
+      "手指在时间柱上上下滑，滑到哪就是几点；拖动过程一像素一像素跟着手，松手才对齐到 5 分钟刻度。",
+      "松手小鸟落到那个时间，今日页里的那条计划同步改过来。"
+    ]},
+    {id:"upd-2411-3", kind:"feat", icon:"⏱", title:"时间柱上直接写「几点到几点」", points:[
+      "柱子上的游标写着完整的起止时间，比如 11:55–12:55，不用再拿时长自己加一遍。",
+      "每个窝上方标着可调范围（早上、中午 11:55–14:20、晚上到 24:00），一眼知道最晚能推到哪。"
+    ]},
+    {id:"upd-2411-4", kind:"feat", icon:"🎯", title:"和课表擦边 20 分钟以内，仍然算课外", points:[
+      "11:55 开始（只踩进 12:15 下课那节的最后 20 分钟）、14:20 结束，都能直接变鸟，不用把整段往前后挪。",
+      "这种擦边不算占用，格子上不会盖一层 busy；超过 20 分钟才按课内算。"
+    ]},
+    {id:"upd-2411-5", kind:"feat", icon:"🧩", title:"课内的块，也能拖进鸟窝", points:[
+      "长按课表里的块，底部照样浮出三个窝；拖进去松手，它就变成课外的小鸟，时间照旧。",
+      "不拖进窝、拖回课表格子，它还是块。两种之间来回换，时间不用重新填。",
+      "拖动时三个窝压在底部导航栏上，最后两节（21:30、22:20）也让得出来，松手导航栏立刻回来。"
+    ]},
+    {id:"upd-2411-6", kind:"feat", icon:"↔️", title:"撞两下边缘，翻到上/下一周", points:[
+      "拖到左右边缘、已经滚到尽头时撞两下，表就翻到上一周或下一周，手里那只鸟一直跟着，翻页不用松手。",
+      "跨周只换周：周三搬过去还是周三，连搬两周就是两周前的周三，时间一分不动。",
+      "撞一下只是探路，位置不动；撞满两下才翻周。翻到新的一周后还能接着横着拖到别的日子。",
+      "周一、周天这两列贴着屏幕边，小鸟会往列中间收，按住它不会误撞成换周。"
+    ]}
+  ],
+  "2.4.3": [
+    {id:"upd-243-1", kind:"feat", icon:"🐦", title:"课表外的时段，也能排计划了", points:[
+      "早上七点的单词、午休的笔记、睡前的复盘——这些本来就不在课表里，以前只能硬塞进某一节，时间就假了。",
+      "添加计划时把「占用时段」切到「按时间点」，直接填几点到几点。今日页会在时间轴上方单独列一栏「课表外安排」，按时间排好。",
+      "周总览里它们不占格子：缩成一只与一节等高的黑色小鸟，早上的印在第一节、晚上的印在最后一节、中午的骑在两节交界处各占一半。",
+      "点小鸟或右上角的小圆圈看详情，长按约 0.3 秒可以拖着改时间，落点精确到 15 分钟。"
+    ]},
+    {id:"upd-243-2", kind:"feat", icon:"📐", title:"总览的格子改成按分钟算", points:[
+      "以前每节固定占一样高，可研究生轴里 30 分钟一段、中间还夹午休，格子和真实时间对不上。",
+      "现在整列按真实分钟铺开：45 分钟就是 46 像素，30 分钟就是 20 像素，长短不一的节次会如实显示。",
+      "切换本科 / 研究生再也不会把块挤到邻节上，busy 也只在时间真的重叠时才出现。"
+    ]},
+    {id:"upd-243-3", kind:"feat", icon:"📖", title:"教程能一口气读完了", points:[
+      "卡片整体放大，图标给了个圆底、标题更醒目，小屏上也不费眼。",
+      "从列表点开任意一张，底部会显示「3 / 10」，点「下一个 →」就能顺着读到尾，不用退出去再点下一张。",
+      "想挑着看还是老样子：关闭后回到列表，想看哪张点哪张。教程也从 8 张扩到 10 张，补了课表外安排和小机关两节。"
+    ]},
+    {id:"upd-243-4", kind:"fix", icon:"🩹", title:"切换时间轴后莫名多出的 busy", points:[
+      "本科切研究生时，两个本来不重叠的计划会被换算到同一节，凭空冒出一个 busy。",
+      "现在 busy 按真实时间是否重叠来判定，切换模式不会再误报。"
+    ]}
+  ],
   "2.4.2": [
     {id:"upd-242-1", kind:"update", icon:"📡", title:"公开版的检查更新改走 GitHub", points:[
       "以前公开版是从开发机的临时地址查版本，那台机器一停，所有人都查不到新版本，点下载还会跳到 404。",
@@ -4160,10 +5985,15 @@ var UPDATE_CARDS = {
   ]
 };
 var cardQueue = [], cardIndex = 0, cardMode = "auto", pendingOnboarding = false;
+/* 连跳两个及以上版本时，按版本排队，一版弹一次；看完上一版再弹下一版 */
+var cardVerQueue = [];
 
-function openCardSheet(cards, badge, mode){
+function openCardSheet(cards, badge, mode, startAt){
   if(!cards || !cards.length) return;
-  cardQueue = cards.slice(); cardIndex = 0; cardMode = mode || "auto";
+  if((mode || "auto") !== "auto") cardVerQueue = [];
+  cardQueue = cards.slice();
+  cardIndex = Math.max(0, Math.min(cards.length - 1, startAt || 0));
+  cardMode = mode || "auto";
   document.getElementById("card-badge").textContent = badge || "新手指南";
   document.getElementById("card-modal").classList.add("open");
   document.getElementById("card-backdrop").classList.add("open");
@@ -4188,12 +6018,16 @@ function renderCard(){
     dots += '<span class="card-dot' + (i === cardIndex ? " on" : "") + '"></span>';
   }
   document.getElementById("card-dots").innerHTML = dots;
+  var stepEl = document.getElementById("card-step");
+  if(stepEl) stepEl.textContent = cardQueue.length > 1 ? (cardIndex + 1) + " / " + cardQueue.length : "";
   document.getElementById("card-prev").disabled = (cardIndex === 0);
   var last = cardIndex === cardQueue.length - 1;
-  var isIntro = cardQueue[0] && cardQueue[0].kind === "intro";
+  var badgeTxt = document.getElementById("card-badge").textContent || "";
+  var isIntro = cardQueue[0] && cardQueue[0].kind === "intro" || /新手指南|教程/.test(badgeTxt);
   var isNotice = cardMode === "notice";
   document.getElementById("card-next").textContent =
-    last ? (isNotice ? "立即更新" : (isIntro ? "开始使用" : "知道了")) : "下一步";
+    last ? (isNotice ? "立即更新" : (isIntro ? "开始使用" : "知道了"))
+         : (cardQueue.length > 2 ? "下一个 →" : "下一步");
 }
 function cardNext(){
   if(cardIndex < cardQueue.length - 1){ cardIndex++; renderCard(); }
@@ -4213,11 +6047,16 @@ function closeCardSheet(){
   if(pendingOnboarding){
     pendingOnboarding = false;
     setTimeout(openOnboarding, 220);
+    return;
+  }
+  /* 跳了不止一个版本：这一组看完，接着弹上一版之后的那一版 */
+  if(cardMode === "auto" && cardVerQueue.length){
+    setTimeout(openNextVersionCards, 320);
   }
   /* 更新提示看完后，补上本次版本的功能卡（展示提示时被让路跳过了） */
   var stc = data.cardState || {};
   if(cardMode === "notice" && stc.lastVersion !== APP_VERSION_NAME
-     && (UPDATE_CARDS[APP_VERSION_NAME] || []).length){
+     && cardsForVersion(APP_VERSION_NAME).length){
     setTimeout(function(){ maybeShowCards(false); }, 360);
   }
 }
@@ -4265,19 +6104,80 @@ function findCardById(id){
   }
   return null;
 }
-/* 老用户/升级用户：版本变化时推送本次更新卡片（首次用户由 closeOnboarding 触发） */
+/* 找到这张卡属于哪一组、排第几：点开之后能接着往下读，而不是孤零零一张 */
+function cardContextOf(id){
+  var i;
+  for(i = 0; i < TUTORIAL_CARDS.length; i++){
+    if(TUTORIAL_CARDS[i].id === id) return {cards: TUTORIAL_CARDS, index: i, badge: "📖 新手指南"};
+  }
+  var vs = Object.keys(UPDATE_CARDS).sort(function(a, b){ return cmpVersion(b, a); });
+  for(var v = 0; v < vs.length; v++){
+    var arr = UPDATE_CARDS[vs[v]];
+    for(i = 0; i < arr.length; i++){
+      if(arr[i].id === id) return {cards: arr, index: i, badge: "v" + vs[v] + " 更新"};
+    }
+  }
+  return null;
+}
+/* 公开版只主动推「有新功能或交互变了」的卡片，纯修 bug 的条目不再弹窗打扰；
+   个人版保持全量。判断依据是卡片的 kind：feat=新功能/交互，fix=修 bug，update=其他说明 */
+function cardsForVersion(v){
+  var arr = UPDATE_CARDS[v] || [];
+  if(!isPublicEdition()) return arr;
+  return arr.filter(function(c){ return c.kind !== "fix"; });
+}
+/* 上次看过之后、到当前版本为止，每个版本一组卡片（从旧到新排队）。
+   连跳两个版本（比如 2.4.13 → 2.4.15）就排两组，看完 2.4.14 那组再弹 2.4.15。 */
+function pendingVersionCards(lastVer){
+  var cur = APP_VERSION_NAME;
+  var curCards = cardsForVersion(cur);
+  /* 没有历史记录（旧数据/清过缓存）：只推当前这一版，不把历史全灌一遍 */
+  if(!lastVer) return curCards.length ? [cur] : [];
+  var vs = [];
+  Object.keys(UPDATE_CARDS).forEach(function(v){
+    if(cmpVersion(v, cur) > 0) return;              /* 比当前还新的不推 */
+    if(cmpVersion(v, lastVer) <= 0) return;          /* 已经看过的不推 */
+    if(!cardsForVersion(v).length) return;
+    vs.push(v);
+  });
+  vs.sort(cmpVersion);
+  /* 一次跳太多版本（比如公开版 2.4.11 → 2.4.16）只补最近 3 版，剩下的去教程列表里翻，
+     免得一打开连弹十几张卡 */
+  if(vs.length > 3) vs = vs.slice(vs.length - 3);
+  return vs;
+}
+function openNextVersionCards(){
+  while(cardVerQueue.length){
+    var g = cardVerQueue.shift();
+    if(!g.cards || !g.cards.length) continue;
+    openCardSheet(g.cards, "v" + g.v + " 更新", "auto");
+    if(!cardVerQueue.length){
+      /* 排到最后一组再记账：中途退出，下次进来还能补上没看的版本 */
+      var st = data.cardState || {seen:{}, lastVersion:null};
+      st.lastVersion = APP_VERSION_NAME;
+      data.cardState = st;
+      saveData();
+    }
+    return;
+  }
+}
+/* 老用户/升级用户：版本变化时推送更新卡片（首次用户由 closeOnboarding 触发） */
 function maybeShowCards(isFirstRun){
   var st = data.cardState || {seen:{}, lastVersion:null};
   var cur = APP_VERSION_NAME;
-  var upd = UPDATE_CARDS[cur] || [];
   var cm = document.getElementById("card-modal");
   /* 版本提示优先：正在展示「发现新版本」时不抢位，也不写 lastVersion，
      下次打开再补功能卡（否则用户只看到功能卡，容易以为没有更新） */
   if(cm && cm.classList.contains("open") && cardMode === "notice") return;
-  if(!isFirstRun && (!st.lastVersion || st.lastVersion !== cur) && upd.length){
-    openCardSheet(upd, "v" + cur + " 更新", "auto");
+  if(isFirstRun) return;
+  if(st.lastVersion === cur) return;
+  var vs = pendingVersionCards(st.lastVersion);
+  if(!vs.length){
+    st.lastVersion = cur; data.cardState = st; saveData();
+    return;
   }
-  if(st.lastVersion !== cur){ st.lastVersion = cur; data.cardState = st; saveData(); }
+  cardVerQueue = vs.map(function(v){ return {v: v, cards: cardsForVersion(v)}; });
+  openNextVersionCards();
 }
 function goToday(){
   viewDate = todayStr();
@@ -4294,10 +6194,11 @@ function initCardUI(){
   document.getElementById("tut-list").addEventListener("click", function(e){
     var item = e.target.closest("[data-tut]");
     if(!item) return;
-    var c = findCardById(item.dataset.tut);
-    if(!c) return;
+    var ctx = cardContextOf(item.dataset.tut);
+    if(!ctx) return;
     closeTutorialList();
-    openCardSheet([c], c.kind === "update" ? "版本更新" : "教程", "manual");
+    /* 从列表点进来：从这一张开始，可以顺着「下一个」一路读完，也可以随时关掉 */
+    openCardSheet(ctx.cards, ctx.badge, "manual", ctx.index);
   });
   document.getElementById("today-sub").addEventListener("click", function(e){
     if(e.target && e.target.id === "btn-today") goToday();
@@ -4466,9 +6367,53 @@ function switchTab(name){
 function shiftDate(days){
   var d = parseDate(viewDate); d.setDate(d.getDate() + days); viewDate = toDateStr(d); renderToday();
 }
+/* 选周：复盘页右上角的周次点开就是这个面板，选完整个 App 一起切过去 */
+function closeWeekPicker(){
+  var m = document.getElementById("wk-mask");
+  if(m) m.remove();
+  document.body.style.overflow = "";
+}
+function setWeek(w){
+  w = Math.max(WEEK_MIN, Math.min(WEEK_MAX, Math.round(Number(w) || 1)));
+  closeWeekPicker();
+  if(w === data.currentWeek) return;
+  data.currentWeek = w;
+  data.weekAnchor = mondayOf(todayStr());   /* 手动指定：以本周为基准，之后照常每周一 +1 */
+  data.weekBase = w;
+  reviewWeek = null;
+  saveData(); refreshAll(); toast("已切到第 " + w + " 周");
+}
+function openWeekPicker(){
+  closeWeekPicker();
+  var cur = (reviewWeek == null) ? data.currentWeek : reviewWeek;
+  var cells = "";
+  for(var w = WEEK_MIN; w <= WEEK_MAX; w++){
+    cells += '<button type="button" class="wk-cell' + (w === cur ? " on" : "") +
+      '" data-wk="' + w + '">' + w + '</button>';
+  }
+  var mask = document.createElement("div");
+  mask.className = "wk-mask"; mask.id = "wk-mask";
+  mask.innerHTML = '<div class="wk-box">' +
+    '<div class="wk-head"><b>复盘看第几周</b><button type="button" class="wk-x" id="wk-x">✕</button></div>' +
+    '<div class="wk-grid">' + cells + '</div>' +
+    '<button type="button" class="wk-now" id="wk-now">回到本周 · 第 ' + data.currentWeek + ' 周</button>' +
+    '<div class="wk-tip">这里只切换复盘页看哪一周，今日、课表不受影响；周次本身仍每周一自动 +1。</div>' +
+    '</div>';
+  document.body.appendChild(mask);
+  document.body.style.overflow = "hidden";
+  mask.addEventListener("click", function(e){
+    if(e.target === mask || e.target.id === "wk-x"){ closeWeekPicker(); return; }
+    if(e.target.id === "wk-now"){
+      reviewWeek = null; closeWeekPicker(); renderReview(); return;
+    }
+    var c = e.target.closest("[data-wk]");
+    if(c){ reviewWeek = Number(c.getAttribute("data-wk")); closeWeekPicker(); renderReview(); }
+  });
+}
 function adjustWeek(delta){
-  data.currentWeek = Math.max(1, Math.min(30, data.currentWeek + delta));
-  saveData(); refreshAll(); toast("已切换到第 " + data.currentWeek + " 周");
+  var w = data.currentWeek + delta;
+  if(w < WEEK_MIN || w > WEEK_MAX){ toast("已经到第 " + (w < WEEK_MIN ? WEEK_MIN : WEEK_MAX) + " 周了"); return; }
+  setWeek(w);
 }
 
 /* ============ 事件绑定与启动 ============ */
@@ -4477,6 +6422,7 @@ function init(){
   viewDate = todayStr();
   var firstRun = false;
   try{ firstRun = (localStorage.getItem(KEY) === null); }catch(e){}
+  var autoWeek = firstRun ? 0 : autoSyncWeek();
 
   document.querySelectorAll(".tab").forEach(function(btn){
     btn.addEventListener("click", function(){ switchTab(btn.dataset.tab); });
@@ -4522,6 +6468,7 @@ function init(){
   document.getElementById("btn-copy-review").addEventListener("click", function(){
     copyText(reviewMarkdown()).then(function(ok){ toast(ok ? "复盘 Markdown 已复制" : "复制失败，请长按手动复制"); });
   });
+  document.getElementById("review-week").addEventListener("click", openWeekPicker);
   document.getElementById("btn-check-update").addEventListener("click", checkUpdate);
   document.getElementById("btn-sync-generate").addEventListener("click", openSyncGenerate);
   document.getElementById("btn-sync-apply").addEventListener("click", openSyncApply);
@@ -4540,8 +6487,55 @@ function init(){
   document.getElementById("btn-ps-cancel").addEventListener("click", closePlanSheet);
   document.getElementById("btn-ps-cancel2").addEventListener("click", closePlanSheet);
   document.getElementById("btn-ps-save").addEventListener("click", savePlan);
+  document.getElementById("btn-ps-seg-add").addEventListener("click", openPlanSegPicker);
+  document.getElementById("btn-carry-seg-add").addEventListener("click", openCarrySegPicker);
+  document.getElementById("ps-seg-chips").addEventListener("click", function(e){
+    var d = e.target.closest("[data-seg-del]");
+    if(d) removePlanSeg(Number(d.dataset.segDel));
+  });
+  document.getElementById("carry-seg-chips").addEventListener("click", function(e){
+    var d = e.target.closest("[data-seg-del]");
+    if(d) removeCarrySeg(Number(d.dataset.segDel));
+  });
   document.getElementById("btn-ps-delete").addEventListener("click", deletePlan);
-  document.getElementById("ps-date").addEventListener("change", function(){ renderPeriodButtons(); renderConflict(); });
+  document.getElementById("ps-date").addEventListener("change", function(){
+    if(planSegs.length === 1){
+      var sg = planSegs[0];
+      sg.date = this.value || todayStr();
+      if(sg.periods && sg.periods.length) sg.t = periodsToT(sg.periods, slotMinutes(data.slots));
+      renderPlanSegChips();
+    }
+    renderConflict();
+  });
+  /* 时段选择器 */
+  document.getElementById("btn-ms-cancel").addEventListener("click", closeSegPicker);
+  document.getElementById("ms-mode").addEventListener("click", function(e){
+    var b = e.target.closest("[data-msmode]");
+    if(!b || !segPick) return;
+    segPick.mode = b.dataset.msmode;
+    renderSegPicker();
+  });
+  document.getElementById("ms-days").addEventListener("click", function(e){
+    var b = e.target.closest("[data-ms-day]");
+    if(!b || !segPick) return;
+    segPick.cursor = b.dataset.msDay;
+    renderSegPicker();
+  });
+  document.getElementById("ms-periods").addEventListener("click", function(e){
+    var b = e.target.closest("[data-ms-p]");
+    if(b && segPick) segPickerToggle(Number(b.dataset.msP));
+  });
+  document.getElementById("ms-seg-list").addEventListener("click", function(e){
+    var b = e.target.closest("[data-ms-del]");
+    if(b) segPickerDelete(Number(b.dataset.msDel));
+  });
+  document.getElementById("btn-ms-add-clock").addEventListener("click", segPickerAddClock);
+  document.getElementById("btn-ms-clear").addEventListener("click", function(){
+    if(!segPick) return;
+    segPick.picked = {}; segPick.extra = [];
+    renderSegPicker();
+  });
+  document.getElementById("btn-ms-ok").addEventListener("click", segPickerOk);
   document.getElementById("ps-remind-ddl").addEventListener("change", function(){
     document.getElementById("ps-ddl-wrap").style.display = this.checked ? "block" : "none";
   });
@@ -4567,11 +6561,7 @@ function init(){
   document.getElementById("btn-carry-cancel").addEventListener("click", closeCarryoverSheet);
   document.getElementById("btn-carry-no").addEventListener("click", closeCarryoverSheet);
   document.getElementById("btn-carry-save").addEventListener("click", applyCarryover);
-  document.getElementById("carry-date").addEventListener("change", function(){
-    carrySelectedPeriods = [];
-    renderCarryPeriods();
-    renderCarryDays();
-  });
+
   document.getElementById("btn-check-cancel").addEventListener("click", closeCheckSheet);
   document.getElementById("btn-check-cancel2").addEventListener("click", closeCheckSheet);
   document.getElementById("btn-check-save").addEventListener("click", saveCheck);
@@ -4681,18 +6671,24 @@ function init(){
     if(Date.now() < wgSuppressUntil || Date.now() < dpSuppressUntil) return;
     var caItem = e.target.closest("#timeline [data-ca]");
     if(caItem){ openCourseAction(caItem.dataset.ca, viewDate); return; }
-    var planItem = e.target.closest("#timeline [data-planid]");
+    var planItem = e.target.closest("#timeline [data-planid], #offgrid [data-planid]");
     if(planItem){ openPlanAction(planItem.dataset.planid); return; }
     var freeItem = e.target.closest("#timeline [data-freep]");
     if(freeItem){ openPlanSheet(null, viewDate, [Number(freeItem.dataset.freep)]); return; }
     var wgCa = e.target.closest("#week-grid [data-ca]");
     if(wgCa){ openCourseAction(wgCa.dataset.ca, wgCa.dataset.d || overviewWeekStart || todayStr()); return; }
+    var wgBirdGroup = e.target.closest("#week-grid [data-birdgroup]");
+    if(wgBirdGroup){ openBirdSheet(wgBirdGroup.dataset.d, wgBirdGroup.dataset.birdgroup); return; }
+    var wgBird = e.target.closest("#week-grid [data-birdid]");
+    if(wgBird){ openPlanAction(wgBird.dataset.birdid); return; }
     var wgPlan = e.target.closest("#week-grid [data-planid]");
     if(wgPlan){ openPlanAction(wgPlan.dataset.planid); return; }
     var wgBusy = e.target.closest("#week-grid [data-busy-seg]");
     if(wgBusy){ openMultiSheet(wgBusy.dataset.d, Number(wgBusy.dataset.busySeg)); return; }
     var wgFree = e.target.closest("#week-grid [data-freep]");
     if(wgFree){ openPlanSheet(null, wgFree.dataset.d || overviewWeekStart || todayStr(), [Number(wgFree.dataset.freep)]); return; }
+    var segRow = e.target.closest("[data-seg-id]");
+    if(segRow){ openPlanAction(segRow.dataset.segId); return; }
     var card = e.target.closest(".plan-card");
     if(card){ openPlanAction(card.dataset.id); return; }
     var del = e.target.closest("[data-del-course]");
@@ -4704,35 +6700,22 @@ function init(){
       if(src){
         var reco = recommendCarryover(src);
         if(reco){
-          carrySelectedPeriods = reco.periods.slice();
-          document.getElementById("carry-date").value = reco.date;
-          renderCarryPeriods();
-          renderCarryDays();
+          carrySegs = [{date: reco.date, periods: reco.periods.slice(), t: periodsToT(reco.periods, slotMinutes(data.slots))}];
+          renderCarrySegChips();
         }
       }
       return;
     }
-    var carryDay = e.target.closest("[data-carry-day]");
-    if(carryDay){
-      document.getElementById("carry-date").value = carryDay.dataset.carryDay;
-      carrySelectedPeriods = [];
-      renderCarryPeriods();
-      renderCarryDays();
-      return;
-    }
     var checkBtn = e.target.closest("[data-check]");
     if(checkBtn){ openCheckSheet(checkBtn.dataset.check, checkBtn.dataset.kind); return; }
-    var carryPbtn = e.target.closest("#carry-periods .pbtn");
-    if(carryPbtn){ toggleCarryPeriod(Number(carryPbtn.dataset.carryP)); return; }
-    var pbtn = e.target.closest("#ps-periods .pbtn");
-    if(pbtn){ togglePeriod(Number(pbtn.dataset.p)); return; }
     if(e.target.classList && e.target.classList.contains("backdrop")){
-      closePlanSheet(); closeCourseSheet(); closeBatch(); closeConfirm(); closeCarryoverSheet(); closeCheckSheet(); closeCourseAction(); closePlanAction(); closeFillSheet();
+      closePlanSheet(); closeCourseSheet(); closeBatch(); closeConfirm(); closeCarryoverSheet(); closeCheckSheet(); closeCourseAction(); closePlanAction(); closeFillSheet(); closeSegPicker();
     }
   });
 
   renderSlotEditor();
   syncWeekTabVisibility();
+  if(autoWeek) refreshAll();   /* 跳周后先重排，复盘 / 周总览标签才跟上真实周次 */
   switchTab("today");
   if(firstRun){ pendingOnboarding = true; openCardSheet(TUTORIAL_CARDS, "新手指南", "auto"); }
   /* 功能卡延后：先给更新检查让路，有新版时优先提示更新 */
@@ -4742,9 +6725,14 @@ function init(){
   syncReminders();
   checkInAppReminders();
   setInterval(checkInAppReminders, 30000);
+  /* 新的一周：只提示一次，界面已按新周重排 */
+  if(autoWeek){ setTimeout(function(){ toast("新的一周，已自动切到第 " + autoWeek + " 周"); }, 1400); }
+  /* 常驻前台跨过周一零点，也能自己跳 */
+  setInterval(function(){ if(!document.hidden && autoSyncWeek()) refreshAll(); }, 60000);
   /* 回到前台：重排提醒（顺带取消已不再符合条件的），并补一次网页版提醒 */
   document.addEventListener("visibilitychange", function(){
     if(document.hidden) return;
+    if(autoSyncWeek()) refreshAll();
     try{ if(isInApp()) syncReminders(); }catch(e){}
     checkInAppReminders();
   });

@@ -10,7 +10,7 @@
 |---|---|
 | 落地页 | https://coolflower1984.github.io/plantracker/ |
 | 网页版 | https://coolflower1984.github.io/plantracker/web.html |
-| Android APK | https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.2.apk |
+| Android APK | https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.16.apk |
 | iOS（PWA） | https://coolflower1984.github.io/plantracker/ios.html |
 | 版本信息 | https://coolflower1984.github.io/plantracker/version.json |
 
@@ -22,15 +22,19 @@
 | `web.html` | 网页版主程序，单文件应用 |
 | `ios.html` | iOS PWA 版（Safari 添加到主屏幕） |
 | `ios-project.zip` | iOS Xcode 工程打包 |
-| `plantracker-open-v2.4.2.apk` | Android 安装包（公开版，versionCode 29） |
+| `plantracker-open-v2.4.16.apk` | Android 安装包（公开版，versionCode 32） |
 | `version.json` | 版本信息，App 启动时读取以判断是否有新版 |
 | `sw.js` / `manifest.webmanifest` / `icon-*.png` | PWA 资源 |
 
-## 当前版本 v2.4.2
+## 当前版本 v2.4.16
 
-- 公开版的检查更新改从 GitHub Pages 读取，失败回退 jsDelivr，不再依赖开发机的临时地址
-- 下载链接换成固定地址，修掉「检查更新后点下载跳到 404」
-- 上一版 `plantracker-open-v2.4.1.apk` 暂留，供仍在缓存旧清单的客户端下载
+- 今日页一项任务只占一张卡：今天占了几段就合成一张，卡上显示整项合计完成度（按段时长加权），下面按段列时间和各段完成度
+- 时段并段的分界线是「中间空不到 30 分钟」（29 分钟以内），正好空 30 分钟就拆成两张卡；重叠必并、跨天不并
+- 「全部计划」仍按段平铺，一段一张
+- 顺延过的任务再顺延时，名字收敛为「（顺延×2）」，不再叠成「（顺延）（顺延）」
+- 添加计划与顺延都支持跨天、多段、课表外时段；推荐顺延只占够用的那几节
+- 一次跳过多个版本时，更新卡按版本各弹一次（最多补最近 3 版），不再只看到最后一版
+- 旧版 `plantracker-open-v2.4.2.apk` 暂留，供仍在缓存旧清单的客户端下载
 
 ## 更新流程
 
@@ -38,8 +42,8 @@
 2. 修改 `version.json` 的 `versionCode`、`versionName`、`apkUrl`、`notes`
 3. 提交推送到 `main`，Pages 会在 1～2 分钟内自动重新发布
 
-客户端读取 `version.json` 时采用双源：优先 GitHub Pages，失败自动回退到 jsDelivr
-（`https://cdn.jsdelivr.net/gh/coolflower1984/plantracker@main/version.json`）。
+客户端读取 `version.json` 时按顺序尝试三个源：GitHub Pages → `raw.githubusercontent.com`
+（`https://raw.githubusercontent.com/coolflower1984/plantracker/main/version-public.json`）→ jsDelivr。
 
 > **注意**：jsDelivr 对 `@main` 有约 12 小时的缓存，推完代码它仍可能返回上一版，
 > 导致回退线路误报「已是最新」。每次发版后必须手动清缓存，query 参数无效：

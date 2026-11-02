@@ -1,11 +1,11 @@
 {
-  "versionCode": 29,
-  "versionName": "2.4.2",
-  "apkUrl": "https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.2.apk",
-  "iosVersion": "2.4.2",
+  "versionCode": 32,
+  "versionName": "2.4.16",
+  "apkUrl": "https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.16.apk",
+  "iosVersion": "2.4.16",
   "iosUrl": "https://coolflower1984.github.io/plantracker/ios.html",
   "iosInstall": "Safari 打开 → 分享 → 添加到主屏幕（PWA，无需越狱/无需签名）",
   "webUrl": "https://coolflower1984.github.io/plantracker/web.html",
-  "notes": "公开版的「检查更新」不再依赖开发机的临时地址：版本信息改从 GitHub Pages 读取，失败自动回退 jsDelivr 备用线路，下载链接也换成固定地址。之前那台机器一停，所有装公开版的人都查不到新版本，点下载还会跳到 404。",
+  "notes": "两段之间空满 30 分钟就分开：并段的分界线从「不超过 30 分钟」改成「不到 30 分钟」，中间空 29 分钟以内仍算一段，正好空 30 分钟就拆成两张卡、各记各的完成度；重叠必并、跨天不并，选时段/今日页/全部计划三处口径一致。另外修好跳版本时的更新卡：一次跨两个版本会把两版的卡分开各弹一次，不再只看到最后一版。公开版不带任何人的内置课表，导入自己的 Excel 即可开始。",
   "minVersion": "2.2.6"
 }
