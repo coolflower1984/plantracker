@@ -666,6 +666,64 @@ body.wg-dragging{-webkit-user-select:none;user-select:none;}
 .card-dots{padding:10px 0 2px;}
 .card-step{font-size:11.5px; font-weight:700; color:var(--muted); text-align:center; padding-top:1px;}
 .card-foot{padding:0 20px; margin-top:6px;}
+
+/* ===== v2.4.17 待分类：先记个名字，再去周总览拖到格子上排时间 ===== */
+.inbox{position:fixed; right:12px; bottom:calc(74px + var(--safe-b)); z-index:34;
+  display:flex; flex-direction:column; align-items:flex-end; gap:8px;}
+.inbox-fab{display:flex; align-items:center; gap:6px; border:none; border-radius:999px;
+  padding:9px 13px 9px 11px; background:linear-gradient(135deg,#3b82f6,#8b5cf6); color:#fff;
+  font-size:13px; font-weight:700; font-family:inherit; line-height:1;
+  box-shadow:0 8px 22px rgba(59,130,246,.32), 0 2px 6px rgba(15,23,42,.12);
+  transition:transform .16s, box-shadow .16s, background .16s;}
+.inbox-fab .inbox-ico{font-size:15px; line-height:1;}
+.inbox-fab b{min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:rgba(255,255,255,.94);
+  color:#4c1d95; font-size:11.5px; line-height:18px; text-align:center; font-variant-numeric:tabular-nums;}
+.inbox-fab.zero{background:rgba(255,255,255,.96); color:#475569; box-shadow:0 4px 14px rgba(15,23,42,.13);}
+.inbox-fab.zero b{background:#eef2f7; color:#64748b;}
+.inbox-fab:active{transform:scale(.95);}
+.inbox.dragging .inbox-fab{transform:scale(1.05);}
+.inbox.dragging .inbox-pop{opacity:.28; pointer-events:none;}
+.inbox-pop{display:none; width:min(276px, calc(100vw - 24px)); max-height:min(350px, 55vh);
+  background:var(--card); border-radius:16px; overflow:hidden;
+  box-shadow:0 18px 42px rgba(15,23,42,.26); border:1px solid rgba(148,163,184,.22);
+  transition:opacity .16s;}
+.inbox.open .inbox-pop{display:flex; flex-direction:column;}
+.inbox-head{display:flex; align-items:center; gap:8px; padding:11px 12px 7px;}
+.inbox-head b{font-size:13.5px; font-weight:800; flex:0 0 auto;}
+.inbox-head em{flex:1 1 auto; min-width:0; font-size:10.5px; font-style:normal; color:var(--muted); line-height:1.35;}
+.inbox-close{flex:0 0 auto; width:26px; height:26px; border:none; border-radius:8px; background:#f1f5f9;
+  color:#64748b; font-size:13px; line-height:1;}
+.inbox-list{flex:1 1 auto; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:0 8px 2px; touch-action:pan-y;}
+.inbox-empty{padding:4px 6px 12px; font-size:12px; color:var(--muted); line-height:1.65;}
+.ib-item{display:flex; align-items:center; gap:7px; padding:8px 6px; border-radius:10px;}
+.ib-item:active{background:#f8fafc;}
+.ib-grip{flex:0 0 auto; width:14px; color:#cbd5e1; font-size:12px; letter-spacing:-2px; line-height:1; text-align:center;}
+.ib-name{flex:1 1 auto; min-width:0; font-size:13px; font-weight:600; word-break:break-all; line-height:1.35;}
+.ib-del{flex:0 0 auto; width:25px; height:25px; border:none; border-radius:7px; background:#f8fafc;
+  color:#94a3b8; font-size:12px; line-height:1;}
+.ib-del:active{background:#fee2e2; color:var(--danger);}
+.ib-edit{flex:1 1 auto; min-width:0; font-family:inherit; font-size:13px; padding:4px 7px; border-radius:8px;
+  border:1px solid #bfdbfe; background:#fff;}
+.ib-edit:focus{outline:none; border-color:#60a5fa; box-shadow:0 0 0 3px rgba(59,130,246,.14);}
+.inbox-new{display:flex; gap:6px; padding:8px; border-top:1px solid var(--line); background:#fbfcfe;}
+.inbox-new input{flex:1 1 auto; min-width:0; font-family:inherit; font-size:13px; padding:8px 10px;
+  border:1px solid var(--line); border-radius:10px; background:#fff;}
+.inbox-new input:focus{outline:none; border-color:#93c5fd; box-shadow:0 0 0 3px rgba(59,130,246,.12);}
+.inbox-add{flex:0 0 auto; width:38px; border:none; border-radius:10px; background:var(--primary);
+  color:#fff; font-size:17px; line-height:1; font-family:inherit;}
+.inbox-add:active{background:#1d4ed8;}
+/* 拖到格子上松手后的时长选择 */
+.ibt-when{font-size:13px; font-weight:800; color:#334155; margin:0 0 2px;}
+.ibt-task{font-size:12.5px; color:var(--muted); line-height:1.5; word-break:break-all;}
+.ibt-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px;}
+.ibt-opt{border:1px solid var(--line); background:#fff; border-radius:12px; padding:10px 4px 9px;
+  font-family:inherit; display:flex; flex-direction:column; gap:3px; align-items:center;}
+.ibt-opt b{font-size:14px; font-weight:800; color:var(--text);}
+.ibt-opt em{font-size:10.5px; font-style:normal; color:var(--muted);}
+.ibt-opt.on{border-color:#60a5fa; background:#eff6ff;}
+.ibt-opt:active{border-color:#93c5fd; background:#f0f7ff;}
+.ibt-warn{margin-top:11px; font-size:11.5px; color:#b45309; background:#fffbeb;
+  border:1px solid #fde68a; border-radius:9px; padding:7px 9px; line-height:1.55; display:none;}
 </style>
 </head>
 <body>
@@ -828,6 +886,41 @@ body.wg-dragging{-webkit-user-select:none;user-select:none;}
     <button class="sheet-close" id="multi-close">✕</button>
   </div>
   <div class="sheet-body" id="multi-list"></div>
+</div>
+
+<!-- 待分类：随手记一条，周总览里长按拖到格子上再排时间 -->
+<div class="inbox" id="inbox">
+  <div class="inbox-pop" id="inbox-pop">
+    <div class="inbox-head">
+      <b>待分类</b>
+      <em id="inbox-hint">长按条目拖到周总览的格子上</em>
+      <button class="inbox-close" id="inbox-close" aria-label="收起">✕</button>
+    </div>
+    <div class="inbox-list" id="inbox-list"></div>
+    <div class="inbox-new">
+      <input type="text" id="inbox-input" placeholder="写个任务名，回车就记下" maxlength="60" enterkeyhint="done">
+      <button class="inbox-add" id="inbox-add" aria-label="加入待分类">＋</button>
+    </div>
+  </div>
+  <button class="inbox-fab zero" id="inbox-fab" aria-label="待分类">
+    <span class="inbox-ico">📥</span><span>待分类</span><b id="inbox-count">0</b>
+  </button>
+</div>
+
+<!-- 待分类落到格子后：选时长 -->
+<div class="backdrop" id="ibt-backdrop"></div>
+<div class="sheet" id="ibt-sheet">
+  <div class="sheet-head">
+    <div class="sheet-title">放到这段时间</div>
+    <button class="sheet-close" id="btn-ibt-cancel" aria-label="关闭">✕</button>
+  </div>
+  <div class="sheet-body">
+    <div class="ibt-when" id="ibt-when">—</div>
+    <div class="ibt-task" id="ibt-task"></div>
+    <div class="ibt-grid" id="ibt-grid"></div>
+    <div class="ibt-warn" id="ibt-warn"></div>
+    <div class="hint">选完立刻变成正常计划，今日页、全部计划、周总览、复盘一起更新；时长不合适，之后长按色块还能上下拖。</div>
+  </div>
 </div>
 
 <!-- 底部导航 -->
@@ -1425,7 +1518,13 @@ function normalize(d){
   });
   var cardState = (d.cardState && typeof d.cardState === "object") ? d.cardState : {seen:{}, lastVersion:null};
   if(!cardState.seen || typeof cardState.seen !== "object") cardState.seen = {};
-  return {slots:slots, slotMode:slotModeV, courses:courses, plans:plans, currentWeek:currentWeek, weekAnchor:weekAnchor, weekBase:weekBase, checkins:checkins, weeklyReflections:weeklyReflections, showCheck:showCheck, showWeekOverview:showWeekOverview, classNotes:classNotes, skips:skips, cardState:cardState, semesterId:d.semesterId || null};
+  /* 待分类：只有名字，还没有日期和时间；分配到格子上之后才变成正式计划 */
+  var inbox = Array.isArray(d.inbox) ? d.inbox.filter(function(x){
+    return x && typeof x.task === "string" && x.task.trim();
+  }).map(function(x){
+    return {id: x.id || uid(), task: String(x.task).trim().slice(0, 60), createdAt: Number(x.createdAt) || Date.now()};
+  }) : [];
+  return {slots:slots, slotMode:slotModeV, courses:courses, plans:plans, currentWeek:currentWeek, weekAnchor:weekAnchor, weekBase:weekBase, checkins:checkins, weeklyReflections:weeklyReflections, showCheck:showCheck, showWeekOverview:showWeekOverview, classNotes:classNotes, skips:skips, cardState:cardState, inbox:inbox, semesterId:d.semesterId || null};
 }
 
 function loadData(){
@@ -3106,6 +3205,13 @@ function wgUpdateView(){
     return;
   }
 
+  /* 待分类：手指已经搬离格子，就别再画一个「松手就放这儿」的落点骗人 */
+  if(st.mode === "inbox" && !st.hit){
+    var ghx = document.getElementById("wg-ghost");
+    if(ghx && ghx.parentNode) ghx.parentNode.removeChild(ghx);
+    return;
+  }
+
   var col = wgColByDay(st.tDay);
   var gh = document.getElementById("wg-ghost");
   if(!col){ if(gh && gh.parentNode) gh.parentNode.removeChild(gh); return; }
@@ -3218,6 +3324,24 @@ function wgApplyPointer(x, y){
   /* 手指贴着左右边缘 = 在撞周，不是在调时间。撞第二下得上下蹭，这里若还按位移
      算时间，蹭一下就把这只鸟的时间推走了 —— 边缘上时间一律冻住 */
   var atEdge = !!wgEdgeZone(x);
+  /* 从待分类拖出来的：手指在哪一格就落哪一格的哪一分钟，不需要基准位移。
+     这里不看「左右边缘」（那是给已有块撞周用的）：待分类是往格子里放东西，
+     周日那一列本来就贴着右边缘，排除掉就永远放不进去 */
+  if(st.mode === "inbox"){
+    var hb = wgHitTest(x, y);
+    if(hb){
+      st.hit = true;
+      st.tDay = hb.day;
+      st.t0 = Math.max(0, Math.min(24 * 60 - st.dur, Math.round(hb.min / WG_SNAP_MIN) * WG_SNAP_MIN));
+      st.t1 = st.t0 + st.dur;
+      st.moved = true;
+    } else {
+      st.hit = false;   /* 手指搬离了格子：松手就不算数 */
+    }
+    wgMoveFloat(x, y);
+    wgUpdateView();
+    return;
+  }
   if(st.mode === "lift" || st.birdMode){
     /* 撞周时手指压在屏幕边缘，横向上多半是压在一列被裁掉一半的边上：
        这会儿按「手指在哪就落哪」会把跨周后的落点又拽回边缘那一列，
@@ -3276,7 +3400,7 @@ function wgPointerMove(e){
      从周三的鸟一路划到屏幕左边，途中会扫过每一列 —— 拿某一次扫到的列当落点，
      最后就落在最左边那一列（看着像「还在原来的位置」）。所以贴边期间日期锁死在
      「按下那天 ± 翻过的周数」，只有把手移开边缘，才重新按手指所在列算 */
-  if(!z){
+  if(!z || st.mode === "inbox"){
     st.weekShift = 0;   /* 离开边缘：这一轮翻周结束，下次贴着谁算谁 */
     st.edgeDay = null;
     if(day && !(st.nest && st.nest.on)) st.tDay = day;
@@ -3288,7 +3412,7 @@ function wgPointerMove(e){
      两下分别是：①从外面撞进来（z 变了）②停在边上上下蹭一下。
      但如果按下时就贴着边（周天那只鸟），先不算数 —— 得先把手指挪出去再回来，
      否则一按住就已经「撞」了一下，稍微一动就误翻周 */
-  if(z && wgAtHScrollEnd(z)){
+  if(z && wgAtHScrollEnd(z) && st.mode !== "inbox"){
     if(z !== st.zone) wgEdgeBump(z);
     else if(st.bumpOk && Math.abs(y - (st.bumpY || y)) >= 10) wgEdgeBump(z);
     st.bumpY = y;
@@ -3322,6 +3446,18 @@ function wgPointerUp(){
   if(edge && edge.parentNode) edge.parentNode.removeChild(edge);
   if(!active) return;
   if(moved) wgSuppressUntil = Date.now() + 800;
+  /* 待分类：先收起拖拽态，再问一句多长，选完才真正写成计划 */
+  if(st.mode === "inbox"){
+    finishInboxDrag();
+    var hEnd = (st.lastX != null) ? wgHitTest(st.lastX, st.lastY) : null;
+    if(!hEnd){
+      toast("拖到课表格子上再松手");
+      renderWeekOverview();
+      return;
+    }
+    openInboxDropSheet(st.inboxId, st.plan.task, st.tDay, Math.round(st.t0 / WG_SNAP_MIN) * WG_SNAP_MIN);
+    return;
+  }
   var g = wgGeomCache;
   var day = st.tDay || st.day;
   var dropDur = Math.round(st.dur);
@@ -3374,6 +3510,7 @@ function wgAbortDrag(){
   if(g && g.parentNode) g.parentNode.removeChild(g);
   wgNestHide();
   wgDropBird();
+  if(st.mode === "inbox") finishInboxDrag();
   if(wasActive) renderWeekOverview();
 }
 
@@ -3422,6 +3559,286 @@ function wgLiftFromSheet(planId, x, y){
   wgUpdateView();
   wgRafStart();
   try{ if(navigator.vibrate) navigator.vibrate(14); }catch(err){}
+}
+
+/* ============ v2.4.17 待分类（Inbox） ============
+   随手记一条只有名字的任务，不占日期与时间；到「周总览」长按它拖到格子上，
+   选个时长就变成正常计划，今日 / 全部 / 周总览 / 复盘一起更新。 */
+var ibDrop = null;      /* 刚落下、等着选时长的那一条 */
+var ibPress = null;     /* 小框里按住的动作：满 260ms 才算拖，动了就当滚动 */
+var ibFab = null;       /* 长按胶囊上下挪位置 */
+var ibFabJustMoved = 0;
+
+function inboxList(){
+  if(!Array.isArray(data.inbox)) data.inbox = [];
+  return data.inbox;
+}
+function inboxFind(id){
+  var arr = inboxList();
+  for(var i = 0; i < arr.length; i++){ if(arr[i].id === id) return arr[i]; }
+  return null;
+}
+function renderInbox(){
+  var fab = document.getElementById("inbox-fab");
+  if(!fab) return;
+  var arr = inboxList();
+  var cnt = document.getElementById("inbox-count");
+  if(cnt) cnt.textContent = arr.length;
+  fab.classList.toggle("zero", !arr.length);
+  var list = document.getElementById("inbox-list");
+  if(!list) return;
+  list.innerHTML = arr.length ? arr.map(function(x){
+    return '<div class="ib-item" data-inbox-id="' + esc(x.id) + '">' +
+      '<span class="ib-grip">≡</span>' +
+      '<span class="ib-name" data-ib-name="' + esc(x.id) + '">' + esc(x.task) + '</span>' +
+      '<button class="ib-del" data-ib-del="' + esc(x.id) + '" aria-label="删除">✕</button>' +
+    '</div>';
+  }).join("") : '<div class="inbox-empty">还没有待分类。<br>在下面写个任务名，回车就记下来；去「周总览」长按它，拖到格子上就能排时间。</div>';
+}
+function openInbox(){
+  var box = document.getElementById("inbox");
+  if(!box) return;
+  renderInbox();
+  box.classList.add("open");
+  var inp = document.getElementById("inbox-input");
+  if(inp) setTimeout(function(){ try{ inp.focus(); }catch(e){} }, 80);
+}
+function closeInbox(){
+  var box = document.getElementById("inbox");
+  if(box) box.classList.remove("open");
+}
+function toggleInbox(){
+  var box = document.getElementById("inbox");
+  if(!box) return;
+  if(box.classList.contains("open")) closeInbox(); else openInbox();
+}
+function inboxAdd(){
+  var inp = document.getElementById("inbox-input");
+  if(!inp) return;
+  var name = String(inp.value || "").trim();
+  if(!name){ toast("先写个任务名"); try{ inp.focus(); }catch(e){} return; }
+  inboxList().push({id: uid(), task: name.slice(0, 60), createdAt: Date.now()});
+  inp.value = "";
+  saveData(); renderInbox();
+  try{ inp.focus(); }catch(e){}
+  toast("已放进待分类");
+}
+function inboxDelete(id){
+  var it = inboxFind(id);
+  if(!it) return;
+  data.inbox = inboxList().filter(function(x){ return x.id !== id; });
+  saveData(); renderInbox();
+  toast("已删掉「" + it.task + "」");
+}
+/* 点名字直接改，改完回车或点别处就存 */
+function inboxStartRename(id){
+  var el = document.querySelector('[data-ib-name="' + id + '"]');
+  if(!el || el.querySelector("input")) return;
+  var cur = el.textContent;
+  el.innerHTML = '<input class="ib-edit" maxlength="60" value="' + esc(cur) + '">';
+  var inp = el.querySelector("input");
+  setTimeout(function(){ try{ inp.focus(); inp.select(); }catch(e){} }, 30);
+  var done = false;
+  function finish(ok){
+    if(done) return;
+    done = true;
+    var v = ok ? String(inp.value || "").trim().slice(0, 60) : "";
+    var it = inboxFind(id);
+    if(ok && v && it){ it.task = v; saveData(); }
+    renderInbox();
+  }
+  inp.addEventListener("blur", function(){ finish(true); });
+  inp.addEventListener("keydown", function(ev){
+    if(ev.key === "Enter"){ ev.preventDefault(); finish(true); }
+    else if(ev.key === "Escape"){ ev.preventDefault(); finish(false); }
+  });
+}
+
+/* ---------- 从待分类拖到周总览 ---------- */
+function inboxPointerDown(e){
+  if(wgDragState) return;
+  if(e.pointerType === "mouse" && e.button !== 0) return;
+  var item = e.target.closest(".ib-item");
+  if(!item) return;
+  if(e.target.closest("[data-ib-del]") || e.target.closest(".ib-edit")) return;
+  var id = item.dataset.inboxId, x = e.clientX, y = e.clientY;
+  if(ibPress && ibPress.timer) clearTimeout(ibPress.timer);
+  ibPress = {id: id, x: x, y: y, timer: setTimeout(function(){
+    if(!ibPress) return;
+    ibPress = null;
+    startInboxDrag(id, x, y);
+  }, 260)};
+}
+function startInboxDrag(id, x, y){
+  var it = inboxFind(id);
+  if(!it || wgDragState) return;
+  /* 没有周总览就没地方落，别把人送到一个进不去的页面 */
+  if(data.showWeekOverview === false){
+    toast("先把「周总览」打开（数据 → 显示周总览 tab）");
+    return;
+  }
+  /* 不在周总览就先切过去。列表只收起、不从 DOM 拿掉，触摸序列才不会断在中间 */
+  if(currentTabName !== "week"){
+    closeInbox();
+    switchTab("week");
+  }
+  var box = document.getElementById("inbox");
+  if(box) box.classList.add("dragging");
+  if(!overviewWeekStart) overviewWeekStart = mondayOf(todayStr());
+  var g = wgGeomCache || wgGeomOf();
+  var hit = g ? wgHitTest(x, y) : null;
+  var day = hit ? hit.day : overviewWeekStart;
+  var t0 = hit ? Math.round(hit.min / WG_SNAP_MIN) * WG_SNAP_MIN : 8 * 60;
+  t0 = Math.max(0, Math.min(24 * 60 - 45, t0));
+  var fl = document.createElement("div");
+  fl.className = "wg-float"; fl.id = "wg-float";
+  fl.innerHTML = "<b></b><span>" + esc(it.task) + "</span>";
+  document.body.appendChild(fl);
+  wgDragState = {
+    mode: "inbox", block: null, float: fl, plan: {task: it.task},
+    inboxId: it.id, hit: !!hit,
+    day: day, tDay: day,
+    t0: t0, t1: t0 + 45, t0Base: t0, dur: 45, grabMin: 0,
+    allowOut: true, birdMode: false, nest: null, nestRanges: null,
+    lastX: x, lastY: y, zone: null,
+    bumpY: y, bumpOk: true, hits: [], bumpCool: 0, weekShift: 0,
+    startX: x, startY: y, active: true, moved: true, timer: null
+  };
+  document.body.classList.add("wg-dragging");
+  wgMoveFloat(x, y);
+  wgUpdateView();
+  wgRafStart();
+  try{ if(navigator.vibrate) navigator.vibrate(14); }catch(e){}
+}
+function finishInboxDrag(){
+  var box = document.getElementById("inbox");
+  if(box) box.classList.remove("dragging");
+  closeInbox();
+}
+
+/* ---------- 落点确定后选时长 ---------- */
+function closeInboxDropSheet(){
+  ibDrop = null;
+  var b = document.getElementById("ibt-backdrop"), s = document.getElementById("ibt-sheet");
+  if(b) b.classList.remove("open");
+  if(s) s.classList.remove("open");
+}
+function ibWarnText(t0, t1){
+  var g = wgGeomOf();
+  var parts = [];
+  if(t1 > 24 * 60) parts.push("会跨到第二天凌晨");
+  var periods = (g && wgOnGrid([[t0, t1]], g)) ? tToPeriods([t0, t1], slotMinutes(data.slots), data.slots) : [];
+  parts.push(periods.length
+    ? (slotMode() === "grad" ? ("占第 " + periodsStr(periods) + " 段") : ("占 " + periodsLabel(periods)))
+    : "课表外时段");
+  if(periods.length && ibDrop){
+    var cf = conflictCourses(ibDrop.day, periods);
+    if(cf.length) parts.push("这段时间有 " + cf.length + " 门课（" + cf.map(function(c){ return c.name; }).join("、") + "）");
+  }
+  return parts.join(" · ");
+}
+function renderInboxDropSheet(){
+  var d = ibDrop;
+  if(!d) return;
+  document.getElementById("ibt-when").textContent =
+    (WD[weekdayOf(d.day)] || "") + " " + d.day.slice(5).replace("-", "/") + " · " + fmtMin(d.t0);
+  document.getElementById("ibt-task").textContent = d.task;
+  var opts = [15, 30, 45, 60, 90, 120];
+  document.getElementById("ibt-grid").innerHTML = opts.map(function(m){
+    var end = d.t0 + m, sub;
+    if(end >= 24 * 60) sub = "次日 " + fmtMin(end - 24 * 60);
+    else if(end === 24 * 60) sub = "24:00";
+    else sub = fmtMinEnd(end);
+    return '<button class="ibt-opt' + (m === d.dur ? " on" : "") + '" data-ibt="' + m + '">' +
+      '<b>' + m + ' 分钟</b><em>' + sub + '</em></button>';
+  }).join("");
+  var warn = document.getElementById("ibt-warn");
+  warn.textContent = ibWarnText(d.t0, d.t0 + d.dur);
+  warn.style.display = "block";
+}
+function openInboxDropSheet(id, task, day, t0){
+  ibDrop = {id: id, task: task, day: day, t0: t0, dur: 45};
+  renderInboxDropSheet();
+  document.getElementById("ibt-backdrop").classList.add("open");
+  document.getElementById("ibt-sheet").classList.add("open");
+}
+function inboxDropPick(dur){
+  if(!ibDrop) return;
+  ibDrop.dur = dur;
+  var btns = document.querySelectorAll("#ibt-grid .ibt-opt");
+  for(var i = 0; i < btns.length; i++){ btns[i].classList.toggle("on", Number(btns[i].dataset.ibt) === dur); }
+  var warn = document.getElementById("ibt-warn");
+  if(warn){ warn.textContent = ibWarnText(ibDrop.t0, ibDrop.t0 + dur); warn.style.display = "block"; }
+}
+function commitInboxDrop(){
+  var d = ibDrop;
+  if(!d) return;
+  var it = inboxFind(d.id);
+  if(!it){ closeInboxDropSheet(); toast("这条已经不在待分类里了"); return; }
+  var dur = Math.max(5, Math.round(Number(d.dur) || 45));
+  var t = [d.t0, d.t0 + dur];
+  var g = wgGeomOf();
+  var periods = (g && wgOnGrid([t], g)) ? tToPeriods(t, slotMinutes(data.slots), data.slots) : [];
+  data.plans.push({
+    id: uid(), date: d.day, periods: periods, t: t, task: it.task,
+    estMin: dur, actMin: null, completion: 0, partCompletion: null, partStartComp: null,
+    problem: "", reflection: "", adjustment: "", createdAt: Date.now(),
+    occupied: false, color: "", closedAt: null,
+    remindStart: false, remindDdl: false, remindProgress: false, ddlAt: null
+  });
+  data.inbox = inboxList().filter(function(x){ return x.id !== d.id; });
+  closeInboxDropSheet();
+  saveData();
+  refreshAll();
+  try{ if(window.syncReminders) syncReminders(); }catch(e){}
+  toast("已排到 " + (WD[weekdayOf(d.day)] || "") + " " + fmtMin(t[0]) + "–" + fmtMinEnd(t[1]));
+}
+
+/* ---------- 胶囊可以长按上下挪，免得挡住周总览 ---------- */
+function ibLoadPos(){
+  try{
+    var v = parseInt(localStorage.getItem("planTrackerInboxPos"), 10);
+    var el = document.getElementById("inbox");
+    if(el && v > 0 && v < (window.innerHeight || 800) - 120) el.style.bottom = v + "px";
+  }catch(e){}
+}
+function inboxFabDown(e){
+  if(e.pointerType === "mouse" && e.button !== 0) return;
+  var box = document.getElementById("inbox");
+  if(!box) return;
+  var r = box.getBoundingClientRect();
+  ibFab = {y0: e.clientY, b0: (window.innerHeight || 800) - r.bottom, on: false, moved: false,
+    timer: setTimeout(function(){
+      if(!ibFab) return;
+      ibFab.on = true;
+      try{ if(navigator.vibrate) navigator.vibrate(10); }catch(err){}
+    }, 300)};
+}
+function inboxFabMove(e){
+  if(!ibFab) return;
+  if(!ibFab.on){
+    if(Math.abs(e.clientY - ibFab.y0) > 10){
+      if(ibFab.timer) clearTimeout(ibFab.timer);
+      ibFab.timer = null; ibFab.moved = true;
+    }
+    return;
+  }
+  var maxB = (window.innerHeight || 800) - 140;
+  var b = Math.max(74, Math.min(maxB, ibFab.b0 - (e.clientY - ibFab.y0)));
+  var box = document.getElementById("inbox");
+  if(box) box.style.bottom = Math.round(b) + "px";
+  ibFab.moved = true;
+  if(e.cancelable) e.preventDefault();
+}
+function inboxFabUp(){
+  if(!ibFab) return;
+  if(ibFab.timer) clearTimeout(ibFab.timer);
+  var box = document.getElementById("inbox");
+  if(ibFab.on && ibFab.moved && box){
+    try{ localStorage.setItem("planTrackerInboxPos", String(Math.round(parseFloat(box.style.bottom) || 74))); }catch(e){}
+  }
+  if(ibFab.moved) ibFabJustMoved = Date.now();
+  ibFab = null;
 }
 
 /* ---------- 一个时段多个安排：列出并选择，可长按拖出 ---------- */
@@ -3540,7 +3957,7 @@ function semStats(id){
 function blankData(mode){
   mode = mode === "grad" ? "grad" : "school";
   return {slots: cloneSlots(mode === "grad" ? GRAD_SLOTS : DEFAULT_SLOTS), slotMode: mode,
-    courses:[], plans:[], currentWeek:1, weekAnchor: mondayOf(todayStr()), weekBase:1, checkins:[], weeklyReflections:[],
+    courses:[], plans:[], inbox:[], currentWeek:1, weekAnchor: mondayOf(todayStr()), weekBase:1, checkins:[], weeklyReflections:[],
     showCheck:true, showWeekOverview:true, classNotes:[], skips:[],
     cardState: (typeof data !== "undefined" && data && data.cardState) ? JSON.parse(JSON.stringify(data.cardState)) : {seen:{}, lastVersion:null},
     semesterId: semState ? semState.current : null};
@@ -3810,7 +4227,7 @@ function autoSyncWeek(){
   saveData();
   return data.currentWeek !== before ? data.currentWeek : 0;
 }
-function refreshAll(){ renderToday(); renderAll(); renderTimetable(); renderReview(); renderData(); if(data.showWeekOverview !== false) renderWeekOverview(); }
+function refreshAll(){ renderToday(); renderAll(); renderTimetable(); renderReview(); renderData(); renderInbox(); if(data.showWeekOverview !== false) renderWeekOverview(); }
 
 /* ============ 复盘（周报 / 课前课后 check） ============ */
 /* 某一周（默认当前周）的周一到周日。周次与日期的对应关系挂在锚点上，
@@ -5372,6 +5789,7 @@ function mergeData(local, incoming){
     weeklyReflections: local.weeklyReflections.map(function(r){ return Object.assign({}, r); }),
     showCheck: local.showCheck,
     classNotes: (local.classNotes || []).map(function(n){ return Object.assign({}, n); }),
+    inbox: (local.inbox || []).map(function(x){ return {id:x.id, task:x.task, createdAt:x.createdAt}; }),
     skips: (local.skips || []).map(function(s){ return {id:s.id, courseId:s.courseId, date:s.date, periods:s.periods.slice(), t:(s.t ? s.t.slice() : null)}; })
   };
 
@@ -5423,6 +5841,15 @@ function mergeData(local, incoming){
     var i = skIdx[s.courseId + "|" + s.date];
     if(i == null){ merged.skips.push(copy); skIdx[s.courseId + "|" + s.date] = merged.skips.length - 1; }
     else { merged.skips[i] = copy; }
+  });
+
+  // 待分类按 id 合并：同一条只留一份，名字以较新的为准
+  var ibIdx = {};
+  merged.inbox.forEach(function(x, i){ ibIdx[x.id] = i; });
+  (incoming.inbox || []).forEach(function(x){
+    var i = ibIdx[x.id];
+    if(i == null){ merged.inbox.push({id:x.id, task:x.task, createdAt:x.createdAt}); ibIdx[x.id] = merged.inbox.length - 1; }
+    else if((x.createdAt || 0) > (merged.inbox[i].createdAt || 0)){ merged.inbox[i] = {id:x.id, task:x.task, createdAt:x.createdAt}; }
   });
 
   return merged;
@@ -5488,7 +5915,7 @@ function onSyncAction(){
 }
 
 /* ============ 应用更新 ============ */
-var APP_VERSION_NAME = "2.4.16";
+var APP_VERSION_NAME = "2.4.17";
 
 function isInApp(){
   return typeof window.AndroidBridge !== "undefined" && window.AndroidBridge != null;
@@ -5702,6 +6129,18 @@ var TUTORIAL_CARDS = [
 ];
 var tutShowAll = false;
 var UPDATE_CARDS = {
+  "2.4.17": [
+    {id:"upd-2417-1", kind:"feat", icon:"⚡", title:"先记名字，稍后再排时间", points:[
+      "右下角多了「待分类」：点开写个任务名、回车就记下，不用填日期，也不用挑时段。",
+      "到「周总览」长按这一条，拖到想去的格子松手，选个时长（15 分钟到 2 小时），当场变成正常计划。",
+      "排好之后今日页、全部计划、周总览、复盘一起更新，待分类里自动消失；没排时间的只待在待分类里，不会混进今日时间轴。",
+      "在哪个页面都能记：点胶囊就写，顺手记一条再去干别的。"
+    ]},
+    {id:"upd-2417-2", kind:"feat", icon:"🎈", title:"小框能挪位置，条目能改名", points:[
+      "长按右下角那枚胶囊再上下拖，可以把它挪开，免得挡住周总览的周日晚间；位置会记住。",
+      "点待分类里的任务名直接改，点 ✕ 删掉；拖到格子外松手不会误建计划，那条还留在原处。"
+    ]}
+  ],
   "2.4.16": [
     {id:"upd-2416-1", kind:"feat", icon:"✂️", title:"两段之间空满 30 分钟就分开", points:[
       "并段的分界线从「不超过 30 分钟」收紧到「不到 30 分钟」：中间空 29 分钟以内仍算一段，正好空 30 分钟就拆成两张卡、各记各的完成度。",
@@ -6631,6 +7070,7 @@ function init(){
 
   document.addEventListener("click", function(e){
     if(Date.now() < wgSuppressUntil || Date.now() < dpSuppressUntil) return;
+    if(!e.target.closest("#inbox")) closeInbox();
     var caItem = e.target.closest("#timeline [data-ca]");
     if(caItem){ openCourseAction(caItem.dataset.ca, viewDate); return; }
     var planItem = e.target.closest("#timeline [data-planid], #offgrid [data-planid]");
@@ -6674,6 +7114,49 @@ function init(){
       closePlanSheet(); closeCourseSheet(); closeBatch(); closeConfirm(); closeCarryoverSheet(); closeCheckSheet(); closeCourseAction(); closePlanAction(); closeFillSheet(); closeSegPicker();
     }
   });
+
+  /* ---- 待分类 ---- */
+  ibLoadPos();
+  document.getElementById("inbox-fab").addEventListener("click", function(){
+    if(Date.now() - ibFabJustMoved < 380) return;   /* 刚长按挪过位置，这一下不算点开 */
+    toggleInbox();
+  });
+  document.getElementById("inbox-fab").addEventListener("pointerdown", inboxFabDown);
+  document.getElementById("inbox-close").addEventListener("click", function(e){ e.stopPropagation(); closeInbox(); });
+  document.getElementById("inbox-add").addEventListener("click", inboxAdd);
+  document.getElementById("inbox-input").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){ e.preventDefault(); inboxAdd(); }
+  });
+  document.getElementById("inbox-list").addEventListener("pointerdown", inboxPointerDown);
+  document.getElementById("inbox-list").addEventListener("click", function(e){
+    var del = e.target.closest("[data-ib-del]");
+    if(del){ e.stopPropagation(); inboxDelete(del.dataset.ibDel); return; }
+    var nm = e.target.closest("[data-ib-name]");
+    if(nm && !wgDragState){ inboxStartRename(nm.dataset.ibName); }
+  });
+  document.addEventListener("pointermove", function(e){
+    if(ibPress && (Math.abs(e.clientX - ibPress.x) > 9 || Math.abs(e.clientY - ibPress.y) > 9)){
+      if(ibPress.timer) clearTimeout(ibPress.timer);
+      ibPress = null;
+    }
+    inboxFabMove(e);
+  }, {passive: false});
+  document.addEventListener("pointerup", function(){
+    if(ibPress){ if(ibPress.timer) clearTimeout(ibPress.timer); ibPress = null; }
+    inboxFabUp();
+  });
+  document.addEventListener("pointercancel", function(){
+    if(ibPress){ if(ibPress.timer) clearTimeout(ibPress.timer); ibPress = null; }
+    inboxFabUp();
+  });
+  /* 时长面板：点一下就定，不用再点确认 */
+  document.getElementById("ibt-grid").addEventListener("click", function(e){
+    var b = e.target.closest("[data-ibt]");
+    if(b){ inboxDropPick(Number(b.dataset.ibt)); commitInboxDrop(); }
+  });
+  document.getElementById("btn-ibt-cancel").addEventListener("click", closeInboxDropSheet);
+  document.getElementById("ibt-backdrop").addEventListener("click", closeInboxDropSheet);
+  renderInbox();
 
   renderSlotEditor();
   syncWeekTabVisibility();

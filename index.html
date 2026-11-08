@@ -49,14 +49,15 @@ h1{margin:12px 0 4px;font-size:22px;font-weight:800;}
 <div class="card">
   <div class="icon">📅</div>
   <h1>计划追踪·公开版</h1>
-  <p class="ver">v2.4.16 · Android 7.0+ ／ iOS 15+ · 无内置任何人的课表</p>
+  <p class="ver">v2.4.17 · Android 7.0+ ／ iOS 15+ · 无内置任何人的课表</p>
   <p class="dlcount" id="dlcount"></p>
 
   <div class="desc">
     北航学生课表 + 计划复盘工具。<b>安装后请导入你自己的课表</b>（支持学校官网 Excel、JSON 备份）。<br>
     纯本地运行、完全离线，数据只存在你自己的设备里；支持「🔗 同步码」，手机与电脑之间可互相同步。<br>
-    <span style="color:#6b7280;font-size:13px;">课表之外的时段在总览里是一只小鸟。长按小鸟或课内的块，底部浮出早上、中午、晚上三个鸟窝，拖进去后在上方的时间柱上滑到哪就是几点，柱子上直接写着起止时间；和课表擦边 20 分钟以内也算课外，不占格子。拖回课表格子就变回块；撞两下屏幕边缘翻到上/下一周，跨周只换周，日子和时间都不动。</span>
-  </div>
+    <span style="color:#6b7280;font-size:13px;">课表之外的时段在总览里是一只小鸟。长按小鸟或课内的块，底部浮出早上、中午、晚上三个鸟窝，拖进去后在上方的时间柱上滑到哪就是几点，柱子上直接写着起止时间；和课表擦边 20 分钟以内也算课外，不占格子。拖回课表格子就变回块；撞两下屏幕边缘翻到上/下一周，跨周只换周，日子和时间都不动。</span><br>
+    <span style="color:#6b7280;font-size:13px;">右下角新增「待分类」：点开写个任务名、回车就记下，不用挑日期也不用排时段；到「周总览」长按这一条拖到格子上松手，选个时长就变成正常计划，今日页、全部计划、周总览、复盘同时更新。</span><br>
+    </div>
 
   <div class="plat ios" id="plat-ios">
     <div class="plat-h">🍎 iPhone / iPad<span class="tag" id="ios-tag">网页版 App</span></div>
@@ -71,9 +72,9 @@ h1{margin:12px 0 4px;font-size:22px;font-weight:800;}
   </div>
 
   <div class="plat android" id="plat-android">
-    <div class="plat-h">🤖 Android<span class="tag" id="and-tag">APK 430 KB</span></div>
+    <div class="plat-h">🤖 Android<span class="tag" id="and-tag">APK 436 KB</span></div>
     <p class="plat-sub">下载安装包直接安装，支持后台通知提醒（课前 5 分钟、DDL、进度未填）。</p>
-    <a class="btn green" id="dl" href="plantracker-open-v2.4.16.apk" download="计划追踪-公开版-v2.4.16.apk">⬇ 下载公开版 APK</a>
+    <a class="btn green" id="dl" href="plantracker-open-v2.4.17.apk" download="计划追踪-公开版-v2.4.17.apk">⬇ 下载公开版 APK</a>
     <div class="steps">
       <p><b>安装步骤：</b></p>
       <p>1. 点上方绿色按钮下载；</p>
@@ -108,7 +109,7 @@ h1{margin:12px 0 4px;font-size:22px;font-weight:800;}
   }
 
   if(sc){
-    document.getElementById("dl").href = "plantracker-open-v2.4.16.apk?sharecode=" + encodeURIComponent(sc);
+    document.getElementById("dl").href = "plantracker-open-v2.4.17.apk?sharecode=" + encodeURIComponent(sc);
     document.getElementById("weblink").href = "web.html?sharecode=" + encodeURIComponent(sc);
     document.getElementById("iosbtn").href = "ios.html?sharecode=" + encodeURIComponent(sc);
   }

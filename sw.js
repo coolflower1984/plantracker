@@ -1,6 +1,6 @@
 /* 计划追踪 · iOS 版 Service Worker
    只接管 ios.html 与图标资源，其余请求完全不拦截，避免影响同域其他页面。 */
-var CACHE = "plan-tracker-ios-v24";
+var CACHE = "plan-tracker-ios-v25";
 var CORE = [
   "./ios.html",
   "./icon-180.png",

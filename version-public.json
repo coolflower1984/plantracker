@@ -1,11 +1,11 @@
 {
-  "versionCode": 32,
-  "versionName": "2.4.16",
-  "apkUrl": "https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.16.apk",
-  "iosVersion": "2.4.16",
+  "versionCode": 33,
+  "versionName": "2.4.17",
+  "apkUrl": "https://coolflower1984.github.io/plantracker/plantracker-open-v2.4.17.apk",
+  "iosVersion": "2.4.17",
   "iosUrl": "https://coolflower1984.github.io/plantracker/ios.html",
   "iosInstall": "Safari 打开 → 分享 → 添加到主屏幕（PWA，无需越狱/无需签名）",
   "webUrl": "https://coolflower1984.github.io/plantracker/web.html",
-  "notes": "两段之间空满 30 分钟就分开：并段的分界线从「不超过 30 分钟」改成「不到 30 分钟」，中间空 29 分钟以内仍算一段，正好空 30 分钟就拆成两张卡、各记各的完成度；重叠必并、跨天不并，选时段/今日页/全部计划三处口径一致。另外修好跳版本时的更新卡：一次跨两个版本会把两版的卡分开各弹一次，不再只看到最后一版。公开版不带任何人的内置课表，导入自己的 Excel 即可开始。",
+  "notes": "右下角新增「待分类」：点开写个任务名、回车就记下，不用挑日期也不用排时段；到「周总览」长按这一条拖到格子上松手，选个时长（15 分钟到 2 小时）就变成正常计划，今日页、全部计划、周总览、复盘一起更新。没排时间的只待在待分类里，不会混进今日时间轴；胶囊可长按上下挪位置，免得挡住周日晚间；点名字能改名、点 ✕ 删除。公开版不带任何人的内置课表，导入自己的 Excel 即可开始。",
   "minVersion": "2.2.6"
 }
